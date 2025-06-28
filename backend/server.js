@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require('uuid');
 const fetch = require('node-fetch'); // Pastikan ini terinstal: npm install node-fetch@2 jika Node.js < 18
 
 const app = express();
-const PORT = process.env.PORT || 3002; // FIX: process.env.PORT
+const PORT = process.env.PORT || 3000; // FIX: process.env.PORT
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // --- Discord Configurations ---
@@ -18,7 +18,7 @@ const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICA
 
 // --- Middleware ---
 const corsOptions = {
-    origin: 'http://127.0.0.1:5500', // GANTI DENGAN URL FRONTEND ANDA SAAT DEPLOY! Contoh dari Live Server VS Code
+    origin: '*', // GANTI INI DENGAN URL PUBLIK VERSEL ANDA SETELAH DEPLOY!
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204

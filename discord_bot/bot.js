@@ -6,7 +6,7 @@ const fetch = require('node-fetch'); // Pastikan ini terinstal: npm install node
 
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const BACKEND_API_BASE_URL = process.env.BACKEND_API_BASE_URL; // URL backend utama
-const DISCORD_BOT_API_PORT = process.env.DISCORD_BOT_API_PORT || 3001; // Pastikan ini sama dengan port di .env
+// const DISCORD_BOT_API_PORT = process.env.DISCORD_BOT_API_PORT || 3001; // Pastikan ini sama dengan port di .env
 const ADMIN_DISCORD_ROLE_ID = process.env.ADMIN_DISCORD_ROLE_ID; // ID Peran Admin dari .env
 
 // --- Emote yang akan digunakan ---
@@ -274,7 +274,10 @@ botApp.post('/api/discord-bot-notify', async (req, res) => {
 
 
 // --- Start Express API Server untuk Bot ---
-const BOT_PORT = process.env.DISCORD_BOT_API_PORT || 3001; // Pastikan ini sama dengan port di .env
-botApp.listen(BOT_PORT, () => {
-    console.log(`Discord Bot API server running on http://localhost:${BOT_PORT}`);
+// const BOT_PORT = process.env.DISCORD_BOT_API_PORT || 3001; // Pastikan ini sama dengan port di .env
+// botApp.listen(BOT_PORT, () => {
+//     console.log(`Discord Bot API server running on http://localhost:${BOT_PORT}`);
+// });
+botApp.listen(process.env.PORT || 3001, () => { // Gunakan PORT yang Vercel berikan ke fungsi
+    console.log(`Discord Bot API server running (on Vercel Function PORT).`);
 });
