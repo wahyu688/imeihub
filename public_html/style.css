@@ -1,0 +1,428 @@
+/* style.css */
+
+/* Variables - DISESUAIKAN DENGAN PUNYA ANDA */
+:root {
+    --bg-color: #f0f2f5; /* Light grey background for the overall page */
+    --text-color: #333;
+    --nav-bg: #fff; /* White navbar background */
+    --card-bg: #fff;
+    --primary-blue: #007bff; /* A nice blue for buttons and accents */
+    --dark-blue-text: #2c3e50; /* Darker blue for main headings */
+    --light-blue-bg: #e0f2ff; /* Light blue for the hero section background */
+    --shadow-light: rgba(0, 0, 0, 0.1); /* Bayangan lebih ringan untuk elemen umum */
+    --shadow-medium: rgba(0, 0, 0, 0.15); /* Bayangan sedang untuk hover/fokus */
+    --shadow-strong: rgba(0, 0, 0, 0.25); /* Bayangan kuat untuk elemen menonjol */
+    --border-color: #eee; /* Warna border ringan */
+}
+
+body.dark-mode {
+    --bg-color: #1a202c; /* Background gelap */
+    --text-color: #e2e8f0; /* Teks terang */
+    --nav-bg: #2d3748; /* Navbar gelap */
+    --card-bg: #4a5568; /* Card gelap */
+    --primary-blue: #63b3ed; /* Biru terang untuk dark mode */
+    --dark-blue-text: #e2e8f0; /* Teks heading terang untuk dark mode */
+    --light-blue-bg: #2a4365; /* Latar belakang hero gelap untuk dark mode */
+    --shadow-light: rgba(255, 255, 255, 0.1); /* Bayangan terang untuk dark mode */
+    --shadow-medium: rgba(255, 255, 255, 0.15);
+    --shadow-strong: rgba(255, 255, 255, 0.25);
+    --border-color: #3b455b; /* Warna border gelap */
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font lebih modern */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transisi untuk mode gelap/terang */
+}
+
+a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--nav-bg);
+    padding: 15px 40px;
+    box-shadow: 0 2px 8px var(--shadow-light); /* Menggunakan shadow-light */
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.navbar .brand {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--dark-blue-text);
+}
+.nav-links {
+    list-style-type: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+.nav-links li {
+    margin: 0 20px;
+}
+.nav-links a {
+    color: var(--text-color);
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+.nav-links a:hover {
+    color: var(--primary-blue);
+    text-decoration: none;
+}
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+    padding: 8px 15px;
+    border-radius: 8px; /* Konsisten dengan card */
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+}
+.theme-toggle:hover {
+    background-color: var(--primary-blue);
+    color: #fff;
+    border-color: var(--primary-blue);
+}
+
+/* Main Content */
+main {
+    padding: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, var(--light-blue-bg) 0%, rgba(255,255,255,0) 100%);
+    text-align: center;
+    padding: 80px 20px;
+    position: relative;
+    overflow: hidden;
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 50%, rgba(0,123,255,0.1) 0%, rgba(0,123,255,0) 70%);
+    opacity: 0.5;
+    animation: pulse 4s infinite alternate;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.5; }
+    100% { transform: scale(1.1); opacity: 0.7; }
+}
+
+.hero h1 {
+    font-size: 3.5em;
+    margin-bottom: 20px;
+    color: var(--dark-blue-text);
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.hero h1 span {
+    color: var(--primary-blue);
+    font-weight: bold;
+}
+
+.hero p {
+    font-size: 1.2em;
+    color: #666; /* Warna teks p biasa */
+    max-width: 700px;
+    margin: 0 auto 30px auto;
+}
+
+/* General Button Styles - SANGAT PENTING UNTUK KONSISTENSI */
+.btn {
+    display: inline-block;
+    padding: 15px 30px; /* Padding lebih besar untuk tombol utama */
+    font-size: 1.1em; /* Ukuran font lebih besar */
+    border-radius: 50px; /* BENTUK KAPSUL UNTUK SEMUA TOMBOL UTAMA */
+    background-color: var(--primary-blue);
+    color: #fff;
+    border: none;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 5px 15px var(--shadow-light); /* Shadow konsisten */
+    transition: all 0.3s ease;
+    position: relative; /* Penting untuk z-index */
+    z-index: 10;
+}
+.btn:hover {
+    background-color: #0056b3; /* Warna hover sedikit lebih gelap */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px var(--shadow-medium); /* Shadow lebih kuat saat hover */
+}
+
+/* Override jika ada tombol yang lebih kecil/khusus seperti di service card */
+.service-card .btn {
+    padding: 10px 25px; /* Padding sedikit lebih kecil */
+    font-size: 1em; /* Ukuran font sedikit lebih kecil */
+    border-radius: 25px; /* Bisa lebih kecil atau tetap 50px, saya buat 25px untuk variasi */
+    box-shadow: 0 2px 8px var(--shadow-light); /* Shadow lebih ringan */
+}
+.service-card .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-medium);
+}
+
+
+/* General Card/Section Styles - SANGAT PENTING UNTUK KONSISTENSI */
+.features li, .service-card, .imei-check, .order-form, .contact-preview {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color); /* Border ringan yang konsisten */
+    border-radius: 12px; /* Sudut membulat konsisten untuk semua card/form */
+    box-shadow: 0 4px 15px var(--shadow-light); /* Shadow konsisten */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+
+/* Other sections (from your original style.css, slightly adjusted for consistency) */
+.features {
+    padding: 60px 20px;
+    margin: 40px auto; /* Tambah margin atas/bawah */
+    max-width: 900px;
+    text-align: center;
+}
+.features h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: var(--dark-blue-text);
+}
+.features ul {
+    list-style-type: none;
+    padding-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+.features li {
+    padding: 20px;
+    flex: 1 1 calc(50% - 20px);
+    max-width: 400px;
+    text-align: left;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.features li:hover {
+    transform: translateY(-3px); /* Efek sedikit naik */
+    box-shadow: 0 6px 20px var(--shadow-medium); /* Shadow lebih kuat saat hover */
+}
+.features li::before {
+    content: '✅';
+    margin-right: 10px;
+}
+
+
+.contact-preview {
+    text-align: center;
+    padding: 60px 20px;
+    margin: 40px auto;
+    max-width: 800px;
+    background-color: var(--light-blue-bg); /* Warna latar belakang menarik */
+    border-radius: 15px; /* Sedikit lebih membulat untuk penekanan */
+    box-shadow: 0 6px 20px var(--shadow-medium); /* Bayangan sedikit lebih kuat */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.contact-preview h2 {
+    font-size: 2.2em;
+    margin-bottom: 15px;
+    color: var(--dark-blue-text);
+}
+.contact-preview p {
+    font-size: 1.1em;
+    margin-bottom: 30px;
+    color: #555;
+}
+
+
+.services {
+    padding: 60px 20px;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+.services h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.5em;
+    color: var(--dark-blue-text);
+}
+.service-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
+.service-card {
+    padding: 25px;
+    width: 250px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px var(--shadow-medium);
+}
+.service-card h3 {
+    margin-top: 0;
+    color: var(--dark-blue-text);
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+.service-card p {
+    font-size: 1em;
+    margin: 10px 0 20px;
+    color: #666;
+}
+
+
+/* IMEI Check and Order Form (menggunakan gaya card yang konsisten) */
+.imei-check, .order-form {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 30px;
+    text-align: center;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.imei-check h1, .order-form h1 {
+    margin-bottom: 25px;
+    font-size: 2em;
+    color: var(--dark-blue-text);
+}
+#imei-form input, .order-form input, .order-form select {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1.1em;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+#imei-form .btn, .order-form .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1em;
+    border-radius: 8px; /* Sudut sedikit kotak untuk tombol full-width, atau tetap 50px */
+}
+
+/* Hasil IMEICheck */
+#result {
+    margin-top: 25px;
+    padding: 15px;
+    background-color: var(--light-blue-bg);
+    border: 1px solid var(--primary-blue);
+    border-radius: 8px;
+    color: var(--dark-blue-text);
+    text-align: left;
+    font-size: 1.1em;
+    line-height: 1.8;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+#result strong {
+    color: var(--primary-blue);
+}
+
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 30px;
+    font-size: 0.9em;
+    margin-top: 50px;
+    background-color: var(--nav-bg);
+    color: var(--text-color);
+    box-shadow: 0 -2px 8px var(--shadow-light);
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .ai-ml-solutions {
+        flex-direction: column;
+        text-align: center;
+    }
+    .ai-ml-solutions .content {
+        order: 2;
+    }
+    .ai-ml-solutions .phone-mockup {
+        order: 1;
+        margin-bottom: 40px;
+    }
+    .hero h1 {
+        font-size: 2.8em;
+    }
+    .ai-ml-solutions h2 {
+        font-size: 2em;
+    }
+    .features ul {
+        flex-direction: column;
+        align-items: center;
+    }
+    .features li {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .navbar {
+        justify-content: center;
+        padding: 10px 20px;
+    }
+    .nav-links {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 15px;
+    }
+    .nav-links li {
+        margin: 8px 0;
+        text-align: center;
+    }
+    .theme-toggle {
+        width: 100%;
+        margin-top: 10px;
+    }
+    .hero {
+        padding: 60px 15px;
+    }
+    .hero h1 {
+        font-size: 2.2em;
+    }
+    .hero p {
+        font-size: 1em;
+    }
+    .ai-ml-solutions {
+        padding: 60px 15px;
+    }
+    .ai-ml-solutions h2 {
+        font-size: 1.8em;
+    }
+    .ai-ml-solutions .phone-mockup {
+        width: 250px;
+        height: 500px;
+    }
+    .service-card {
+        width: 100%;
+    }
+}

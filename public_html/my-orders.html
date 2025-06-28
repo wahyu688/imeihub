@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesanan Saya - Unlock IMEI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://img.icons8.com/ios-filled/50/007bff/unlock--v1.png" type="image/png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand">UnlockIMEI</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Beranda</a></li>
+            <li><a href="services.html">Layanan</a></li>
+            <li><a href="order.html">Pesan Sekarang</a></li>
+            <li><a href="my-orders.html">Pesanan Saya</a></li>
+            <li><a href="contact.html">Kontak</a></li>
+            <li id="nav-login-register" style="display: none;"><a href="login.html">Login/Daftar</a></li>
+            <li id="nav-user-greeting" style="display: none;"><span>Halo, <strong id="username-display"></strong>!</span></li>
+            <li><button class="theme-toggle">Mode Gelap</button></li>
+            <li><button id="logout-btn-navbar" class="theme-toggle" style="margin-left: 10px; display: none;">Logout</button></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="my-orders-section" class="services">
+            <h1>Pesanan Saya</h1>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 50px auto; font-size: 1.1em; color: #555;">Lihat status semua pesanan unlock IMEI Anda di sini.</p>
+            <div id="order-list" class="service-list">
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 UnlockIMEI. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Logout functionality for my-orders.html - moved to global script for consistency
+        // document.getElementById('logout-btn').addEventListener('click', () => {
+        //     localStorage.removeItem('authToken');
+        //     localStorage.removeItem('userId');
+        //     window.location.href = 'login.html'; // Redirect ke halaman login setelah logout
+        // });
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesan Layanan - Unlock IMEI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://img.icons8.com/ios-filled/50/007bff/unlock--v1.png" type="image/png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand">UnlockIMEI</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Beranda</a></li>
+            <li><a href="services.html">Layanan</a></li>
+            <li><a href="order.html">Pesan Sekarang</a></li>
+            <li><a href="my-orders.html">Pesanan Saya</a></li>
+            <li><a href="contact.html">Kontak</a></li>
+            <li id="nav-login-register"><a href="login.html">Login/Daftar</a></li>
+            <li id="nav-user-greeting" style="display: none;"><span>Halo, <strong id="username-display"></strong>!</span></li>
+            <li><button class="theme-toggle">Mode Gelap</button></li>
+            <li><button id="logout-btn-navbar" class="theme-toggle" style="margin-left: 10px; display: none;">Logout</button></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="order-form">
+            <h1>Formulir Pemesanan Layanan</h1>
+            <p style="text-align: center; margin-bottom: 30px;">Isi formulir di bawah ini untuk memesan layanan unlock IMEI kami. Pastikan data yang Anda masukkan benar.</p>
+            <form id="order-submission-form" method="POST" action="/api/order">
+                <label for="name">Nama Lengkap:</label>
+                <input type="text" id="name" name="name" required> 
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required> 
+
+                <label for="phone">Nomor Telepon (WhatsApp):</label>
+                <input type="tel" id="phone" name="phone" placeholder="Contoh: 6281234567890" required> 
+
+                <label for="device-imei">IMEI Perangkat:</label>
+                <input type="text" id="device-imei" name="imei" maxlength="15" required> 
+
+                <label for="service-type">Pilih Layanan:</label>
+                <select id="service-type" name="serviceType" required> 
+                    <option value="">-- Pilih Layanan --</option>
+                    <option value="Unlock IMEI iPhone">Unlock IMEI iPhone</option>
+                    <option value="Unlock IMEI Android">Unlock IMEI Android</option>
+                    <option value="Unlock IMEI Global">Unlock IMEI Global</option>
+                    <option value="Pemeriksaan Histori IMEI">Pemeriksaan Histori IMEI</option>
+                    <option value="Other">Lainnya</option>
+                </select>
+
+                <label for="payment-method">Metode Pembayaran:</label>
+                <select id="payment-method" name="paymentMethod" required> 
+                    <option value="">-- Pilih Metode Pembayaran --</option>
+                    <option value="QRIS">QRIS</option>
+                    <option value="Virtual Account BCA">Virtual Account BCA</option>
+                    <option value="Virtual Account Mandiri">Virtual Account Mandiri</option>
+                    <option value="Virtual Account BNI">Virtual Account BNI</option>
+                    <option value="Bank Transfer">Transfer Bank Manual</option>
+                </select>
+                
+                <button type="submit" class="btn">Pesan Sekarang & Proses</button>
+            </form>
+            <div id="order-status" style="margin-top: 20px; text-align: center; font-weight: bold;"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 UnlockIMEI. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
