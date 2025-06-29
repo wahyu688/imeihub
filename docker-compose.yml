@@ -22,7 +22,7 @@ services:
       - "3000:3000" # Port internal untuk komunikasi antar kontainer
     environment: # Variabel lingkungan untuk backend
       JWT_SECRET: ${JWT_SECRET}
-      DISCORD_BOT_UPDATE_API_URL: http://discord_bot:3001/api/discord-bot-notify # Panggil bot via nama service
+      DISCORD_BOT_UPDATE_API_URL: https://bot.imeihub.id/api/discord-bot-notify # Panggil bot via nama service
       DISCORD_ORDER_NOTIFICATION_CHANNEL_ID: ${DISCORD_ORDER_NOTIFICATION_CHANNEL_ID}
       ADMIN_DISCORD_USER_ID: ${ADMIN_DISCORD_USER_ID} # Opsional, jika masih menggunakan user ID admin
       PORT: 3000 # Pastikan aplikasi backend mendengarkan di port ini
@@ -38,7 +38,7 @@ services:
       - "3001:3001" # Port internal untuk komunikasi antar kontainer
     environment: # Variabel lingkungan untuk bot
       DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
-      BACKEND_API_BASE_URL: http://backend:3000 # Panggil backend via nama service
+      BACKEND_API_BASE_URL: https://back.imeihub.id # Panggil backend via nama service
       DISCORD_BOT_API_PORT: 3001 # Port yang didengarkan oleh API Express di bot
       ADMIN_DISCORD_ROLE_ID: ${ADMIN_DISCORD_ROLE_ID}
       PORT: 3001 # Pastikan aplikasi bot mendengarkan di port ini

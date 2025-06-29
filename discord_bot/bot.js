@@ -174,5 +174,5 @@ botApp.post('/api/discord-bot-notify', async (req, res) => {
 
 const BOT_PORT = process.env.DISCORD_BOT_API_PORT || 3001;
 botApp.listen(BOT_PORT, () => {
-    console.log(`Discord Bot API server running on http://localhost:${BOT_PORT}`);
+    console.log(`Discord Bot API server running on https://localhost:${BOT_PORT}`);
 });
