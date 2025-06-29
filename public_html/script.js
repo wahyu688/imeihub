@@ -1,35 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- PENTING: GANTI DENGAN URL API BACKEND ANDA SAAT DEPLOY! ---
-    // Pastikan ini sesuai dengan port backend Anda di backend/.env
-    const API_BASE_URL = 'https://admin.imeihub.id'; // GANTI INI DENGAN URL PUBLIK BACKEND ANDA YANG BENAR';
+    const API_BASE_URL = 'http://localhost:3000'; // Contoh: http://localhost:3000 atau http://localhost:3002
+
+    // --- ADMIN API KEY ---
+    // GANTI INI DENGAN API KEY YANG AMAN DAN HANYA DIKETAHUI OLEH ANDA!
+    // IDEALNYA, INI JUGA HARUS DATANG DARI ENVIRONMENT VARIABLE DI FRONTEND
+    const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI
+
     // --- LOGIKA PROTEKSI HALAMAN ---
-    // Fungsi untuk mendapatkan nama file HTML saat ini dari URL
     const getCurrentPageName = () => {
         const path = window.location.pathname;
-        // Mengambil bagian terakhir setelah '/' dan menghapus parameter query
         return path.substring(path.lastIndexOf('/') + 1).split('?')[0];
     };
     const currentPage = getCurrentPageName();
 
-    // PROTEKSI HALAMAN ORDER.HTML
     if (currentPage === 'order.html') {
         const authToken = localStorage.getItem('authToken');
         if (!authToken) {
-            // Pengguna belum login, arahkan ke halaman login
-            localStorage.setItem('redirectAfterLogin', window.location.href); // Simpan URL untuk redirect setelah login
+            localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
-            return; // Hentikan eksekusi script selanjutnya untuk halaman ini
+            return;
         }
     }
 
-    // PROTEKSI HALAMAN MY-ORDERS.HTML
     if (currentPage === 'my-orders.html') {
         const authToken = localStorage.getItem('authToken');
         const userId = localStorage.getItem('userId');
         if (!authToken || !userId) {
             localStorage.setItem('redirectAfterLogin', window.location.href);
-            window.location.href = 'login.html'; // LANGSUNG REDIRECT DI SINI
-            return; // Hentikan eksekusi jika dialihkan
+            window.location.href = 'login.html';
+            return;
         }
     }
     // --- AKHIR LOGIKA PROTEKSI ---
@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameDisplay = document.getElementById('username-display');
     const logoutBtnNavbar = document.getElementById('logout-btn-navbar');
     
-    // Elemen Mobile Nav
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
     const closeMobileNav = document.querySelector('.close-mobile-nav');
@@ -59,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Desktop Navbar
             if (navLoginRegister) navLoginRegister.style.display = 'none';
             if (navUserGreeting) {
-                navUserGreeting.style.display = 'flex'; // Display as flex to align avatar
+                navUserGreeting.style.display = 'flex';
                 if (usernameDisplay) usernameDisplay.textContent = userNameOnLoad;
             }
             if (logoutBtnNavbar) logoutBtnNavbar.style.display = 'block';
@@ -67,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Mobile Overlay Navbar
             if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = 'none';
             if (mobileNavUserGreeting) {
-                mobileNavUserGreeting.style.display = 'list-item'; // Display as list-item for mobile nav
+                mobileNavUserGreeting.style.display = 'list-item';
                 if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = userNameOnLoad;
             }
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
@@ -84,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
         }
     }
-    updateNavbarLoginStatus(); // Panggil saat DOM dimuat
+    updateNavbarLoginStatus();
 
     // Event Listener untuk Logout Button (Global)
     if (logoutBtnNavbar) {
@@ -92,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userId');
             localStorage.removeItem('userName');
-            updateNavbarLoginStatus(); // Update navbar setelah logout
+            updateNavbarLoginStatus(); 
             window.location.href = 'login.html';
         });
     }
@@ -103,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('userId');
             localStorage.removeItem('userName');
             updateNavbarLoginStatus();
-            mobileNavOverlay.classList.remove('open'); // Tutup overlay
+            mobileNavOverlay.classList.remove('open');
             window.location.href = 'login.html';
         });
     }
@@ -129,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- End Hamburger Menu Logic ---
 
 
-    // --- Page-specific JavaScript Logic (akan dieksekusi hanya jika tidak dire-redirect) ---
+    // --- Page-specific JavaScript Logic ---
 
     // Order and Payment Submission (Only on order.html)
     const orderForm = document.getElementById('order-submission-form');
@@ -163,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             console.log('DEBUG: Default form submission prevented.');
 
-            orderStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Memproses pesanan Anda dan mengirimkan ke sistem kami...</p>`; // Warna teks progress
-            orderStatusDiv.classList.remove('error'); // Hapus class error jika ada dari sebelumnya
+            orderStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Memproses pesanan Anda dan mengirimkan ke sistem kami...</p>`;
+            orderStatusDiv.classList.remove('error');
             orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
             orderStatusDiv.style.borderColor = 'var(--accent-color)';
             orderStatusDiv.style.color = 'var(--text-color)';
@@ -292,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     loginStatusDiv.style.borderColor = 'var(--accent-color)';
                     loginStatusDiv.style.color = 'var(--text-color)';
                     
-                    updateNavbarLoginStatus(); // Update navbar setelah login
+                    updateNavbarLoginStatus(); 
 
                     const redirectUrl = localStorage.getItem('redirectAfterLogin') || 'my-orders.html';
                     localStorage.removeItem('redirectAfterLogin');
@@ -317,66 +316,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Registration functionality (Only on register.html)
-    const registerForm = document.getElementById('register-form');
-    if (registerForm) {
-        const registerStatusDiv = document.getElementById('register-status');
-        registerForm.addEventListener('submit', async (e) => {
+    // Admin Create User functionality (Only on admin_create_user.html)
+    const createUserForm = document.getElementById('create-user-form');
+    if (createUserForm) {
+        const adminCreateUserStatusDiv = document.getElementById('admin-create-user-status');
+        createUserForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const name = document.getElementById('admin-name').value;
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
 
-            registerStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Mendaftar akun...</p>`;
-            registerStatusDiv.classList.remove('error');
-            registerStatusDiv.style.backgroundColor = 'var(--card-bg)';
-            registerStatusDiv.style.borderColor = 'var(--accent-color)';
-            registerStatusDiv.style.color = 'var(--text-color)';
+            adminCreateUserStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Creating user account...</p>`;
+            adminCreateUserStatusDiv.classList.remove('error');
+            adminCreateUserStatusDiv.style.backgroundColor = 'var(--card-bg)';
+            adminCreateUserStatusDiv.style.borderColor = 'var(--accent-color)';
+            adminCreateUserStatusDiv.style.color = 'var(--text-color)';
 
-            if (password !== confirmPassword) {
-                registerStatusDiv.innerHTML = '<p style="color: red;">Error: Password dan konfirmasi password tidak cocok.</p>';
-                registerStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                registerStatusDiv.style.borderColor = 'red';
-                registerStatusDiv.style.color = 'red';
-                registerStatusDiv.classList.add('error');
-                return;
-            }
+            // PENTING: Sertakan Admin API Key di header untuk autentikasi
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-Admin-API-Key': ADMIN_API_KEY // Gunakan header kustom untuk API Key
+            };
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/register`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/create-user`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     body: JSON.stringify({ name, email, password })
                 });
                 const data = await response.json();
 
                 if (response.ok) {
-                    registerStatusDiv.innerHTML = '<p style="color: green;">Pendaftaran berhasil! Anda dapat login sekarang.</p>';
-                    registerStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                    registerStatusDiv.style.borderColor = 'var(--accent-color)';
-                    registerStatusDiv.style.color = 'var(--text-color)';
-                    registerStatusDiv.classList.remove('error');
-                    registerForm.reset();
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 2000);
+                    adminCreateUserStatusDiv.innerHTML = `<p style="color: green;">User "${name}" created successfully!</p>`;
+                    adminCreateUserStatusDiv.classList.remove('error');
+                    adminCreateUserStatusDiv.style.backgroundColor = 'var(--card-bg)';
+                    adminCreateUserStatusDiv.style.borderColor = 'var(--accent-color)';
+                    adminCreateUserStatusDiv.style.color = 'var(--text-color)';
+                    createUserForm.reset();
                 } else {
-                    const errorMessage = data.message || 'Pendaftaran gagal. Silakan coba lagi.';
-                    console.error('DEBUG: Register API responded with error:', errorMessage);
-                    registerStatusDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${errorMessage}</p>`;
-                    registerStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                    registerStatusDiv.style.borderColor = 'red';
-                    registerStatusDiv.style.color = 'red';
-                    registerStatusDiv.classList.add('error');
+                    const errorMessage = data.message || 'Failed to create user. Please try again.';
+                    console.error('DEBUG: Admin Create User API responded with error:', errorMessage);
+                    adminCreateUserStatusDiv.innerHTML = `<p style="color: red;">Error: ${errorMessage}</p>`;
+                    adminCreateUserStatusDiv.style.backgroundColor = 'var(--card-bg)';
+                    adminCreateUserStatusDiv.style.borderColor = 'red';
+                    adminCreateUserStatusDiv.style.color = 'red';
+                    adminCreateUserStatusDiv.classList.add('error');
                 }
             } catch (error) {
-                console.error('DEBUG: Registration error (fetch failed/network issue):', error);
-                registerStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
-                registerStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                registerStatusDiv.style.borderColor = 'red';
-                registerStatusDiv.style.color = 'red';
-                registerStatusDiv.classList.add('error');
+                console.error('DEBUG: Admin Create User error (fetch failed/network issue):', error);
+                adminCreateUserStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
+                adminCreateUserStatusDiv.style.backgroundColor = 'var(--card-bg)';
+                adminCreateUserStatusDiv.style.borderColor = 'red';
+                adminCreateUserStatusDiv.style.color = 'red';
+                adminCreateUserStatusDiv.classList.add('error');
             }
         });
     }
@@ -422,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 console.error('DEBUG: Error fetching orders (fetch failed/network issue):', error);
-                orderListDiv.innerHTML = '<p style="color: red;">Terjadi masalah jaringan atau server saat memuat pesanan.</p>';
+                orderListDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server saat memuat pesanan.</p>`;
             }
         };
 

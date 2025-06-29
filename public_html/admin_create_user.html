@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImeiHub - Admin: Create User</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="imeihub_logo.png" type="image/png"> 
+    <style>
+        /* Gaya khusus untuk admin_create_user.html jika diperlukan */
+        .admin-form-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 40px;
+            background-color: var(--card-bg);
+            border-radius: 25px;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            color: var(--text-color);
+            text-align: center;
+        }
+        .admin-form-container h1 {
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        .admin-form-container label {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: left;
+        }
+        .admin-form-container input {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1.1em;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text-color);
+        }
+        .admin-form-container .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border-radius: 30px;
+        }
+        .status-message { /* Reuse existing status-message style */
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section class="admin-form-container">
+            <h1>Admin: Create New User Account</h1>
+            <p style="color: var(--secondary-text-color);">Enter the details for the new user account.</p>
+            <form id="create-user-form">
+                <label for="admin-name">Full Name:</label>
+                <input type="text" id="admin-name" required>
+
+                <label for="admin-email">Email (for Login):</label>
+                <input type="email" id="admin-email" required>
+
+                <label for="admin-password">Password:</label>
+                <input type="password" id="admin-password" required>
+                
+                <button type="submit" class="btn">Create User</button>
+            </form>
+            <div id="admin-create-user-status" class="status-message"></div>
+        </section>
+    </main>
+
+    <!-- FOOTER (Opsional untuk halaman admin) -->
+    <footer class="main-container-card" style="margin-top: 60px;">
+        <div class="footer-content">
+            <p>&copy; 2025 ImeiHub. Admin Panel.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
