@@ -120,9 +120,13 @@ async function notifyDiscordBot(type, payload) {
 
 // POST /api/register - Register User
 app.post('/api/register', async (req, res) => {
+    console.log('DEBUG: POST /api/register received.'); // TAMBAH LOG INI
+    console.log('DEBUG: Request body:', req.body); // TAMBAH LOG INI UNTUK MELIHAT DATA
+
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
+        console.warn('DEBUG: Missing required fields for registration.'); // TAMBAH LOG
         return res.status(400).json({ message: 'Name, email, and password are required.' });
     }
 
@@ -144,9 +148,11 @@ app.post('/api/register', async (req, res) => {
 
         console.log('New user registered:', email);
         res.status(201).json({ message: 'User registered successfully!', userId: newUserId, userName: name });
+        console.log('DEBUG: Register response sent with status 201.'); // TAMBAH LOG
     } catch (error) {
-        console.error('Registration error:', error);
+        console.error('ERROR: Registration error:', error); // Pastikan ini tetap ada
         res.status(500).json({ message: 'Error registering user.', error: error.message });
+        console.log('DEBUG: Register response failed in catch block.'); // TAMBAH LOG
     }
 });
 
