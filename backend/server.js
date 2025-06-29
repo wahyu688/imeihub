@@ -46,7 +46,7 @@ pool.getConnection()
 const corsOptions = {
     // Pastikan ini cocok dengan URL publik frontend Anda di Dokploy (misal: https://your-frontend-app.dokploy.com)
     // Selama pengembangan lokal, gunakan http://127.0.0.1:5500 (dari Live Server VS Code)
-    origin: 'http://127.0.0.1:5500', 
+    origin: 'http://imeihub.id', // Ganti dengan URL frontend Anda
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204
