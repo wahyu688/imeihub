@@ -4,17 +4,17 @@ const bodyParser = require('body-parser');
 const cors = require('cors'); // Pastikan 'cors' sudah terinstal: npm install cors
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid'); // Digunakan untuk menghasilkan ID unik
 const fetch = require('node-fetch'); // Pastikan ini terinstal: npm install node-fetch@2 jika Node.js < 18
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// --- Discord Configurations ---
+// --- Discord Configurations (akan diambil dari .env Dokploy) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
 const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICATION_CHANNEL_ID;
-const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
+const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID; // Ini tidak lagi digunakan untuk verifikasi utama
 
 // --- Database Configuration (MySQL) ---
 const mysql = require('mysql2/promise'); // Impor driver mysql2/promise
@@ -30,7 +30,7 @@ const pool = mysql.createPool({ // Menggunakan createPool untuk koneksi pool
     queueLimit: 0
 });
 
-// Test database connection on startup
+// Test database connection on startup (akan muncul di log Dokploy)
 pool.getConnection()
     .then(connection => {
         console.log('DEBUG: Successfully connected to MySQL database.');
@@ -39,20 +39,22 @@ pool.getConnection()
     .catch(err => {
         console.error('ERROR: Failed to connect to MySQL database:', err);
         console.error('ERROR: Please check your DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME in Dokploy Environment Variables.');
-        process.exit(1);
+        process.exit(1); // Keluar dari proses jika koneksi database gagal
     });
 
 // --- Middleware ---
 const corsOptions = {
     // INI YANG HARUS DIPASTIKAN SAMA PERSIS DENGAN ORIGIN FRONTEND ANDA (HTTPS!)
+    // Pastikan ini adalah domain publik frontend Anda, misalnya https://imeihub.id
     origin: 'https://imeihub.id', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    optionsSuccessStatus: 204 // Penting untuk preflight requests
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Pastikan OPTIONS otomatis ditangani oleh middleware cors
+    credentials: true, // Izinkan credentials (cookies, auth headers)
+    optionsSuccessStatus: 204 // Status untuk preflight OPTIONS request
 };
-app.use(cors(corsOptions)); // Terapkan middleware CORS
+app.use(cors(corsOptions)); // Terapkan middleware CORS di sini
 
-app.use(bodyParser.json()); // Pastikan bodyParser datang setelah CORS, tapi sebelum rute Anda
+
+app.use(bodyParser.json()); // Pastikan bodyParser datang setelah CORS
 
 
 // --- Middleware Autentikasi JWT ---
@@ -116,9 +118,10 @@ async function notifyDiscordBot(type, payload) {
 // --- API Endpoints ---
 
 // POST /api/register - Register User
+// Endpoint ini TIDAK memerlukan autentikasi
 app.post('/api/register', async (req, res) => {
-    console.log('DEBUG: POST /api/register received.'); // Debug log
-    console.log('DEBUG: Request body:', req.body); // Debug log
+    console.log('DEBUG: POST /api/register received.');
+    console.log('DEBUG: Request body:', req.body);
 
     const { name, email, password } = req.body;
 
@@ -152,6 +155,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 // POST /api/login - Login User
+// Endpoint ini TIDAK memerlukan autentikasi
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -181,9 +185,25 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Middleware to ensure user is logged in for /order access
-// Pastikan hanya /api/order yang dilindungi di sini
+// Middleware to ensure user is logged in for /order access and /orders/:userId
+// Pastikan hanya endpoint ini yang dilindungi.
 app.use('/api/order', authenticateToken); 
+app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
+    if (req.user.userId !== req.params.userId) {
+        return res.status(403).json({ message: 'Forbidden: You can only view your own orders.' });
+    }
+
+    try {
+        const [userOrders] = await pool.query('SELECT order_id AS orderId, service_type AS serviceType, imei, status, payment_method AS paymentMethod, order_date AS orderDate FROM orders WHERE user_id = ? ORDER BY order_date DESC', [req.params.userId]);
+        
+        console.log(`Fetching orders for user ${req.params.userId}. Found ${userOrders.length} orders.`);
+        res.json({ orders: userOrders });
+    }
+     catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ message: 'Error fetching orders.', error: error.message });
+    }
+});
 
 // POST /api/order - Submit Order
 app.post('/api/order', async (req, res) => {
@@ -234,23 +254,6 @@ app.post('/api/order', async (req, res) => {
     }
 });
 
-// GET /api/orders/:userId - Get User Orders
-app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
-    if (req.user.userId !== req.params.userId) {
-        return res.status(403).json({ message: 'Forbidden: You can only view your own orders.' });
-    }
-
-    try {
-        const [userOrders] = await pool.query('SELECT order_id AS orderId, service_type AS serviceType, imei, status, payment_method AS paymentMethod, order_date AS orderDate FROM orders WHERE user_id = ? ORDER BY order_date DESC', [req.params.userId]);
-        
-        console.log(`Fetching orders for user ${req.params.userId}. Found ${userOrders.length} orders.`);
-        res.json({ orders: userOrders });
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).json({ message: 'Error fetching orders.', error: error.message });
-    }
-});
-
 // --- Endpoint untuk Discord Bot memanggil backend untuk update status ---
 app.post('/api/discord-webhook-commands', async (req, res) => {
     const { type, payload } = req.body;
@@ -286,7 +289,7 @@ app.post('/api/discord-webhook-commands', async (req, res) => {
 // --- Start Server ---
 app.listen(PORT, () => {
     console.log(`Backend server running on http://localhost:${PORT}`);
-    if (JWT_SECRET === 'mafia_badung_paling_keren') {
+    if (JWT_SECRET === 'your_super_secret_jwt_key_please_change_this_to_a_random_string_in_production') {
         console.warn('WARNING: JWT_SECRET is not changed. Please update it in your .env file for production!');
     }
 });
