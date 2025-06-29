@@ -1,25 +1,25 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // Pastikan 'cors' sudah terinstal: npm install cors
+const cors = require('cors'); 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid'); // Digunakan untuk menghasilkan ID unik
-const fetch = require('node-fetch'); // Pastikan ini terinstal: npm install node-fetch@2 jika Node.js < 18
+const { v4: uuidv4 } = require('uuid');
+const fetch = require('node-fetch'); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// --- Discord Configurations (akan diambil dari .env Dokploy) ---
+// --- Discord Configurations ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
 const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICATION_CHANNEL_ID;
-const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID; // Ini tidak lagi digunakan untuk verifikasi utama
+const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
 
 // --- Database Configuration (MySQL) ---
-const mysql = require('mysql2/promise'); // Impor driver mysql2/promise
+const mysql = require('mysql2/promise'); 
 
-const pool = mysql.createPool({ // Menggunakan createPool untuk koneksi pool
+const pool = mysql.createPool({ 
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     database: process.env.DB_NAME,
@@ -30,7 +30,6 @@ const pool = mysql.createPool({ // Menggunakan createPool untuk koneksi pool
     queueLimit: 0
 });
 
-// Test database connection on startup (akan muncul di log Dokploy)
 pool.getConnection()
     .then(connection => {
         console.log('DEBUG: Successfully connected to MySQL database.');
@@ -39,22 +38,43 @@ pool.getConnection()
     .catch(err => {
         console.error('ERROR: Failed to connect to MySQL database:', err);
         console.error('ERROR: Please check your DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME in Dokploy Environment Variables.');
-        process.exit(1); // Keluar dari proses jika koneksi database gagal
+        process.exit(1);
     });
 
 // --- Middleware ---
 const corsOptions = {
-    // INI YANG HARUS DIPASTIKAN SAMA PERSIS DENGAN ORIGIN FRONTEND ANDA (HTTPS!)
-    // Pastikan ini adalah domain publik frontend Anda, misalnya https://imeihub.id
     origin: 'https://imeihub.id', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Pastikan OPTIONS otomatis ditangani oleh middleware cors
-    credentials: true, // Izinkan credentials (cookies, auth headers)
-    optionsSuccessStatus: 204 // Status untuk preflight OPTIONS request
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204
 };
-app.use(cors(corsOptions)); // Terapkan middleware CORS di sini
+app.use(cors(corsOptions)); 
 
+// --- Tambahkan middleware raw body ini untuk debugging ---
+// Ini harus diposisikan SEBELUM app.use(bodyParser.json());
+// Akan mem-parse semua request dengan Content-Type: application/json sebagai teks
+app.use(bodyParser.text({ type: 'application/json' })); 
 
-app.use(bodyParser.json()); // Pastikan bodyParser datang setelah CORS
+// Middleware kustom untuk mencoba parse JSON secara manual dan log raw body
+app.use((req, res, next) => {
+    // Jika header Content-Type adalah application/json dan body masih string (belum di-parse oleh bodyParser.json)
+    if (req.headers['content-type'] === 'application/json' && typeof req.body === 'string') {
+        try {
+            // Coba parse JSON secara manual
+            req.body = JSON.parse(req.body);
+            console.log('DEBUG: Manual JSON parse successful. Body:', req.body);
+        } catch (e) {
+            // Jika parsing gagal, log raw body dan kirim 400 Bad Request
+            console.error('ERROR: Manual JSON parse failed for request to', req.path, ':', e.message);
+            console.error('ERROR: Raw request body that caused parse error:', req.body);
+            return res.status(400).json({ message: 'Invalid JSON format in request body.' });
+        }
+    }
+    next(); // Lanjutkan ke middleware berikutnya
+});
+// --- Akhir debugging middleware ---
+
+app.use(bodyParser.json()); // Middleware JSON utama (ini sekarang mungkin tidak banyak bekerja jika yang di atas sudah mem-parse)
 
 
 // --- Middleware Autentikasi JWT ---
@@ -118,15 +138,14 @@ async function notifyDiscordBot(type, payload) {
 // --- API Endpoints ---
 
 // POST /api/register - Register User
-// Endpoint ini TIDAK memerlukan autentikasi
 app.post('/api/register', async (req, res) => {
     console.log('DEBUG: POST /api/register received.');
-    console.log('DEBUG: Request body:', req.body);
+    console.log('DEBUG: Request body (after custom parsing):', req.body); // Ini akan mencetak objek JSON atau undefined jika parsing gagal
 
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-        console.warn('DEBUG: Missing required fields for registration.');
+        console.warn('DEBUG: Missing required fields for registration. Body:', req.body);
         return res.status(400).json({ message: 'Name, email, and password are required.' });
     }
 
@@ -155,7 +174,6 @@ app.post('/api/register', async (req, res) => {
 });
 
 // POST /api/login - Login User
-// Endpoint ini TIDAK memerlukan autentikasi
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -186,7 +204,6 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Middleware to ensure user is logged in for /order access and /orders/:userId
-// Pastikan hanya endpoint ini yang dilindungi.
 app.use('/api/order', authenticateToken); 
 app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
     if (req.user.userId !== req.params.userId) {
