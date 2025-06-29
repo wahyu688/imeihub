@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80" # Map port 80 publik ke port 80 kontainer
+      # Anda mungkin perlu menyesuaikan port publik di sini
+      # jika Hostinger punya mapping port tertentu (misal 8080:80)
+    depends_on:
+      - backend
+      - discord_bot
+    restart: always
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3000:3000" # Port internal untuk komunikasi antar kontainer
+    environment: # Variabel lingkungan untuk backend
+      JWT_SECRET: ${JWT_SECRET}
+      DISCORD_BOT_UPDATE_API_URL: http://discord_bot:3001/api/discord-bot-notify # Panggil bot via nama service
+      DISCORD_ORDER_NOTIFICATION_CHANNEL_ID: ${DISCORD_ORDER_NOTIFICATION_CHANNEL_ID}
+      ADMIN_DISCORD_USER_ID: ${ADMIN_DISCORD_USER_ID} # Opsional, jika masih menggunakan user ID admin
+      PORT: 3000 # Pastikan aplikasi backend mendengarkan di port ini
+    restart: always
+    # volumes: # Opsional: untuk persistent database atau log
+    #   - ./backend-data:/app/backend/data # Contoh untuk data simulasi (data akan hilang tanpa ini)
+
+  discord_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    ports:
+      - "3001:3001" # Port internal untuk komunikasi antar kontainer
+    environment: # Variabel lingkungan untuk bot
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+      BACKEND_API_BASE_URL: http://backend:3000 # Panggil backend via nama service
+      DISCORD_BOT_API_PORT: 3001 # Port yang didengarkan oleh API Express di bot
+      ADMIN_DISCORD_ROLE_ID: ${ADMIN_DISCORD_ROLE_ID}
+      PORT: 3001 # Pastikan aplikasi bot mendengarkan di port ini
+    restart: always
+    # volumes: # Opsional: untuk persistent log bot
+    #   - ./bot-logs:/var/log/discord_bot

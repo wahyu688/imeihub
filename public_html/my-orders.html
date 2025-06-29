@@ -3,47 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesanan Saya - Unlock IMEI</title>
+    <title>ImeiHub - My Orders</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="https://img.icons8.com/ios-filled/50/007bff/unlock--v1.png" type="image/png">
+    <link rel="icon" href="imeihub_logo.png" type="image/png"> 
 </head>
 <body>
-    <nav class="navbar">
-        <div class="brand">UnlockIMEI</div>
-        <ul class="nav-links">
-            <li><a href="index.html">Beranda</a></li>
-            <li><a href="services.html">Layanan</a></li>
-            <li><a href="order.html">Pesan Sekarang</a></li>
-            <li><a href="my-orders.html">Pesanan Saya</a></li>
-            <li><a href="contact.html">Kontak</a></li>
-            <li id="nav-login-register" style="display: none;"><a href="login.html">Login/Daftar</a></li>
-            <li id="nav-user-greeting" style="display: none;"><span>Halo, <strong id="username-display"></strong>!</span></li>
-            <li><button class="theme-toggle">Mode Gelap</button></li>
-            <li><button id="logout-btn-navbar" class="theme-toggle" style="margin-left: 10px; display: none;">Logout</button></li>
-        </ul>
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <div class="brand-logo">
+                <img src="imeihub_logo.png" alt="ImeiHub Logo"> 
+            </div>
+            <ul class="nav-links-desktop">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="my-orders.html">My Orders</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-right">
+            <div id="nav-login-register" style="display: none;"><a href="login.html" class="nav-link-button">Login/Register</a></div>
+            <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
+                <span>Hi, <strong id="username-display"></strong>!</span>
+                <img src="avatar_placeholder.jpg" alt="User Avatar" class="user-avatar">
+            </div>
+            <button id="logout-btn-navbar" class="nav-link-button" style="display: none;">Logout</button>
+        </div>
+
+        <button class="hamburger-menu" aria-label="Toggle navigation">
+            ☰
+        </button>
     </nav>
 
-    <main>
-        <section id="my-orders-section" class="services">
-            <h1>Pesanan Saya</h1>
-            <p style="text-align: center; max-width: 800px; margin: 0 auto 50px auto; font-size: 1.1em; color: #555;">Lihat status semua pesanan unlock IMEI Anda di sini.</p>
-            <div id="order-list" class="service-list">
+    <div class="mobile-nav-overlay">
+        <button class="close-mobile-nav">✖</button>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="order.html">Order</a></li>
+            <li><a href="my-orders.html">My Orders</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li id="mobile-nav-login-register" style="display: none;"><a href="login.html">Login/Register</a></li>
+            <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
+            <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
+        </ul>
+    </div>
+
+    <main class="main-content-area">
+        <section id="my-orders-section" class="services section-container">
+            <h1 class="section-title">My Orders</h1>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 50px auto; font-size: 1.1em; color: var(--secondary-text-color);">View the status of all your IMEI unlock orders here.</p>
+            <div id="order-list" class="card-grid">
                 </div>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2025 UnlockIMEI. All rights reserved.</p>
+    <footer class="main-container-card">
+        <div class="footer-content">
+            <p>&copy; 2025 ImeiHub. All rights reserved.</p>
+        </div>
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        // Logout functionality for my-orders.html - moved to global script for consistency
-        // document.getElementById('logout-btn').addEventListener('click', () => {
-        //     localStorage.removeItem('authToken');
-        //     localStorage.removeItem('userId');
-        //     window.location.href = 'login.html'; // Redirect ke halaman login setelah logout
-        // });
-    </script>
 </body>
 </html>

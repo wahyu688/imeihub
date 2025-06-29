@@ -1,0 +1,20 @@
+# Gunakan image Node.js LTS resmi
+FROM node:18-alpine
+
+# Setel direktori kerja di dalam kontainer
+WORKDIR /app/discord_bot
+
+# Salin package.json dan package-lock.json untuk menginstal dependensi
+COPY discord_bot/package*.json ./
+
+# Instal dependensi
+RUN npm install
+
+# Salin sisa kode aplikasi bot
+COPY discord_bot/ .
+
+# Ekspos port yang didengarkan oleh API bot Express (jika ada)
+EXPOSE 3001
+
+# Perintah untuk menjalankan bot
+CMD ["npm", "start"]

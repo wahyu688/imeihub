@@ -4,9 +4,10 @@ const bodyParser = require('body-parser');
 const { Client, GatewayIntentBits, Partials, EmbedBuilder, Collection } = require('discord.js');
 const fetch = require('node-fetch'); // Pastikan ini terinstal: npm install node-fetch@2
 
+// --- Discord Bot Configuration ---
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
-const BACKEND_API_BASE_URL = process.env.BACKEND_API_BASE_URL; // URL backend utama
-// const DISCORD_BOT_API_PORT = process.env.DISCORD_BOT_API_PORT || 3001; // Pastikan ini sama dengan port di .env
+const BACKEND_API_BASE_URL = process.env.BACKEND_API_BASE_URL;
+const DISCORD_BOT_API_PORT = process.env.DISCORD_BOT_API_PORT || 3001; // Pastikan ini sama dengan port di .env
 const ADMIN_DISCORD_ROLE_ID = process.env.ADMIN_DISCORD_ROLE_ID; // ID Peran Admin dari .env
 
 // --- Emote yang akan digunakan ---
@@ -20,7 +21,7 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMessageReactions, // Diperlukan untuk mendengarkan reaksi
+        GatewayIntentBits.GuildMessageReactions,
     ],
     partials: [
         Partials.Message,
@@ -29,7 +30,6 @@ const client = new Client({
     ],
 });
 
-// Koleksi untuk menyimpan cooldown perintah (jika ada)
 client.commands = new Collection();
 
 // --- Event Listener untuk Bot Discord ---
@@ -44,12 +44,9 @@ client.once('ready', () => {
     }
 });
 
-// Event listener untuk reaksi pada pesan (untuk update status cepat)
 client.on('messageReactionAdd', async (reaction, user) => {
-    // Abaikan reaksi dari bot itu sendiri
     if (user.bot) return;
 
-    // Pastikan reaction.message.partial adalah false (pesan sudah di-cache penuh)
     if (reaction.partial) {
         try {
             await reaction.fetch();
@@ -59,17 +56,14 @@ client.on('messageReactionAdd', async (reaction, user) => {
         }
     }
 
-    // Hanya proses reaksi pada pesan yang dikirim oleh bot ini
     if (reaction.message.author.id !== client.user.id) return;
 
-    // Hanya proses reaksi pada pesan yang memiliki embed (asumsi embed order)
     if (!reaction.message.embeds || reaction.message.embeds.length === 0) return;
 
-    // --- Verifikasi User yang Bereaksi Adalah Admin Berdasarkan Peran ---
     const guild = reaction.message.guild;
     if (!guild) {
         console.warn(`Reaction on DM or uncached guild. Cannot verify role for user: ${user.tag}`);
-        return; // Tidak bisa cek peran di DM
+        return;
     }
     
     const member = await guild.members.fetch(user.id).catch(console.error);
@@ -82,30 +76,22 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (ADMIN_DISCORD_ROLE_ID && !member.roles.cache.has(ADMIN_DISCORD_ROLE_ID)) {
         console.warn(`Unauthorized reaction by user ${user.tag} (ID: ${user.id}). Missing required role.`);
         try {
-            // Hapus reaksi dari non-admin
             await reaction.users.remove(user.id);
         } catch (error) {
             console.error('Failed to remove unauthorized reaction:', error);
         }
         return;
     }
-    // --- Akhir Verifikasi Peran ---
 
-    // Ambil Order ID dan Status saat ini dari embed pesan
     let orderId = null;
-    let currentStatusInEmbed = 'Tidak Diketahui'; // Untuk logging
+    let currentStatusInEmbed = 'Tidak Diketahui';
     const orderEmbed = reaction.message.embeds[0];
 
-    if (orderEmbed.title && orderEmbed.title.startsWith('Pesanan Baru #')) {
-        orderId = orderEmbed.title.replace('Pesanan Baru #', '');
-    }
-    // Mencari Order ID di fields (jika order ID dipindahkan ke fields)
     const orderIdField = orderEmbed.fields.find(field => field.name === 'Order ID');
     if(orderIdField) {
-        orderId = orderIdField.value.replace(/`/g, ''); // Hapus backtick jika ada
+        orderId = orderIdField.value.replace(/`/g, '');
     }
 
-    // Mencari Status saat ini di fields (jika Status dipindahkan ke fields)
     const statusField = orderEmbed.fields.find(field => field.name === 'Status');
     if(statusField) {
         currentStatusInEmbed = statusField.value;
@@ -134,11 +120,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
     }
 
     if (newStatus) {
-        // Jika status yang baru sama dengan status yang ada di embed, tidak perlu update
         if (newStatus === currentStatusInEmbed) {
             console.log(`Status for order ${orderId} is already ${newStatus}. Ignoring update.`);
             try {
-                // Tetap hapus reaksi admin, agar tidak terpicu berulang jika sudah sama
                 await reaction.users.remove(user.id);
             } catch (error) {
                 console.error('Failed to remove reaction after redundant update:', error);
@@ -147,7 +131,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
         }
 
         try {
-            // Panggil API di backend server untuk update status
             const response = await fetch(`${BACKEND_API_BASE_URL}/api/discord-webhook-commands`, {
                 method: 'POST',
                 headers: {
@@ -158,7 +141,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
                     payload: {
                         orderId: orderId,
                         newStatus: newStatus,
-                        initiatorId: user.id, // ID user Discord yang bereaksi
+                        initiatorId: user.id,
                         channelId: reaction.message.channel.id
                     }
                 })
@@ -168,27 +151,23 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
             if (response.ok && data.success) {
                 console.log(`Order ${orderId} status updated to ${newStatus} via reaction.`);
-                // Mengirim pesan chat baru dengan status yang diperbarui
                 reaction.message.channel.send(`Status order **${orderId}** berhasil diupdate menjadi: **${newStatus}** oleh ${user.username}.`);
                 
-                // --- BARIS UNTUK MENGHAPUS SEMUA REAKSI SUDAH DIHILANGKAN ---
-                // Sebagai gantinya, hapus reaksi user yang baru saja mengklik saja
                 try {
                     await reaction.users.remove(user.id);
                 } catch (error) {
                     console.error('Failed to remove reaction after update:', error);
                 }
 
-                // Opsional: Edit embed pesan notifikasi asli untuk mencerminkan status baru
                 try {
-                    const updatedEmbed = EmbedBuilder.from(orderEmbed) // Buat embed baru dari yang lama
+                    const updatedEmbed = EmbedBuilder.from(orderEmbed)
                         .setFields(orderEmbed.fields.map(field => {
                             if (field.name === 'Status') {
-                                field.value = newStatus; // Update nilai status
+                                field.value = newStatus;
                             }
                             return field;
                         }))
-                        .setColor(newStatus === 'Selesai' ? 0x00ff00 : newStatus === 'Diproses' ? 0xffff00 : newStatus === 'Dibatalkan' ? 0xff0000 : 0x0099ff); // Ubah warna embed berdasarkan status
+                        .setColor(newStatus === 'Selesai' ? 0x00ff00 : newStatus === 'Diproses' ? 0xffff00 : newStatus === 'Dibatalkan' ? 0xff0000 : 0x0099ff);
                     
                     await reaction.message.edit({ embeds: [updatedEmbed] });
                     console.log(`Original embed for order ${orderId} updated.`);
@@ -221,7 +200,7 @@ botApp.post('/api/discord-bot-notify', async (req, res) => {
 
     if (type === 'new_order' && payload && payload.order) {
         const order = payload.order;
-        const channelId = payload.order.channelId; // Channel ID dari payload backend
+        const channelId = payload.order.channelId;
 
         if (!channelId) {
             console.error("Channel ID not provided in new_order payload.");
@@ -236,28 +215,25 @@ botApp.post('/api/discord-bot-notify', async (req, res) => {
         }
 
         try {
-            // Membuat Embed untuk Notifikasi Pesanan Baru (Hanya menampilkan Order ID, Username, IMEI, Status)
             const newOrderEmbed = new EmbedBuilder()
-                .setColor(0x0099ff) // Warna biru default
+                .setColor(0x0099ff)
                 .setTitle(`Pesanan Baru #${order.orderId}`)
-                .setURL(`${BACKEND_API_BASE_URL}/admin/orders/${order.orderId}`) // Contoh URL ke halaman admin (jika ada)
+                .setURL(`${BACKEND_API_BASE_URL}/admin/orders/${order.orderId}`)
                 .setDescription(`Detail pesanan baru telah diterima.`)
                 .addFields(
-                    { name: 'Order ID', value: `\`${order.orderId}\``, inline: false }, // Order ID di atas agar mudah terlihat
+                    { name: 'Order ID', value: `\`${order.orderId}\``, inline: false },
                     { name: 'Nama Pelanggan', value: order.name, inline: true },
                     { name: 'IMEI', value: `\`${order.imei}\``, inline: true },
                     { name: 'Status', value: order.status, inline: true },
-                    // Hapus field lainnya
                 )
                 .setTimestamp()
-                .setFooter({ text: `Order ID: ${order.orderId} | Dibuat oleh: ${order.name}` }); // Footer tetap ada untuk data lengkap
+                .setFooter({ text: `Order ID: ${order.orderId} | Dibuat oleh: ${order.name}` });
 
             const message = await channel.send({ embeds: [newOrderEmbed] });
 
-            // Tambahkan reaksi untuk update status cepat
-            await message.react(EMOJI_PROCESSING); // Reaksi untuk "Diproses"
-            await message.react(EMOJI_DONE);        // Reaksi untuk "Selesai"
-            await message.react(EMOJI_CANCEL);      // Reaksi untuk "Dibatalkan"
+            await message.react(EMOJI_PROCESSING);
+            await message.react(EMOJI_DONE);
+            await message.react(EMOJI_CANCEL);
 
             console.log(`New order notification sent to Discord channel ${channel.name} (${channel.id}).`);
             res.status(200).json({ message: 'New order notification sent successfully to Discord.' });
@@ -274,10 +250,7 @@ botApp.post('/api/discord-bot-notify', async (req, res) => {
 
 
 // --- Start Express API Server untuk Bot ---
-// const BOT_PORT = process.env.DISCORD_BOT_API_PORT || 3001; // Pastikan ini sama dengan port di .env
-// botApp.listen(BOT_PORT, () => {
-//     console.log(`Discord Bot API server running on http://localhost:${BOT_PORT}`);
-// });
-botApp.listen(process.env.PORT || 3001, () => { // Gunakan PORT yang Vercel berikan ke fungsi
-    console.log(`Discord Bot API server running (on Vercel Function PORT).`);
+const BOT_PORT = process.env.DISCORD_BOT_API_PORT || 3001;
+botApp.listen(BOT_PORT, () => {
+    console.log(`Discord Bot API server running on http://localhost:${BOT_PORT}`);
 });

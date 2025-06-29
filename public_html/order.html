@@ -3,71 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesan Layanan - Unlock IMEI</title>
+    <title>ImeiHub - Place Order</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="https://img.icons8.com/ios-filled/50/007bff/unlock--v1.png" type="image/png">
+    <link rel="icon" href="imeihub_logo.png" type="image/png"> 
 </head>
 <body>
-    <nav class="navbar">
-        <div class="brand">UnlockIMEI</div>
-        <ul class="nav-links">
-            <li><a href="index.html">Beranda</a></li>
-            <li><a href="services.html">Layanan</a></li>
-            <li><a href="order.html">Pesan Sekarang</a></li>
-            <li><a href="my-orders.html">Pesanan Saya</a></li>
-            <li><a href="contact.html">Kontak</a></li>
-            <li id="nav-login-register"><a href="login.html">Login/Daftar</a></li>
-            <li id="nav-user-greeting" style="display: none;"><span>Halo, <strong id="username-display"></strong>!</span></li>
-            <li><button class="theme-toggle">Mode Gelap</button></li>
-            <li><button id="logout-btn-navbar" class="theme-toggle" style="margin-left: 10px; display: none;">Logout</button></li>
-        </ul>
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <div class="brand-logo">
+                <img src="imeihub_logo.png" alt="ImeiHub Logo"> 
+            </div>
+            <ul class="nav-links-desktop">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="my-orders.html">My Orders</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-right">
+            <div id="nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div>
+            <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
+                <span>Hi, <strong id="username-display"></strong>!</span>
+                <img src="avatar_placeholder.jpg" alt="User Avatar" class="user-avatar">
+            </div>
+            <button id="logout-btn-navbar" class="nav-link-button" style="display: none;">Logout</button>
+        </div>
+
+        <button class="hamburger-menu" aria-label="Toggle navigation">
+            ☰
+        </button>
     </nav>
 
-    <main>
-        <section class="order-form">
-            <h1>Formulir Pemesanan Layanan</h1>
-            <p style="text-align: center; margin-bottom: 30px;">Isi formulir di bawah ini untuk memesan layanan unlock IMEI kami. Pastikan data yang Anda masukkan benar.</p>
+    <div class="mobile-nav-overlay">
+        <button class="close-mobile-nav">✖</button>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="order.html">Order</a></li>
+            <li><a href="my-orders.html">My Orders</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li id="mobile-nav-login-register"><a href="login.html">Login/Register</a></li>
+            <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
+            <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
+        </ul>
+    </div>
+
+    <main class="main-content-area">
+        <section class="order-form content-container-card">
+            <h1>Place Your Order</h1>
+            <p style="text-align: center; margin-bottom: 30px; color: var(--secondary-text-color);">Fill in the form below to order our IMEI unlock service. Please ensure all data is correct.</p>
             <form id="order-submission-form" method="POST" action="/api/order">
-                <label for="name">Nama Lengkap:</label>
+                <label for="name">Full Name:</label>
                 <input type="text" id="name" name="name" required> 
 
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required> 
 
-                <label for="phone">Nomor Telepon (WhatsApp):</label>
-                <input type="tel" id="phone" name="phone" placeholder="Contoh: 6281234567890" required> 
+                <label for="phone">Phone Number (WhatsApp):</label>
+                <input type="tel" id="phone" name="phone" placeholder="e.g. 6281234567890" required> 
 
-                <label for="device-imei">IMEI Perangkat:</label>
+                <label for="device-imei">Device IMEI:</label>
                 <input type="text" id="device-imei" name="imei" maxlength="15" required> 
 
-                <label for="service-type">Pilih Layanan:</label>
+                <label for="service-type">Select Service:</label>
                 <select id="service-type" name="serviceType" required> 
-                    <option value="">-- Pilih Layanan --</option>
+                    <option value="">-- Select Service --</option>
                     <option value="Unlock IMEI iPhone">Unlock IMEI iPhone</option>
                     <option value="Unlock IMEI Android">Unlock IMEI Android</option>
                     <option value="Unlock IMEI Global">Unlock IMEI Global</option>
-                    <option value="Pemeriksaan Histori IMEI">Pemeriksaan Histori IMEI</option>
-                    <option value="Other">Lainnya</option>
+                    <option value="IMEI History Check">IMEI History Check</option>
+                    <option value="Other">Other</option>
                 </select>
 
-                <label for="payment-method">Metode Pembayaran:</label>
+                <label for="payment-method">Payment Method:</label>
                 <select id="payment-method" name="paymentMethod" required> 
-                    <option value="">-- Pilih Metode Pembayaran --</option>
+                    <option value="">-- Select Payment Method --</option>
                     <option value="QRIS">QRIS</option>
                     <option value="Virtual Account BCA">Virtual Account BCA</option>
                     <option value="Virtual Account Mandiri">Virtual Account Mandiri</option>
                     <option value="Virtual Account BNI">Virtual Account BNI</option>
-                    <option value="Bank Transfer">Transfer Bank Manual</option>
+                    <option value="Bank Transfer">Bank Transfer Manual</option>
                 </select>
                 
-                <button type="submit" class="btn">Pesan Sekarang & Proses</button>
+                <button type="submit" class="btn">Place Order & Process</button>
             </form>
-            <div id="order-status" style="margin-top: 20px; text-align: center; font-weight: bold;"></div>
+            <div id="order-status" class="status-message" style="margin-top: 20px;"></div>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2025 UnlockIMEI. All rights reserved.</p>
+    <footer class="main-container-card">
+        <div class="footer-content">
+            <p>&copy; 2025 ImeiHub. All rights reserved.</p>
+        </div>
     </footer>
 
     <script src="script.js"></script>

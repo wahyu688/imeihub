@@ -3,32 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Akun - Unlock IMEI</title>
+    <title>ImeiHub - Register</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="https://img.icons8.com/ios-filled/50/007bff/unlock--v1.png" type="image/png">
+    <link rel="icon" href="imeihub_logo.png" type="image/png"> 
 </head>
 <body>
-    <nav class="navbar">
-        <div class="brand">UnlockIMEI</div>
-        <ul class="nav-links">
-            <li><a href="index.html">Beranda</a></li>
-            <li><a href="services.html">Layanan</a></li>
-            <li><a href="order.html">Pesan Sekarang</a></li>
-            <li><a href="my-orders.html">Pesanan Saya</a></li>
-            <li><a href="contact.html">Kontak</a></li>
-            <li id="nav-login-register"><a href="login.html">Login/Daftar</a></li>
-            <li id="nav-user-greeting" style="display: none;"><span>Halo, <strong id="username-display"></strong>!</span></li>
-            <li><button class="theme-toggle">Mode Gelap</button></li>
-            <li><button id="logout-btn-navbar" class="theme-toggle" style="margin-left: 10px; display: none;">Logout</button></li>
-        </ul>
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <div class="brand-logo">
+                <img src="imeihub_logo.png" alt="ImeiHub Logo"> 
+            </div>
+            <ul class="nav-links-desktop">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="my-orders.html">My Orders</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-right">
+            <div id="nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div>
+            <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
+                <span>Hi, <strong id="username-display"></strong>!</span>
+                <img src="avatar_placeholder.jpg" alt="User Avatar" class="user-avatar">
+            </div>
+            <button id="logout-btn-navbar" class="nav-link-button" style="display: none;">Logout</button>
+        </div>
+
+        <button class="hamburger-menu" aria-label="Toggle navigation">
+            ☰
+        </button>
     </nav>
 
-    <main>
-        <section class="order-form">
-            <h1>Daftar Akun Baru</h1>
-            <p style="text-align: center; margin-bottom: 30px;">Buat akun untuk melacak pesanan Anda dengan mudah.</p>
+    <div class="mobile-nav-overlay">
+        <button class="close-mobile-nav">✖</button>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="order.html">Order</a></li>
+            <li><a href="my-orders.html">My Orders</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li id="mobile-nav-login-register"><a href="login.html">Login/Register</a></li>
+            <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
+            <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
+        </ul>
+    </div>
+
+    <main class="main-content-area">
+        <section class="order-form content-container-card">
+            <h1>Register a New Account</h1>
+            <p style="text-align: center; margin-bottom: 30px; color: var(--secondary-text-color);">Create an account to easily track your orders.</p>
             <form id="register-form">
-                <label for="reg-name">Nama Lengkap:</label>
+                <label for="reg-name">Full Name:</label>
                 <input type="text" id="reg-name" required>
 
                 <label for="reg-email">Email:</label>
@@ -37,18 +64,20 @@
                 <label for="reg-password">Password:</label>
                 <input type="password" id="reg-password" required>
 
-                <label for="reg-confirm-password">Konfirmasi Password:</label>
+                <label for="reg-confirm-password">Confirm Password:</label>
                 <input type="password" id="reg-confirm-password" required>
                 
-                <button type="submit" class="btn">Daftar</button>
+                <button type="submit" class="btn">Register</button>
             </form>
-            <div id="register-status" style="margin-top: 20px; text-align: center; font-weight: bold;"></div>
-            <p style="text-align: center; margin-top: 20px;">Sudah punya akun? <a href="login.html">Login di sini</a></p>
+            <div id="register-status" class="status-message" style="margin-top: 20px;"></div>
+            <p style="text-align: center; margin-top: 20px; color: var(--secondary-text-color);">Already have an account? <a href="login.html" class="accent-text">Login here</a></p>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2025 UnlockIMEI. All rights reserved.</p>
+    <footer class="main-container-card">
+        <div class="footer-content">
+            <p>&copy; 2025 ImeiHub. All rights reserved.</p>
+        </div>
     </footer>
 
     <script src="script.js"></script>

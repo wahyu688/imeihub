@@ -8,17 +8,17 @@ const { v4: uuidv4 } = require('uuid');
 const fetch = require('node-fetch'); // Pastikan ini terinstal: npm install node-fetch@2 jika Node.js < 18
 
 const app = express();
-const PORT = process.env.PORT || 3000; // FIX: process.env.PORT
+const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // --- Discord Configurations ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
 const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICATION_CHANNEL_ID;
-// ADMIN_DISCORD_USER_ID dihapus dari sini, karena cek peran dilakukan oleh bot
+const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID; // Ini tidak lagi digunakan untuk verifikasi utama
 
 // --- Middleware ---
 const corsOptions = {
-    origin: '*', // GANTI INI DENGAN URL PUBLIK VERSEL ANDA SETELAH DEPLOY!
+    origin: 'http://127.0.0.1:5500', // GANTI DENGAN URL FRONTEND ANDA SAAT DEPLOY! Contoh dari Live Server VS Code
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204
@@ -27,7 +27,7 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // --- Simulasi Database (GANTI DENGAN DATABASE SUNGGUHAN UNTUK PRODUKSI) ---
-let users = [];
+let users = []; // { id: 'uuid', name: 'string', email: 'string', password: 'hashed_password' }
 let orders = [];
 
 // --- Middleware Autentikasi JWT ---
@@ -104,7 +104,7 @@ app.post('/api/register', async (req, res) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = { id: uuidv4(), name, email, password: hashedPassword };
+        const newUser = { id: uuidv4(), name, email, password: hashedPassword }; // Simpan nama
         users.push(newUser);
 
         console.log('New user registered:', newUser.email);
@@ -211,7 +211,6 @@ app.get('/api/orders/:userId', authenticateToken, (req, res) => {
 });
 
 // --- Endpoint untuk Discord Bot memanggil backend untuk update status ---
-// Bot Discord akan memanggil endpoint ini ketika admin memberikan perintah /update
 app.post('/api/discord-webhook-commands', (req, res) => {
     const { type, payload } = req.body;
 
@@ -220,9 +219,7 @@ app.post('/api/discord-webhook-commands', (req, res) => {
     if (type === 'update_order_status' && payload && payload.orderId && payload.newStatus && payload.initiatorId) {
         const { orderId, newStatus, initiatorId } = payload;
 
-        // VERIFIKASI ROLE DILAKUKAN DI SISI BOT DISCORD
-        // Backend menerima perintah dan mengasumsikan bot sudah melakukan verifikasi izin
-        // Tambahan logging untuk tujuan debugging
+        // Verifikasi peran dilakukan di sisi bot Discord
         console.log(`Received status update for Order ${orderId} to ${newStatus} from initiator ${initiatorId}.`);
 
         const orderToUpdate = orders.find(o => o.orderId === orderId);

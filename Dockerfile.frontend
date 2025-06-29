@@ -1,0 +1,11 @@
+# Gunakan image Nginx resmi sebagai base image
+FROM nginx:alpine
+
+# Salin konfigurasi Nginx kustom Anda
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Salin semua file frontend ke dalam direktori Nginx
+COPY public_html /usr/share/nginx/html
+
+# Port yang diekspos oleh Nginx
+EXPOSE 80
