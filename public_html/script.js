@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- PENTING: GANTI DENGAN URL API BACKEND ANDA SAAT DEPLOY! ---
-    const API_BASE_URL = 'http://localhost:3000'; // Contoh: http://localhost:3000 atau http://localhost:3002
+    const API_BASE_URL = 'http://imeihub.id'; 
 
-    // --- ADMIN API KEY ---
+    // --- ADMIN API KEY (Ini akan digunakan oleh admin_create_user.html) ---
     // GANTI INI DENGAN API KEY YANG AMAN DAN HANYA DIKETAHUI OLEH ANDA!
     // IDEALNYA, INI JUGA HARUS DATANG DARI ENVIRONMENT VARIABLE DI FRONTEND
-    const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI
+    const ADMIN_API_KEY = 'mafia_badung_paling_keren'; // <-- GANTI INI
 
     // --- LOGIKA PROTEKSI HALAMAN ---
     const getCurrentPageName = () => {
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loginStatusDiv = document.getElementById('login-status');
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
+            const username = document.getElementById('login-username').value; // Ambil username
             const password = document.getElementById('login-password').value;
 
             loginStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Logging in...</p>`;
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`${API_BASE_URL}/api/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ username, password }) // Kirim username, bukan email
                 });
                 const data = await response.json();
 
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.removeItem('redirectAfterLogin');
                     window.location.href = redirectUrl; 
                 } else {
-                    const errorMessage = data.message || 'Login gagal. Email atau password salah.';
+                    const errorMessage = data.message || 'Login gagal. Username atau password salah.'; // Pesan error diubah
                     console.error('DEBUG: Login API responded with error:', errorMessage);
                     loginStatusDiv.innerHTML = `<p style="color: red;">${errorMessage}</p>`;
                     loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
@@ -322,8 +322,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const adminCreateUserStatusDiv = document.getElementById('admin-create-user-status');
         createUserForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('admin-name').value;
-            const email = document.getElementById('admin-email').value;
+            const username = document.getElementById('admin-username').value; // Ambil username
+            const fullname = document.getElementById('admin-fullname').value; // Ambil fullname
+            const email = document.getElementById('admin-email').value; // Ambil email
             const password = document.getElementById('admin-password').value;
 
             adminCreateUserStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Creating user account...</p>`;
@@ -335,19 +336,19 @@ document.addEventListener('DOMContentLoaded', () => {
             // PENTING: Sertakan Admin API Key di header untuk autentikasi
             const headers = {
                 'Content-Type': 'application/json',
-                'X-Admin-API-Key': ADMIN_API_KEY // Gunakan header kustom untuk API Key
+                'X-Admin-API-Key': ADMIN_API_KEY
             };
 
             try {
                 const response = await fetch(`${API_BASE_URL}/api/admin/create-user`, {
                     method: 'POST',
                     headers: headers,
-                    body: JSON.stringify({ name, email, password })
+                    body: JSON.stringify({ username, fullname, email, password }) // Kirim username, fullname, email
                 });
                 const data = await response.json();
 
                 if (response.ok) {
-                    adminCreateUserStatusDiv.innerHTML = `<p style="color: green;">User "${name}" created successfully!</p>`;
+                    adminCreateUserStatusDiv.innerHTML = `<p style="color: green;">User "${username}" created successfully!</p>`; // Pesan sukses pakai username
                     adminCreateUserStatusDiv.classList.remove('error');
                     adminCreateUserStatusDiv.style.backgroundColor = 'var(--card-bg)';
                     adminCreateUserStatusDiv.style.borderColor = 'var(--accent-color)';

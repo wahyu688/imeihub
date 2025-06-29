@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="imeihub_logo.png" type="image/png"> 
     <style>
-        /* Gaya khusus untuk admin_create_user.html jika diperlukan */
         .admin-form-container {
             max-width: 600px;
             margin: 60px auto;
@@ -23,6 +22,9 @@
             margin-bottom: 30px;
             font-size: 2.5em;
             font-weight: 700;
+        }
+        .admin-form-container p {
+            color: var(--secondary-text-color);
         }
         .admin-form-container label {
             display: block;
@@ -48,7 +50,7 @@
             font-size: 1.2em;
             border-radius: 30px;
         }
-        .status-message { /* Reuse existing status-message style */
+        .status-message {
             margin-top: 30px;
         }
     </style>
@@ -57,13 +59,16 @@
     <main>
         <section class="admin-form-container">
             <h1>Admin: Create New User Account</h1>
-            <p style="color: var(--secondary-text-color);">Enter the details for the new user account.</p>
+            <p>Enter the details for the new user account.</p>
             <form id="create-user-form">
-                <label for="admin-name">Full Name:</label>
-                <input type="text" id="admin-name" required>
+                <label for="admin-username">Username (for Login):</label>
+                <input type="text" id="admin-username" required> <!-- Ganti dari admin-name -->
 
-                <label for="admin-email">Email (for Login):</label>
-                <input type="email" id="admin-email" required>
+                <label for="admin-fullname">Full Name (Optional):</label>
+                <input type="text" id="admin-fullname"> <!-- Tambah kolom Full Name opsional -->
+
+                <label for="admin-email">Email (Optional, for notifications):</label>
+                <input type="email" id="admin-email"> <!-- Email opsional -->
 
                 <label for="admin-password">Password:</label>
                 <input type="password" id="admin-password" required>
@@ -74,7 +79,7 @@
         </section>
     </main>
 
-    <!-- FOOTER (Opsional untuk halaman admin) -->
+    <!-- FOOTER -->
     <footer class="main-container-card" style="margin-top: 60px;">
         <div class="footer-content">
             <p>&copy; 2025 ImeiHub. Admin Panel.</p>

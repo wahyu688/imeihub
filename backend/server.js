@@ -1,15 +1,16 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors'); 
+const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
-const fetch = require('node-fetch'); 
+const fetch = require('node-fetch');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
+const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin
 
 // --- Discord Configurations ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
@@ -17,14 +18,14 @@ const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICA
 const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
 
 // --- Database Configuration (MySQL) ---
-const mysql = require('mysql2/promise'); 
+const mysql = require('mysql2/promise');
 
-const pool = mysql.createPool({ 
+const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT, 
+    port: process.env.DB_PORT,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -43,38 +44,14 @@ pool.getConnection()
 
 // --- Middleware ---
 const corsOptions = {
-    origin: 'https://imeihub.id', 
+    origin: 'https://imeihub.id', // Pastikan ini sama persis dengan URL frontend Anda
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204
 };
-app.use(cors(corsOptions)); 
+app.use(cors(corsOptions));
 
-// --- Tambahkan middleware raw body ini untuk debugging ---
-// Ini harus diposisikan SEBELUM app.use(bodyParser.json());
-// Akan mem-parse semua request dengan Content-Type: application/json sebagai teks
-app.use(bodyParser.text({ type: 'application/json' })); 
-
-// Middleware kustom untuk mencoba parse JSON secara manual dan log raw body
-app.use((req, res, next) => {
-    // Jika header Content-Type adalah application/json dan body masih string (belum di-parse oleh bodyParser.json)
-    if (req.headers['content-type'] === 'application/json' && typeof req.body === 'string') {
-        try {
-            // Coba parse JSON secara manual
-            req.body = JSON.parse(req.body);
-            console.log('DEBUG: Manual JSON parse successful. Body:', req.body);
-        } catch (e) {
-            // Jika parsing gagal, log raw body dan kirim 400 Bad Request
-            console.error('ERROR: Manual JSON parse failed for request to', req.path, ':', e.message);
-            console.error('ERROR: Raw request body that caused parse error:', req.body);
-            return res.status(400).json({ message: 'Invalid JSON format in request body.' });
-        }
-    }
-    next(); // Lanjutkan ke middleware berikutnya
-});
-// --- Akhir debugging middleware ---
-
-app.use(bodyParser.json()); // Middleware JSON utama (ini sekarang mungkin tidak banyak bekerja jika yang di atas sudah mem-parse)
+app.use(bodyParser.json());
 
 
 // --- Middleware Autentikasi JWT ---
@@ -137,66 +114,75 @@ async function notifyDiscordBot(type, payload) {
 
 // --- API Endpoints ---
 
-// POST /api/register - Register User
-app.post('/api/register', async (req, res) => {
-    console.log('DEBUG: POST /api/register received.');
-    console.log('DEBUG: Request body (after custom parsing):', req.body); // Ini akan mencetak objek JSON atau undefined jika parsing gagal
+// POST /api/admin/create-user - Endpoint Admin untuk Membuat Akun User
+// Endpoint ini dilindungi oleh ADMIN_API_KEY
+app.post('/api/admin/create-user', async (req, res) => {
+    const adminApiKey = req.headers['x-admin-api-key']; // Ambil API Key dari header
+    console.log('DEBUG: POST /api/admin/create-user received.');
+    console.log('DEBUG: Request body:', req.body);
 
-    const { name, email, password } = req.body;
+    if (!adminApiKey || adminApiKey !== ADMIN_API_KEY_BACKEND) {
+        console.warn('DEBUG: Unauthorized attempt to create user (invalid API Key).');
+        return res.status(401).json({ message: 'Unauthorized: Invalid Admin API Key.' });
+    }
 
-    if (!name || !email || !password) {
-        console.warn('DEBUG: Missing required fields for registration. Body:', req.body);
-        return res.status(400).json({ message: 'Name, email, and password are required.' });
+    const { username, fullname, email, password } = req.body; // Ambil username, fullname, email
+
+    if (!username || !password) { // Hanya username dan password yang wajib
+        console.warn('DEBUG: Missing required fields (username, password) for admin user creation.');
+        return res.status(400).json({ message: 'Username and password are required.' });
     }
 
     try {
-        const [existingUsers] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+        // Cek apakah username sudah ada
+        const [existingUsers] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
         if (existingUsers.length > 0) {
-            return res.status(409).json({ message: 'Email already registered.' });
+            return res.status(409).json({ message: 'Username already taken.' }); // Pesan diubah
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUserId = uuidv4();
         
+        // Masukkan user baru ke database, dengan username, fullname, dan email opsional
         const [result] = await pool.query(
-            'INSERT INTO users(id, name, email, password) VALUES(?, ?, ?, ?)',
-            [newUserId, name, email, hashedPassword]
+            'INSERT INTO users(id, username, name, email, password) VALUES(?, ?, ?, ?, ?)',
+            [newUserId, username, fullname || null, email || null, hashedPassword] // fullname dan email bisa null
         );
 
-        console.log('New user registered:', email);
-        res.status(201).json({ message: 'User registered successfully!', userId: newUserId, userName: name });
-        console.log('DEBUG: Register response sent with status 201.');
+        console.log('New user created by admin:', username); // Log pakai username
+        res.status(201).json({ message: `User "${username}" created successfully!`, userId: newUserId, userName: username }); // Respon pakai username
     } catch (error) {
-        console.error('ERROR: Registration error:', error);
-        res.status(500).json({ message: 'Error registering user.', error: error.message });
-        console.log('DEBUG: Register response failed in catch block.');
+        console.error('ERROR: Admin user creation error:', error);
+        res.status(500).json({ message: 'Error creating user.', error: error.message });
     }
 });
 
-// POST /api/login - Login User
-app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required.' });
+// POST /api/login - Login User (Publik)
+// Endpoint ini sekarang login dengan USERNAME
+app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body; // Ambil username, bukan email
+
+    if (!username || !password) { // Cek username dan password
+        return res.status(400).json({ message: 'Username and password are required.' });
     }
 
     try {
-        const [users] = await pool.query('SELECT id, name, password FROM users WHERE email = ?', [email]);
+        const [users] = await pool.query('SELECT id, username, name, email, password FROM users WHERE username = ?', [username]); // Cari berdasarkan username
         const user = users[0];
 
         if (!user) {
-            return res.status(400).json({ message: 'Invalid email or password.' });
+            return res.status(400).json({ message: 'Invalid username or password.' }); // Pesan error diubah
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(400).json({ message: 'Invalid email or password.' });
+            return res.status(400).json({ message: 'Invalid username or password.' }); // Pesan error diubah
         }
 
         const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-        console.log('User logged in:', user.email);
-        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name });
+        console.log('User logged in:', user.username); // Log pakai username
+        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username }); //userName bisa nama asli atau username
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Error logging in.', error: error.message });
@@ -225,9 +211,17 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 // POST /api/order - Submit Order
 app.post('/api/order', async (req, res) => {
     const userId = req.user.userId;
-    const { name, email, phone, imei, serviceType, paymentMethod } = req.body;
+    // Ambil detail nama dan email dari user yang login (dari DB)
+    const [userRows] = await pool.query('SELECT name, email, username FROM users WHERE id = ?', [userId]);
+    const loggedInUser = userRows[0];
+    if (!loggedInUser) {
+        console.error('ERROR: Logged in user not found in DB for order creation:', userId);
+        return res.status(400).json({ message: 'Logged in user data not found.' });
+    }
 
-    if (!name || !email || !phone || !imei || !serviceType || !paymentMethod) {
+    const { phone, imei, serviceType, paymentMethod } = req.body; // fullname dan email tidak lagi dari form order
+
+    if (!phone || !imei || !serviceType || !paymentMethod) {
         return res.status(400).json({ message: 'All order fields are required.' });
     }
 
@@ -237,15 +231,15 @@ app.post('/api/order', async (req, res) => {
     try {
         await pool.query(
             'INSERT INTO orders(id, order_id, user_id, customer_name, customer_email, customer_phone, imei, service_type, payment_method, status, order_date) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
-            [newOrderId, orderId, userId, name, email, phone, imei, serviceType, paymentMethod, 'Menunggu Pembayaran']
+            [newOrderId, orderId, userId, loggedInUser.name || loggedInUser.username, loggedInUser.email || null, phone, imei, serviceType, paymentMethod, 'Menunggu Pembayaran'] // Nama dan email dari DB user
         );
 
         const discordNotificationPayload = {
             type: 'new_order',
             order: {
                 orderId: orderId,
-                name: name,
-                email: email,
+                name: loggedInUser.name || loggedInUser.username, // Nama yang ditampilkan di Discord
+                email: loggedInUser.email || 'N/A', // Email yang ditampilkan di Discord
                 phone: phone,
                 imei: imei,
                 serviceType: serviceType,
