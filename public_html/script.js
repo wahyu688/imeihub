@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- PENTING: GANTI DENGAN URL API BACKEND ANDA SAAT DEPLOY! ---
     // Pastikan ini sesuai dengan port backend Anda di backend/.env
-    const API_BASE_URL = 'http://localhost:3000'; // Contoh: http://localhost:3000 atau http://localhost:3002
+    const API_BASE_URL = 'http://imeihub.id'; // Contoh: http://localhost:3000 atau http://localhost:3002
 
     // --- LOGIKA PROTEKSI HALAMAN ---
     // Fungsi untuk mendapatkan nama file HTML saat ini dari URL
