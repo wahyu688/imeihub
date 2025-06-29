@@ -298,9 +298,6 @@ app.post('/api/discord-webhook-commands', async (req, res) => {
 
 
 // --- Start Server ---
-app.listen(PORT, () => {
-    console.log(`Backend server running on http://localhost:${PORT}`);
-    if (JWT_SECRET === 'your_super_secret_jwt_key_please_change_this_to_a_random_string_in_production') {
-        console.warn('WARNING: JWT_SECRET is not changed. Please update it in your .env file for production!');
-    }
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Backend server running on http://0.0.0.0:${PORT}`);
 });
