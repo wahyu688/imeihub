@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- PENTING: GANTI DENGAN URL API BACKEND ANDA SAAT DEPLOY! ---
-    const API_BASE_URL = 'http://imeihub.id'; 
+const API_BASE_URL = 'https://admin.imeihub.id';
 
     // --- ADMIN API KEY (Ini akan digunakan oleh admin_create_user.html) ---
     // GANTI INI DENGAN API KEY YANG AMAN DAN HANYA DIKETAHUI OLEH ANDA!
