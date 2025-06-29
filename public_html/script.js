@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- PENTING: GANTI DENGAN URL API BACKEND ANDA SAAT DEPLOY! ---
     // Pastikan ini sesuai dengan port backend Anda di backend/.env
-    const API_BASE_URL = 'https://imeihub.id'; // GANTI INI DENGAN URL PUBLIK BACKEND ANDA YANG BENAR';
+    const API_BASE_URL = 'https://admin.imeihub.id'; // GANTI INI DENGAN URL PUBLIK BACKEND ANDA YANG BENAR';
     // --- LOGIKA PROTEKSI HALAMAN ---
     // Fungsi untuk mendapatkan nama file HTML saat ini dari URL
     const getCurrentPageName = () => {
