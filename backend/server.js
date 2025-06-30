@@ -323,7 +323,7 @@ app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
 
         query += ` ORDER BY ${column} ${order}`;
         
-        console.log('DEBUG_BACKEND: Executing admin orders query:', query, 'with params:', queryParams); // DEBUG LOG
+        console.log('DEBUG_BACKEND: Executing admin orders query:', query, 'with params:', queryParams);
         const [orders] = await pool.query(query, queryParams);
         res.json({ success: true, orders: orders });
     } catch (error) {

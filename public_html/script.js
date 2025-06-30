@@ -12,8 +12,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const currentPage = getCurrentPageName();
 
-    if (currentPage === 'order.html') {
+    // Fungsi untuk memeriksa status login dan admin
+    const checkAuthAndAdminStatus = () => {
         const authToken = localStorage.getItem('authToken');
+        const userId = localStorage.getItem('userId');
+        const isAdmin = localStorage.getItem('isAdmin') === 'true'; // Pastikan membaca string 'true'
+
+        return { authToken, userId, isAdmin };
+    };
+
+    // Proteksi halaman Order
+    if (currentPage === 'order.html') {
+        const { authToken } = checkAuthAndAdminStatus();
         if (!authToken) {
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
@@ -21,9 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Proteksi halaman My Orders
     if (currentPage === 'my-orders.html') {
-        const authToken = localStorage.getItem('authToken');
-        const userId = localStorage.getItem('userId');
+        const { authToken, userId } = checkAuthAndAdminStatus();
         if (!authToken || !userId) {
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
@@ -31,9 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Proteksi halaman Admin Dashboard dan Admin Create User
     if (currentPage.startsWith('admin_')) {
-        const authToken = localStorage.getItem('authToken');
-        const isAdmin = localStorage.getItem('isAdmin') === 'true'; 
+        const { authToken, isAdmin } = checkAuthAndAdminStatus();
         console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
         if (!authToken || !isAdmin) {
             alert('Akses Ditolak: Anda harus login sebagai Admin.');
@@ -46,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Manajemen Status Login di Navbar (Top & Mobile Overlay) ---
+    // Deklarasikan semua elemen navbar di scope DOMContentLoaded agar selalu tersedia
     const navLoginRegister = document.getElementById('nav-login-register');
     const navUserGreeting = document.getElementById('nav-user-greeting');
     const usernameDisplay = document.getElementById('username-display');
@@ -59,33 +70,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-     const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // PASTIKAN BARIS INI ADA
+    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // Pastikan ini dideklarasikan
 
 
     function updateNavbarLoginStatus() {
-        const currentAuthToken = localStorage.getItem('authToken');
-        const currentUserName = localStorage.getItem('userName');
-        const currentIsAdmin = localStorage.getItem('isAdmin') === 'true'; 
+        const { authToken, userName, isAdmin } = checkAuthAndAdminStatus();
 
-        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!currentAuthToken}, Current UserName: ${currentUserName}, Current IsAdmin: ${currentIsAdmin}`);
-        if (currentAuthToken && currentUserName) {
+        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!authToken}, Current UserName: ${userName}, Current IsAdmin: ${isAdmin}`);
+        if (authToken && userName) {
             // Desktop Navbar
             if (navLoginRegister) navLoginRegister.style.display = 'none';
             if (navUserGreeting) {
                 navUserGreeting.style.display = 'flex';
-                if (usernameDisplay) usernameDisplay.textContent = currentUserName;
+                if (usernameDisplay) usernameDisplay.textContent = userName;
             }
             if (logoutBtnNavbar) logoutBtnNavbar.style.display = 'block';
-            if (navAdminDashboard) navAdminDashboard.style.display = currentIsAdmin ? 'block' : 'none';
+            if (navAdminDashboard) navAdminDashboard.style.display = isAdmin ? 'block' : 'none';
 
             // Mobile Overlay Navbar
             if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = 'none';
             if (mobileNavUserGreeting) {
                 mobileNavUserGreeting.style.display = 'list-item';
-                if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = currentUserName;
+                if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = userName;
             }
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
-            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = currentIsAdmin ? 'list-item' : 'none';
+            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = isAdmin ? 'list-item' : 'none';
 
         } else {
             // Desktop Navbar
@@ -101,31 +110,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = 'none';
         }
     }
-    updateNavbarLoginStatus(); 
+    updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
 
     // Event Listener untuk Logout Button (Global)
     if (logoutBtnNavbar) {
         logoutBtnNavbar.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Logout button clicked.');
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('isAdmin'); 
+            localStorage.clear(); // Hapus semua item terkait sesi
             console.log('DEBUG_FRONTEND: LocalStorage cleared. AuthToken:', localStorage.getItem('authToken'));
-            updateNavbarLoginStatus(); 
-            window.location.href = 'login.html';
+            updateNavbarLoginStatus(); // Panggil lagi untuk segera update UI
+            window.location.href = 'login.html'; // Redirect
         });
     }
     // Event Listener untuk Logout Button Mobile
     if (mobileLogoutBtn) {
         mobileLogoutBtn.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Mobile Logout button clicked.');
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('isAdmin');
+            localStorage.clear(); // Hapus semua item terkait sesi
             updateNavbarLoginStatus();
-            mobileNavOverlay.classList.remove('open');
+            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open'); // Tutup overlay
             window.location.href = 'login.html';
         });
     }
@@ -134,17 +137,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Hamburger Menu Logic ---
     if (hamburgerMenu) {
         hamburgerMenu.addEventListener('click', () => {
-            mobileNavOverlay.classList.toggle('open');
+            if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
         });
     }
     if (closeMobileNav) {
         closeMobileNav.addEventListener('click', () => {
-            mobileNavOverlay.classList.remove('open');
+            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
         });
     }
     document.querySelectorAll('.mobile-nav-links a').forEach(link => {
         link.addEventListener('click', () => {
-            mobileNavOverlay.classList.remove('open');
+            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
         });
     });
     // --- End Hamburger Menu Logic ---
@@ -335,9 +338,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('DEBUG: Login error (fetch failed/network issue):', error);
                 loginStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
                 loginStatusDiv.classList.add('error');
-                loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                loginStatusDiv.style.borderColor = 'red';
-                loginStatusDiv.style.color = 'red';
+                orderStatusDiv.style.backgroundColor = 'var(--card-bg)'; // Ini harusnya loginStatusDiv
+                orderStatusDiv.style.borderColor = 'red'; // Ini harusnya loginStatusDiv
+                orderStatusDiv.style.color = 'red'; // Ini harusnya loginStatusDiv
                 return;
             }
         });
@@ -460,14 +463,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortOrdersBySelect = document.getElementById('sort-orders-by');
         if (sortOrdersBySelect) {
             sortOrdersBySelect.addEventListener('change', () => {
-                fetchAdminOrders(sortOrdersBySelect.value, document.getElementById('search-orders-by').value); // Panggil dengan nilai sorting dan search
+                const searchOrdersInput = document.getElementById('search-orders-by'); // Ambil di sini
+                fetchAdminOrders(sortOrdersBySelect.value, searchOrdersInput ? searchOrdersInput.value : ''); // Panggil dengan nilai sorting dan search
             });
         }
         // Event Listener for Search Input
         const searchOrdersInput = document.getElementById('search-orders-by');
         if (searchOrdersInput) {
             searchOrdersInput.addEventListener('input', () => { // Gunakan 'input' untuk real-time search
-                fetchAdminOrders(document.getElementById('sort-orders-by').value, searchOrdersInput.value); // Panggil dengan nilai sorting dan search
+                const sortOrdersBySelect = document.getElementById('sort-orders-by'); // Ambil di sini
+                fetchAdminOrders(sortOrdersBySelect ? sortOrdersBySelect.value : 'order_date DESC', searchOrdersInput.value); // Panggil dengan nilai sorting dan search
             });
         }
 
@@ -518,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     let totalAmountForDisplay = 0;
 
                     if (data.orders && data.orders.length > 0) {
+                        // Group orders by date (Today vs. Tomorrow)
                         const now = new Date();
                         const todayCutoffHour = 17; // 5 PM in 24-hour format
                         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -735,4 +741,3 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchOrders();
     }
 });
-
