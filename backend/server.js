@@ -19,13 +19,6 @@ const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
 const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICATION_CHANNEL_ID;
 const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
 
-// --- Tripay API Credentials (DIHAPUS KARENA TIDAK DIGUNAKAN) ---
-// const TRIPAY_API_KEY = process.env.TRIPAY_API_KEY;
-// const TRIPAY_PRIVATE_KEY = process.env.TRIPAY_PRIVATE_KEY;
-// const TRIPAY_MERCHANT_CODE = process.env.TRIPAY_MERCHANT_CODE;
-// const TRIPAY_BASE_URL = process.env.TRIPAY_BASE_URL;
-// const TRIPAY_MODE = process.env.TRIPAY_MODE;
-
 // --- Email Configuration (Nodemailer) ---
 const EMAIL_SERVICE = process.env.EMAIL_SERVICE;
 const EMAIL_HOST = process.env.EMAIL_HOST;
@@ -258,7 +251,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
-        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran'");
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok'"); // Hitung status baru
         const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
 
         res.json({
@@ -274,9 +267,37 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
 });
 
 app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
+    const sortBy = req.query.sortBy || 'order_date DESC'; // Ambil parameter sorting, default latest
+    
+    // Validasi nilai sortBy untuk mencegah SQL Injection
+    const validSortColumns = ['order_date', 'order_id', 'customer_name', 'status', 'amount']; // Tambah customer_name
+    const [column, order] = sortBy.split(' ');
+    if (!validSortColumns.includes(column) || !['ASC', 'DESC'].includes(order)) {
+        console.warn(`DEBUG: Invalid sortBy parameter received: ${sortBy}. Using default.`);
+        // Fallback ke default jika parameter tidak valid
+        const defaultOrders = await pool.query("SELECT id, order_id AS orderId, user_id, customer_name AS customerName, customer_email AS customerEmail, customer_phone AS customerPhone, imei, service_type AS serviceType, status, order_date AS orderDate, amount FROM orders ORDER BY order_date DESC");
+        return res.json({ success: true, orders: defaultOrders[0] });
+    }
+
     try {
-        // Hapus 'payment_method AS paymentMethod' dari SELECT query
-        const [orders] = await pool.query("SELECT id, order_id AS orderId, user_id, customer_name AS customerName, customer_email AS customerEmail, customer_phone AS customerPhone, imei, service_type AS serviceType, status, order_date AS orderDate, amount FROM orders ORDER BY order_date DESC");
+        // Ambil orders dan join dengan users untuk mendapatkan username jika customer_name kosong
+        const [orders] = await pool.query(`
+            SELECT 
+                o.id, 
+                o.order_id AS orderId, 
+                o.user_id, 
+                COALESCE(o.customer_name, u.username) AS customerName, -- Gunakan username jika customer_name kosong
+                o.customer_email AS customerEmail, 
+                o.customer_phone AS customerPhone, 
+                o.imei, 
+                o.service_type AS serviceType, 
+                o.status, 
+                o.order_date AS orderDate, 
+                o.amount 
+            FROM orders o
+            LEFT JOIN users u ON o.user_id = u.id
+            ORDER BY ${column} ${order}
+        `);
         res.json({ success: true, orders: orders });
     } catch (error) {
         console.error('ERROR: Failed to fetch all orders for admin:', error);
@@ -300,8 +321,8 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
     if (!orderId || !newStatus) {
         return res.status(400).json({ message: 'Order ID and new status are required.' });
     }
-    
-    const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan'];
+
+    const validStatuses = ['Menunggu Pembayaran', 'Menunggu Proses Besok', 'Diproses', 'Selesai', 'Dibatalkan']; // Tambah status baru
     if (!validStatuses.includes(newStatus)) {
         return res.status(400).json({ message: 'Invalid status provided.' });
     }
@@ -331,7 +352,7 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
                 `;
                 await sendEmail(order.customer_email, mailSubject, mailHtml);
             } else {
-                console.warn(`DEBUG: No email sent for order ${orderId}, customer email missing or notification HTML not generated.`);
+                console.warn(`DEBUG: No customer email found for order ${orderId}, skipping email notification.`);
             }
 
             res.json({ success: true, message: `Status for order ${orderId} updated to ${newStatus}.` });
@@ -365,10 +386,23 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
     const orderId = `ORD-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 100)}`;
     const newOrderId = uuidv4();
 
+    // --- LOGIKA JAM BISNIS UNTUK STATUS AWAL ORDER ---
+    const now = new Date();
+    const currentHour = now.getHours(); // Jam lokal server (UTC di container)
+    const businessStartHour = 7; // 7 AM
+    const businessEndHour = 17; // 5 PM (17:00)
+
+    let initialStatus = 'Menunggu Pembayaran'; // Default status
+    if (currentHour < businessStartHour || currentHour >= businessEndHour) {
+        initialStatus = 'Menunggu Proses Besok'; // Di luar jam kerja
+    }
+    console.log(`DEBUG: Order placed at hour ${currentHour}. Initial status set to: ${initialStatus}`);
+
+
     try {
         await pool.query(
             'INSERT INTO orders(id, order_id, user_id, customer_name, customer_email, customer_phone, imei, service_type, status, order_date, amount) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
-            [newOrderId, orderId, userId, name, email, phone, imei, serviceType, 'Menunggu Pembayaran', amount]
+            [newOrderId, orderId, userId, name, email, phone, imei, serviceType, initialStatus, amount] // Gunakan initialStatus
         );
         console.log(`Order ${orderId} saved to database.`);
 
@@ -380,7 +414,7 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
                 <li>Service: ${serviceType}</li>
                 <li>IMEI: ${imei}</li>
                 <li>Amount: Rp ${amount.toLocaleString('id-ID')}</li>
-                <li>Status: Menunggu Pembayaran</li>
+                <li>Status: ${initialStatus}</li> <!-- Status di email admin -->
                 <li>Customer Phone: ${phone}</li>
             </ul>
             <p>Check admin dashboard for more details: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
@@ -395,6 +429,7 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
             message: 'Order submitted successfully.',
             orderId: orderId,
             amount: amount,
+            initialStatus: initialStatus // Kirim status awal ke frontend
         });
 
     } catch (error) {
