@@ -1,52 +1,61 @@
-require('dotenv').config(); // Memuat variabel lingkungan dari file .env
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser'); // Middleware untuk mem-parse body request
-const cors = require('cors'); // Middleware untuk Cross-Origin Resource Sharing
-const jwt = require('jsonwebtoken'); // Library untuk JSON Web Tokens
-const bcrypt = require('bcryptjs'); // Library untuk hashing password
-const { v4: uuidv4 } = require('uuid'); // Library untuk menghasilkan UUID
-const fetch = require('node-fetch'); // Untuk melakukan HTTP requests
-const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi (HMAC SHA256)
-const nodemailer = require('nodemailer'); // Library untuk mengirim email
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
+const fetch = require('node-fetch');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Port server dari variabel lingkungan atau default 3000
-const JWT_SECRET = process.env.JWT_SECRET; // Secret key untuk JWT dari variabel lingkungan
-const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
+const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND;
 
-// --- Discord Configurations (untuk notifikasi internal, bukan lagi utama) ---
+// --- Discord Configurations ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
 const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICATION_CHANNEL_ID;
-const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID; // Tidak lagi digunakan untuk verifikasi utama
+const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
 
 // --- Tripay API Credentials ---
-const TRIPAY_API_KEY = process.env.TRIPAY_API_KEY; // API Key dari Tripay
-const TRIPAY_PRIVATE_KEY = process.env.TRIPAY_PRIVATE_KEY; // Private Key dari Tripay
-const TRIPAY_MERCHANT_CODE = process.env.TRIPAY_MERCHANT_CODE; // Merchant Code dari Tripay
-const TRIPAY_BASE_URL = process.env.TRIPAY_BASE_URL; // Base URL Tripay (sandbox atau production)
-const TRIPAY_MODE = process.env.TRIPAY_MODE; // Mode Tripay (sandbox/production)
+const TRIPAY_API_KEY = process.env.TRIPAY_API_KEY;
+const TRIPAY_PRIVATE_KEY = process.env.TRIPAY_PRIVATE_KEY;
+const TRIPAY_MERCHANT_CODE = process.env.TRIPAY_MERCHANT_CODE;
+const TRIPAY_BASE_URL = process.env.TRIPAY_BASE_URL; 
+const TRIPAY_MODE = process.env.TRIPAY_MODE;
 
 // --- Email Configuration (Nodemailer) ---
-const EMAIL_SERVICE = process.env.EMAIL_SERVICE; // Layanan email (misal 'gmail')
-const EMAIL_USER = process.env.EMAIL_USER; // Email pengirim
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD; // Password email pengirim
-const ADMIN_EMAIL_RECEIVER = process.env.ADMIN_EMAIL_RECEIVER; // Email admin untuk notifikasi internal
+const EMAIL_SERVICE = process.env.EMAIL_SERVICE; 
+const EMAIL_HOST = process.env.EMAIL_HOST; // BARU: HOST SMTP eksplisit
+const EMAIL_PORT_SMTP = process.env.EMAIL_PORT_SMTP; // BARU: PORT SMTP eksplisit
+const EMAIL_SECURE = process.env.EMAIL_SECURE === 'true'; // BARU: Gunakan SSL/TLS (biasanya true untuk port 465, false untuk 587)
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+const ADMIN_EMAIL_RECEIVER = process.env.ADMIN_EMAIL_RECEIVER;
 
-// Konfigurasi transporter email
+console.log('DEBUG: Nodemailer config: Service:', EMAIL_SERVICE, 'User:', EMAIL_USER, 'Host:', EMAIL_HOST, 'Port:', EMAIL_PORT_SMTP);
 const transporter = nodemailer.createTransport({
-    service: EMAIL_SERVICE,
+    // Jika EMAIL_HOST dan EMAIL_PORT_SMTP diisi, gunakan itu daripada 'service'
+    host: EMAIL_HOST || null, 
+    port: EMAIL_PORT_SMTP ? parseInt(EMAIL_PORT_SMTP, 10) : null,
+    secure: EMAIL_SECURE, // true for 465, false for other ports (587)
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASSWORD,
     },
+    // Opsi timeout untuk koneksi SMTP
+    connectionTimeout: 10 * 1000, // 10 detik
+    socketTimeout: 30 * 1000 // 30 detik
 });
 
 // Test koneksi Nodemailer saat startup (untuk debugging)
 transporter.verify(function(error, success) {
     if (error) {
         console.error('ERROR: Nodemailer transporter verification failed:', error);
-        console.error('ERROR: Please check EMAIL_SERVICE, EMAIL_USER, EMAIL_PASSWORD in Dokploy Environment Variables.');
-        // Jika Anda ingin aplikasi crash jika email tidak bisa terhubung: process.exit(1);
+        console.error('ERROR: Please check EMAIL_SERVICE, EMAIL_HOST, EMAIL_PORT_SMTP, EMAIL_SECURE, EMAIL_USER, EMAIL_PASSWORD in Dokploy Environment Variables.');
+        process.exit(1); // Crash jika email tidak bisa terhubung (untuk debugging cepat)
     } else {
         console.log('DEBUG: Nodemailer transporter is ready to send emails.');
     }
