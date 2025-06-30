@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- PENTING: GANTI DENGAN URL API BACKEND ANDA SAAT DEPLOY! ---
-    const API_BASE_URL = 'https://back.imeihub.id';
+    const API_BASE_URL = 'https://back.imeihub.id'; 
 
     // --- ADMIN API KEY (Ini akan digunakan oleh admin_create_user.html) ---
     const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI DENGAN KUNCI RAHASIA ANDA
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const authToken = localStorage.getItem('authToken');
         // PASTIKAN INI MEMBANDINGKAN DENGAN STRING 'true'
         const isAdmin = localStorage.getItem('isAdmin') === 'true'; 
-        console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
+        console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`); // DEBUG LOG
         if (!authToken || !isAdmin) {
             alert('Akses Ditolak: Anda harus login sebagai Admin.');
             localStorage.setItem('redirectAfterLogin', window.location.href);
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentUserName = localStorage.getItem('userName');
         const currentIsAdmin = localStorage.getItem('isAdmin') === 'true'; // Pastikan ini membaca string 'true'
 
-        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!currentAuthToken}, Current UserName: ${currentUserName}, Current IsAdmin: ${currentIsAdmin}`);
+        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!currentAuthToken}, Current UserName: ${currentUserName}, Current IsAdmin: ${currentIsAdmin}`); // DEBUG LOG
         if (currentAuthToken && currentUserName) {
             // Desktop Navbar
             if (navLoginRegister) navLoginRegister.style.display = 'none';
@@ -421,7 +421,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const createUserLink = document.getElementById('create-user-link');
 
     if (currentPage === 'admin_dashboard.html') {
-        if (!isAdminOnLoad) { // Menggunakan isAdminOnLoad dari awal script
+        // PERBAIKAN DI SINI: Gunakan localStorage.getItem('isAdmin') langsung
+        const isAdminCheck = localStorage.getItem('isAdmin') === 'true'; 
+        console.log(`DEBUG_FRONTEND: Admin Dashboard access check. IsAdmin: ${isAdminCheck}`); // DEBUG LOG
+        if (!isAdminCheck) { 
             alert('Akses Ditolak: Anda harus login sebagai Admin.');
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
