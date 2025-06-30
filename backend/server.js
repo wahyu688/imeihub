@@ -219,7 +219,7 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
-        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET); // Hapus expiresIn
+        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET);
         console.log('User logged in:', user.username);
         res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
     } catch (error) {
@@ -251,7 +251,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
-        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok'"); // Hitung status baru
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok'");
         const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
 
         res.json({
@@ -267,13 +267,15 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
 });
 
 app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
-    const sortBy = req.query.sortBy || 'order_date DESC'; // Ambil parameter sorting, default latest
-    
-    // Validasi nilai sortBy untuk mencegah SQL Injection
-    const validSortColumns = ['order_date', 'order_id', 'customer_name', 'status', 'amount']; // Tambah customer_name
+    const sortBy = req.query.sortBy || 'order_date DESC';
+    const searchName = req.query.searchName || ''; // Ambil parameter searchName
+
+    console.log(`DEBUG_BACKEND: Fetching admin orders. SortBy: ${sortBy}, SearchName: ${searchName}`); // DEBUG LOG
+
+    const validSortColumns = ['order_date', 'order_id', 'customer_name', 'status', 'amount'];
     const [column, order] = sortBy.split(' ');
     if (!validSortColumns.includes(column) || !['ASC', 'DESC'].includes(order)) {
-        console.warn(`DEBUG: Invalid sortBy parameter received: ${sortBy}. Using default.`);
+        console.warn(`DEBUG_BACKEND: Invalid sortBy parameter received: ${sortBy}. Using default.`);
         // Fallback ke default jika parameter tidak valid
         const defaultOrders = await pool.query(`
             SELECT 
@@ -296,8 +298,7 @@ app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
     }
 
     try {
-        // Ambil orders dan join dengan users untuk mendapatkan username jika customer_name kosong
-        const [orders] = await pool.query(`
+        let query = `
             SELECT 
                 o.id, 
                 o.order_id AS orderId, 
@@ -312,8 +313,18 @@ app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
                 o.amount 
             FROM orders o
             LEFT JOIN users u ON o.user_id = u.id
-            ORDER BY ${column} ${order}
-        `);
+        `;
+        const queryParams = [];
+
+        if (searchName) {
+            query += ` WHERE COALESCE(o.customer_name, u.username) LIKE ?`;
+            queryParams.push(`%${searchName}%`);
+        }
+
+        query += ` ORDER BY ${column} ${order}`;
+        
+        console.log('DEBUG_BACKEND: Executing admin orders query:', query, 'with params:', queryParams); // DEBUG LOG
+        const [orders] = await pool.query(query, queryParams);
         res.json({ success: true, orders: orders });
     } catch (error) {
         console.error('ERROR: Failed to fetch all orders for admin:', error);

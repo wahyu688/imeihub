@@ -59,8 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // PASTIKAN BARIS INI ADA
-
+     const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // PASTIKAN BARIS INI ADA
 
 
     function updateNavbarLoginStatus() {
@@ -100,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mobileNavUserGreeting) mobileNavUserGreeting.style.display = 'none';
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
             if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = 'none';
-            
         }
     }
     updateNavbarLoginStatus(); 
@@ -171,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 switch(serviceParam) {
                     case 'Temporary IMEI Activation (90 Days)': serviceToSelect = 'Temporary IMEI Activation (90 Days)'; break;
                     case 'Permanent Unlock iPhone': serviceToSelect = 'Permanent Unlock iPhone'; break;
-                    case 'Permanent Unlock Android': serviceToSelect = 'Permanent Unlock IMEI Android'; break; // Perbaikan typo
+                    case 'Permanent Unlock Android': serviceToSelect = 'Permanent Unlock IMEI Android'; break; 
                     case 'IMEI History Check': serviceToSelect = 'IMEI History Check'; break;
                     case 'Other Service': serviceToSelect = 'Other Service'; break;
                     default: serviceToSelect = '';
@@ -198,8 +196,16 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let [key, value] of formData.entries()) {
                 orderData[key] = value;
             }
-            // Harga akan ditentukan oleh backend (fixed Rp 250.000 per IMEI)
-            // orderData.amount tidak lagi dikirim dari frontend
+            let amount = 0;
+            switch(orderData.serviceType) {
+                case 'Temporary IMEI Activation (90 Days)': amount = 100000; break;
+                case 'Permanent Unlock iPhone': amount = 500000; break;
+                case 'Permanent Unlock Android': amount = 300000; break;
+                case 'IMEI History Check': amount = 50000; break;
+                case 'Other Service': amount = 75000; break;
+                default: amount = 10000;
+            }
+            orderData.amount = amount;
 
             console.log('DEBUG: Order data collected for submission:', orderData);
 
@@ -303,9 +309,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('userName', data.userName);
-                    // PERBAIKAN DI SINI: Pastikan data.isAdmin adalah boolean sebelum disimpan
                     localStorage.setItem('isAdmin', String(data.isAdmin === true || data.isAdmin === 1)); 
-                    console.log(`DEBUG_FRONTEND: Login successful. IsAdmin: ${data.isAdmin} (Stored as: ${localStorage.getItem('isAdmin')})`); // DEBUG LOG
+                    console.log(`DEBUG_FRONTEND: Login successful. IsAdmin: ${data.isAdmin} (Stored as: ${localStorage.getItem('isAdmin')})`);
                     loginStatusDiv.innerHTML = '<p style="color: green;">Login berhasil! Mengarahkan...</p>';
                     loginStatusDiv.classList.remove('error');
                     loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
@@ -455,9 +460,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortOrdersBySelect = document.getElementById('sort-orders-by');
         if (sortOrdersBySelect) {
             sortOrdersBySelect.addEventListener('change', () => {
-                fetchAdminOrders(sortOrdersBySelect.value); // Panggil dengan nilai sorting
+                fetchAdminOrders(sortOrdersBySelect.value, document.getElementById('search-orders-by').value); // Panggil dengan nilai sorting dan search
             });
         }
+        // Event Listener for Search Input
+        const searchOrdersInput = document.getElementById('search-orders-by');
+        if (searchOrdersInput) {
+            searchOrdersInput.addEventListener('input', () => { // Gunakan 'input' untuk real-time search
+                fetchAdminOrders(document.getElementById('sort-orders-by').value, searchOrdersInput.value); // Panggil dengan nilai sorting dan search
+            });
+        }
+
 
         // --- Fetch Admin Dashboard Stats ---
         async function fetchDashboardStats() {
@@ -481,59 +494,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- Fetch Admin Orders ---
-        async function fetchAdminOrders(sortBy = 'order_date DESC') { // Tambah parameter sorting, default latest
+        async function fetchAdminOrders(sortBy = 'order_date DESC', searchName = '') { // Tambah parameter searchName
+            console.log(`DEBUG_FRONTEND: Fetching admin orders. SortBy: ${sortBy}, SearchName: ${searchName}`); // DEBUG LOG
             const adminOrdersTableBody = document.getElementById('admin-orders-table-body');
-            const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount'); // Ambil span total amount
+            const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount');
             adminOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading orders...</td></tr>';
-            totalDisplayedAmountSpan.textContent = 'Rp 0'; // Reset total amount
+            totalDisplayedAmountSpan.textContent = 'Rp 0';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/orders?sortBy=${encodeURIComponent(sortBy)}`, { // Kirim parameter sorting
+                let url = `${API_BASE_URL}/api/admin/orders?sortBy=${encodeURIComponent(sortBy)}`;
+                if (searchName) {
+                    url += `&searchName=${encodeURIComponent(searchName)}`; // Tambah parameter search
+                }
+                console.log('DEBUG_FRONTEND: Fetching orders from URL:', url); // DEBUG LOG
+
+                const response = await fetch(url, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
                 });
                 const data = await response.json();
 
                 if (response.ok && data.success) {
                     adminOrdersTableBody.innerHTML = '';
-                    let totalAmountForDisplay = 0; // Inisialisasi total amount
+                    let totalAmountForDisplay = 0;
 
                     if (data.orders && data.orders.length > 0) {
-                        // Group orders by date (Today vs. Tomorrow)
                         const now = new Date();
                         const todayCutoffHour = 17; // 5 PM in 24-hour format
-                        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Start of today
-
+                        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+                        
                         let currentGroupDate = null;
-                        let isTodayGroupAdded = false;
-                        let isTomorrowGroupAdded = false;
+                        let isTodayBusinessOrdersAdded = false;
+                        let isTomorrowOrdersAdded = false;
 
                         data.orders.forEach(order => {
                             const orderDate = new Date(order.orderDate);
-                            const orderDay = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
+                            const orderDayStart = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate(), 0, 0, 0);
 
                             let groupHeader = '';
-                            if (orderDay.toDateString() === today.toDateString()) {
-                                // Order is from today
-                                if (orderDate.getHours() < todayCutoffHour) {
-                                    // Order is within today's business hours
-                                    if (!isTodayGroupAdded) {
+
+                            if (orderDayStart.toDateString() === todayStart.toDateString()) {
+                                if (orderDate.getHours() >= 7 && orderDate.getHours() < todayCutoffHour) {
+                                    if (!isTodayBusinessOrdersAdded) {
                                         groupHeader = `<tr class="order-group-header"><td colspan="7">Today's Orders (7 AM - 5 PM)</td></tr>`;
-                                        isTodayGroupAdded = true;
+                                        isTodayBusinessOrdersAdded = true;
                                     }
                                 } else {
-                                    // Order is after today's business hours (for tomorrow's processing)
-                                    if (!isTomorrowGroupAdded) {
-                                        groupHeader = `<tr class="order-group-header"><td colspan="7">Tomorrow's Orders (After 5 PM Today)</td></tr>`;
-                                        isTomorrowGroupAdded = true;
+                                    if (!isTomorrowOrdersAdded) {
+                                        groupHeader = `<tr class="order-group-header"><td colspan="7">Tomorrow's Orders (After 5 PM Today / Before 7 AM Tomorrow)</td></tr>`;
+                                        isTomorrowOrdersAdded = true;
                                     }
                                 }
                             } else {
-                                // Order is from a different day
-                                if (currentGroupDate === null || orderDay.toDateString() !== currentGroupDate.toDateString()) {
-                                    groupHeader = `<tr class="order-group-header"><td colspan="7">${orderDay.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>`;
-                                    currentGroupDate = orderDay;
-                                    isTodayGroupAdded = false; // Reset for new day
-                                    isTomorrowGroupAdded = false; // Reset for new day
+                                if (currentGroupDate === null || orderDayStart.toDateString() !== currentGroupDate.toDateString()) {
+                                    groupHeader = `<tr class="order-group-header"><td colspan="7">${orderDayStart.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>`;
+                                    currentGroupDate = orderDayStart;
+                                    isTodayBusinessOrdersAdded = false;
+                                    isTomorrowOrdersAdded = false;
                                 }
                             }
 
@@ -541,7 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 adminOrdersTableBody.innerHTML += groupHeader;
                             }
 
-                            totalAmountForDisplay += order.amount || 0; // Tambahkan ke total
+                            totalAmountForDisplay += order.amount || 0;
 
                             const row = `
                                 <tr>
@@ -559,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <select class="admin-status-select" data-order-id="${order.orderId}">
                                             <option value="">Update Status</option>
                                             <option value="Menunggu Pembayaran" ${order.status === 'Menunggu Pembayaran' ? 'selected' : ''}>Menunggu Pembayaran</option>
-                                            <option value="Menunggu Proses Besok" ${order.status === 'Menunggu Proses Besok' ? 'selected' : ''}>Menunggu Proses Besok</option> <!-- BARU -->
+                                            <option value="Menunggu Proses Besok" ${order.status === 'Menunggu Proses Besok' ? 'selected' : ''}>Menunggu Proses Besok</option>
                                             <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
                                             <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
                                             <option value="Dibatalkan" ${order.status === 'Dibatalkan' ? 'selected' : ''}>Dibatalkan</option>
@@ -569,17 +585,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             adminOrdersTableBody.innerHTML += row;
                         });
-                        // Update total amount display
                         totalDisplayedAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
 
-                        // Add event listeners for status select dropdowns
                         document.querySelectorAll('.admin-status-select').forEach(select => {
                             select.addEventListener('change', async (e) => {
                                 const orderId = e.target.dataset.orderId;
                                 const newStatus = e.target.value;
                                 if (newStatus && orderId) {
                                     await updateOrderStatusAdmin(orderId, newStatus);
-                                    e.target.value = ''; // Reset dropdown
+                                    e.target.value = '';
                                 }
                             });
                         });
@@ -655,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok && data.success) {
                     alert(`Order ${orderId} updated to ${newStatus} successfully!`);
-                    fetchAdminOrders(sortOrdersBySelect.value); // Panggil ulang dengan sorting yang aktif
+                    fetchAdminOrders(sortOrdersBySelect.value, searchOrdersInput.value); // Panggil ulang dengan sorting dan search aktif
                 } else {
                     alert(`Failed to update order ${orderId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update order status:', data.message || 'Error');
@@ -666,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        showSection('dashboard-overview'); // Tampilkan dashboard overview saat halaman dimuat
+        showSection('dashboard-overview');
     }
     // --- End Admin Dashboard Logic ---
 
@@ -721,3 +735,4 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchOrders();
     }
 });
+
