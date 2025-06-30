@@ -275,7 +275,8 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
 
 app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
     try {
-        const [orders] = await pool.query("SELECT id, order_id AS orderId, user_id, customer_name AS customerName, customer_email AS customerEmail, customer_phone AS customerPhone, imei, service_type AS serviceType, payment_method AS paymentMethod, status, order_date AS orderDate, amount FROM orders ORDER BY order_date DESC");
+        // Hapus 'payment_method AS paymentMethod' dari SELECT query
+        const [orders] = await pool.query("SELECT id, order_id AS orderId, user_id, customer_name AS customerName, customer_email AS customerEmail, customer_phone AS customerPhone, imei, service_type AS serviceType, status, order_date AS orderDate, amount FROM orders ORDER BY order_date DESC");
         res.json({ success: true, orders: orders });
     } catch (error) {
         console.error('ERROR: Failed to fetch all orders for admin:', error);
