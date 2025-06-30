@@ -58,10 +58,14 @@
         .sort-controls {
             margin-bottom: 20px;
             text-align: right;
+            display: flex; /* Untuk menyelaraskan label dan select */
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px; /* Jarak antara label dan select */
         }
         .sort-controls label {
             color: var(--secondary-text-color);
-            margin-right: 10px;
+            margin-right: 0; /* Hapus margin kanan default */
         }
         .sort-controls select {
             padding: 8px 12px;
@@ -77,11 +81,38 @@
             border-color: var(--accent-color);
             box-shadow: 0 0 0 2px rgba(255,165,0,0.3);
         }
+        /* Gaya untuk Total Amount */
+        .total-amount-display {
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding-right: 20px; /* Sesuaikan dengan padding tabel */
+        }
+        /* Gaya untuk grouping header */
+        .order-group-header {
+            background-color: rgba(255, 165, 0, 0.2); /* Latar belakang oranye transparan */
+            color: var(--accent-color);
+            font-weight: bold;
+            padding: 10px;
+            text-align: center;
+            grid-column: 1 / -1; /* Rentangkan di seluruh kolom grid tabel */
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
         /* Responsive untuk sorting */
         @media (max-width: 768px) {
             .sort-controls {
                 text-align: center;
                 margin-top: 20px;
+                justify-content: center; /* Pusatkan di mobile */
+            }
+            .total-amount-display {
+                text-align: center; /* Pusatkan di mobile */
+                padding-right: 0;
             }
         }
     </style>
@@ -174,11 +205,16 @@
                         <option value="order_date DESC">Latest Order</option>
                         <option value="order_id ASC">Order ID (Asc)</option>
                         <option value="order_id DESC">Order ID (Desc)</option>
+                        <option value="customer_name ASC">Customer Name (Asc)</option> <!-- BARU -->
+                        <option value="customer_name DESC">Customer Name (Desc)</option> <!-- BARU -->
                         <option value="status ASC">Status (Asc)</option>
                         <option value="status DESC">Status (Desc)</option>
                         <option value="amount DESC">Amount (High to Low)</option>
                         <option value="amount ASC">Amount (Low to High)</option>
                     </select>
+                </div>
+                <div class="total-amount-display">
+                    Total Displayed: <span id="total-displayed-amount">Rp 0</span>
                 </div>
                 <div class="admin-table-container">
                     <table class="admin-table">

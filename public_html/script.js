@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // PASTIKAN BARIS INI ADA
 
 
     function updateNavbarLoginStatus() {
@@ -169,8 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 switch(serviceParam) {
                     case 'Temporary IMEI Activation (90 Days)': serviceToSelect = 'Temporary IMEI Activation (90 Days)'; break;
                     case 'Permanent Unlock iPhone': serviceToSelect = 'Permanent Unlock iPhone'; break;
-                    case 'Permanent Unlock Android': serviceToSelect = 'Permanent Unlock Android'; break;
+                    case 'Permanent Unlock Android': serviceToSelect = 'Permanent Unlock IMEI Android'; break; // Perbaikan typo
                     case 'IMEI History Check': serviceToSelect = 'IMEI History Check'; break;
+                    case 'Other Service': serviceToSelect = 'Other Service'; break;
                     default: serviceToSelect = '';
                 }
                 if (serviceToSelect) {
@@ -195,16 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let [key, value] of formData.entries()) {
                 orderData[key] = value;
             }
-            let amount = 0;
-            switch(orderData.serviceType) {
-                case 'Temporary IMEI Activation (90 Days)': amount = 100000; break;
-                case 'Permanent Unlock iPhone': amount = 500000; break;
-                case 'Permanent Unlock Android': amount = 300000; break;
-                case 'IMEI History Check': amount = 50000; break;
-                case 'Other Service': amount = 75000; break;
-                default: amount = 10000;
-            }
-            orderData.amount = amount;
+            // Harga akan ditentukan oleh backend (fixed Rp 250.000 per IMEI)
+            // orderData.amount tidak lagi dikirim dari frontend
 
             console.log('DEBUG: Order data collected for submission:', orderData);
 
@@ -441,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 manageOrdersContent.style.display = 'block';
                 adminContentTitle.textContent = 'Manage Orders';
                 manageOrdersLink.classList.add('active');
-                fetchAdminOrders();
+                fetchAdminOrders(); // Panggil fetchAdminOrders saat section ditampilkan
             } else if (sectionId === 'manage-users') {
                 manageUsersContent.style.display = 'block';
                 adminContentTitle.textContent = 'Manage Users';
@@ -450,11 +442,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Event Listeners for Sidebar Navigation
         if (dashboardLink) dashboardLink.addEventListener('click', (e) => { e.preventDefault(); showSection('dashboard-overview'); });
         if (manageOrdersLink) manageOrdersLink.addEventListener('click', (e) => { e.preventDefault(); showSection('manage-orders'); });
         if (manageUsersLink) manageUsersLink.addEventListener('click', (e) => { e.preventDefault(); showSection('manage-users'); });
         if (createUserLink) createUserLink.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'admin_create_user.html'; });
 
+        // Event Listener for Sorting Dropdown
+        const sortOrdersBySelect = document.getElementById('sort-orders-by');
+        if (sortOrdersBySelect) {
+            sortOrdersBySelect.addEventListener('change', () => {
+                fetchAdminOrders(sortOrdersBySelect.value); // Panggil dengan nilai sorting
+            });
+        }
+
+        // --- Fetch Admin Dashboard Stats ---
         async function fetchDashboardStats() {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/admin/stats`, {
@@ -475,18 +477,69 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        async function fetchAdminOrders() {
+        // --- Fetch Admin Orders ---
+        async function fetchAdminOrders(sortBy = 'order_date DESC') { // Tambah parameter sorting, default latest
             const adminOrdersTableBody = document.getElementById('admin-orders-table-body');
+            const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount'); // Ambil span total amount
             adminOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading orders...</td></tr>';
+            totalDisplayedAmountSpan.textContent = 'Rp 0'; // Reset total amount
+
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/orders`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/orders?sortBy=${encodeURIComponent(sortBy)}`, { // Kirim parameter sorting
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
                 });
                 const data = await response.json();
+
                 if (response.ok && data.success) {
                     adminOrdersTableBody.innerHTML = '';
+                    let totalAmountForDisplay = 0; // Inisialisasi total amount
+
                     if (data.orders && data.orders.length > 0) {
+                        // Group orders by date (Today vs. Tomorrow)
+                        const now = new Date();
+                        const todayCutoffHour = 17; // 5 PM in 24-hour format
+                        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Start of today
+
+                        let currentGroupDate = null;
+                        let isTodayGroupAdded = false;
+                        let isTomorrowGroupAdded = false;
+
                         data.orders.forEach(order => {
+                            const orderDate = new Date(order.orderDate);
+                            const orderDay = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
+
+                            let groupHeader = '';
+                            if (orderDay.toDateString() === today.toDateString()) {
+                                // Order is from today
+                                if (orderDate.getHours() < todayCutoffHour) {
+                                    // Order is within today's business hours
+                                    if (!isTodayGroupAdded) {
+                                        groupHeader = `<tr class="order-group-header"><td colspan="7">Today's Orders (7 AM - 5 PM)</td></tr>`;
+                                        isTodayGroupAdded = true;
+                                    }
+                                } else {
+                                    // Order is after today's business hours (for tomorrow's processing)
+                                    if (!isTomorrowGroupAdded) {
+                                        groupHeader = `<tr class="order-group-header"><td colspan="7">Tomorrow's Orders (After 5 PM Today)</td></tr>`;
+                                        isTomorrowGroupAdded = true;
+                                    }
+                                }
+                            } else {
+                                // Order is from a different day
+                                if (currentGroupDate === null || orderDay.toDateString() !== currentGroupDate.toDateString()) {
+                                    groupHeader = `<tr class="order-group-header"><td colspan="7">${orderDay.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>`;
+                                    currentGroupDate = orderDay;
+                                    isTodayGroupAdded = false; // Reset for new day
+                                    isTomorrowGroupAdded = false; // Reset for new day
+                                }
+                            }
+
+                            if (groupHeader) {
+                                adminOrdersTableBody.innerHTML += groupHeader;
+                            }
+
+                            totalAmountForDisplay += order.amount || 0; // Tambahkan ke total
+
                             const row = `
                                 <tr>
                                     <td>${order.orderId}</td>
@@ -495,7 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <td>${order.imei}</td>
                                     <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
                                     <td>
-                                        <button class="status-button status-${order.status.toLowerCase()}" data-order-id="${order.orderId}" data-current-status="${order.status}">
+                                        <button class="status-button status-${order.status.toLowerCase().replace(/\s/g, '-')}" data-order-id="${order.orderId}" data-current-status="${order.status}">
                                             ${order.status}
                                         </button>
                                     </td>
@@ -503,6 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <select class="admin-status-select" data-order-id="${order.orderId}">
                                             <option value="">Update Status</option>
                                             <option value="Menunggu Pembayaran" ${order.status === 'Menunggu Pembayaran' ? 'selected' : ''}>Menunggu Pembayaran</option>
+                                            <option value="Menunggu Proses Besok" ${order.status === 'Menunggu Proses Besok' ? 'selected' : ''}>Menunggu Proses Besok</option> <!-- BARU -->
                                             <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
                                             <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
                                             <option value="Dibatalkan" ${order.status === 'Dibatalkan' ? 'selected' : ''}>Dibatalkan</option>
@@ -512,26 +566,33 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             adminOrdersTableBody.innerHTML += row;
                         });
+                        // Update total amount display
+                        totalDisplayedAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
+
+                        // Add event listeners for status select dropdowns
                         document.querySelectorAll('.admin-status-select').forEach(select => {
                             select.addEventListener('change', async (e) => {
                                 const orderId = e.target.dataset.orderId;
                                 const newStatus = e.target.value;
                                 if (newStatus && orderId) {
                                     await updateOrderStatusAdmin(orderId, newStatus);
-                                    e.target.value = '';
+                                    e.target.value = ''; // Reset dropdown
                                 }
                             });
                         });
                     } else {
                         adminOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--secondary-text-color);">No orders found.</td></tr>';
+                        totalDisplayedAmountSpan.textContent = 'Rp 0';
                     }
                 } else {
                     console.error('DEBUG: Failed to fetch admin orders:', data.message || 'Error');
                     adminOrdersTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Failed to load orders: ${data.message || 'Error'}</td></tr>`;
+                    totalDisplayedAmountSpan.textContent = 'Rp 0';
                 }
             } catch (error) {
                 console.error('DEBUG: Error fetching admin orders:', error);
                 adminOrdersTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Network error loading orders.</td></tr>`;
+                totalDisplayedAmountSpan.textContent = 'Rp 0';
             }
         }
 
@@ -591,7 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok && data.success) {
                     alert(`Order ${orderId} updated to ${newStatus} successfully!`);
-                    fetchAdminOrders();
+                    fetchAdminOrders(sortOrdersBySelect.value); // Panggil ulang dengan sorting yang aktif
                 } else {
                     alert(`Failed to update order ${orderId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update order status:', data.message || 'Error');
@@ -602,7 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        showSection('dashboard-overview');
+        showSection('dashboard-overview'); // Tampilkan dashboard overview saat halaman dimuat
     }
     // --- End Admin Dashboard Logic ---
 
