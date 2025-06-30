@@ -11,6 +11,18 @@
     --shadow-color: rgba(0, 0, 0, 0.5); /* Bayangan kuat untuk tema gelap */
     --navbar-bg: #000000; /* Hitam untuk navbar */
     --cta-dark-text: #000000; /* Teks hitam di tombol CTA oranye */
+
+    /* Warna spesifik untuk status button di dashboard */
+    --status-pending-bg: #FFA500; /* Oranye untuk Menunggu Pembayaran */
+    --status-pending-text: #000000;
+    --status-processing-bg: #007bff; /* Biru untuk Diproses */
+    --status-processing-text: #FFFFFF;
+    --status-completed-bg: #28a745; /* Hijau untuk Selesai */
+    --status-completed-text: #FFFFFF;
+    --status-cancelled-bg: #dc3545; /* Merah untuk Dibatalkan */
+    --status-cancelled-text: #FFFFFF;
+    --status-unknown-bg: #6c757d; /* Abu-abu untuk Unknown/User */
+    --status-unknown-text: #FFFFFF;
 }
 
 body {
@@ -710,5 +722,195 @@ footer {
     .offer-single-grid { /* Pastikan margin tetap konsisten di ukuran sangat kecil */
         margin-left: 5px;
         margin-right: 5px;
+    }
+}
+
+/* --- ADMIN DASHBOARD STYLES --- */
+.admin-dashboard-layout {
+    display: flex;
+    min-height: calc(100vh - 100px); /* Kurangi tinggi footer & navbar */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+.admin-sidebar {
+    width: 250px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    box-shadow: 4px 0 15px var(--shadow-color);
+    flex-shrink: 0; /* Mencegah sidebar menyusut */
+}
+.admin-sidebar h2 {
+    color: var(--accent-color);
+    margin-bottom: 30px;
+    text-align: center;
+}
+.admin-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.admin-sidebar ul li {
+    margin-bottom: 10px;
+}
+.admin-sidebar ul li a {
+    display: block;
+    padding: 10px 15px;
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.admin-sidebar ul li a:hover,
+.admin-sidebar ul li a.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
+}
+
+.admin-content {
+    flex-grow: 1; /* Konten mengisi sisa ruang */
+    padding: 30px;
+}
+.admin-content h1 {
+    color: var(--text-color);
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    font-weight: 700;
+}
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+.stat-card {
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    text-align: center;
+}
+.stat-card h3 {
+    color: var(--secondary-text-color);
+    font-size: 1.1em;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.stat-card p {
+    color: var(--accent-color);
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0;
+}
+.admin-table-container {
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    overflow-x: auto; /* Untuk tabel responsif */
+}
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: var(--text-color);
+    font-size: 0.9em;
+}
+.admin-table th, .admin-table td {
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    text-align: left;
+}
+.admin-table th {
+    background-color: rgba(255, 165, 0, 0.1);
+    color: var(--accent-color);
+    font-weight: bold;
+}
+.admin-table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.03); /* Sedikit berbeda untuk baris genap */
+}
+.admin-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+/* Gaya Status Button BARU */
+.status-button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    color: white; /* Teks putih untuk semua status */
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    min-width: 90px; /* Lebar minimum agar konsisten */
+}
+.status-menunggu.pembayaran { /* Menunggu Pembayaran */
+    background-color: var(--status-pending-bg);
+    color: var(--status-pending-text);
+}
+.status-diproses { /* Diproses */
+    background-color: var(--status-processing-bg);
+    color: var(--status-processing-text);
+}
+.status-selesai { /* Selesai */
+    background-color: var(--status-completed-bg);
+    color: var(--status-completed-text);
+}
+.status-dibatalkan { /* Dibatalkan */
+    background-color: var(--status-cancelled-bg);
+    color: var(--status-cancelled-text);
+}
+.status-unknown { /* Default jika status tidak dikenal */
+    background-color: var(--status-unknown-bg);
+    color: var(--status-unknown-text);
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-dashboard-layout {
+        flex-direction: column;
+    }
+    .admin-sidebar {
+        width: 100%;
+        padding: 15px;
+    }
+    .admin-sidebar ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .admin-sidebar ul li a {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    .admin-content {
+        padding: 20px;
+    }
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+    .sort-controls {
+        text-align: center;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-content h1 {
+        font-size: 2em;
+    }
+    .stat-card h3 {
+        font-size: 1em;
+    }
+    .stat-card p {
+        font-size: 1.8em;
+    }
+    .admin-table th, .admin-table td {
+        padding: 8px;
+        font-size: 0.8em;
+    }
+    .status-button {
+        min-width: 70px;
+        font-size: 0.8em;
     }
 }
