@@ -377,39 +377,8 @@ a:hover {
     top: 0;
 }
 
-/* Feature card (lama, masih relevan untuk services.html) */
-.feature-card h3 {
-    color: var(--accent-color);
-    font-size: 1.6em;
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
 
-.feature-card ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-.feature-card ul li {
-    position: relative;
-    padding-left: 30px;
-    margin-bottom: 12px;
-    color: var(--secondary-text-color);
-    font-size: 1.05em;
-}
-
-.feature-card ul li::before {
-    content: '•';
-    color: var(--accent-color);
-    position: absolute;
-    left: 0;
-    font-size: 1.5em;
-    line-height: 1;
-    top: 0;
-}
-
-/* Important Notes Specifics */
+/* IMPORTANT NOTES SPECIFICS - REVISED TO GRID */
 .important-notes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

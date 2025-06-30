@@ -7,150 +7,81 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="imeihub_logo.png" type="image/png">
     <style>
-        .admin-dashboard-layout {
-            display: flex;
-            min-height: calc(100vh - 100px); /* Kurangi tinggi footer & navbar */
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
-        .admin-sidebar {
-            width: 250px;
+        /* Gaya khusus untuk admin_create_user.html jika diperlukan */
+        .admin-form-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 40px;
             background-color: var(--card-bg);
-            padding: 20px;
-            box-shadow: 4px 0 15px var(--shadow-color);
-            flex-shrink: 0; /* Mencegah sidebar menyusut */
-        }
-        .admin-sidebar h2 {
-            color: var(--accent-color);
-            margin-bottom: 30px;
+            border-radius: 25px;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            color: var(--text-color);
             text-align: center;
         }
-        .admin-sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .admin-sidebar ul li {
-            margin-bottom: 10px;
-        }
-        .admin-sidebar ul li a {
-            display: block;
-            padding: 10px 15px;
-            color: var(--text-color);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-        .admin-sidebar ul li a:hover,
-        .admin-sidebar ul li a.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--accent-color);
-        }
-
-        .admin-content {
-            flex-grow: 1; /* Konten mengisi sisa ruang */
-            padding: 30px;
-        }
-        .admin-content h1 {
+        .admin-form-container h1 {
             color: var(--text-color);
             margin-bottom: 30px;
             font-size: 2.5em;
             font-weight: 700;
         }
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .stat-card {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 10px var(--shadow-color);
-            text-align: center;
-        }
-        .stat-card h3 {
+        .admin-form-container p {
             color: var(--secondary-text-color);
-            font-size: 1.1em;
-            margin-top: 0;
-            margin-bottom: 10px;
         }
-        .stat-card p {
-            color: var(--accent-color);
-            font-size: 2em;
-            font-weight: bold;
-            margin: 0;
-        }
-        .admin-table-container {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 10px var(--shadow-color);
-            overflow-x: auto; /* Untuk tabel responsif */
-        }
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
+        .admin-form-container label {
+            display: block;
             margin-top: 20px;
+            margin-bottom: 8px;
+            font-weight: 600;
             color: var(--text-color);
-            font-size: 0.9em;
-        }
-        .admin-table th, .admin-table td {
-            border: 1px solid var(--border-color);
-            padding: 12px;
             text-align: left;
         }
-        .admin-table th {
-            background-color: rgba(255, 165, 0, 0.1);
-            color: var(--accent-color);
-            font-weight: bold;
+        .admin-form-container input {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1.1em;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text-color);
         }
-        .admin-table tr:nth-child(even) {
-            background-color: rgba(255, 255, 255, 0.03); /* Sedikit berbeda untuk baris genap */
+        .admin-form-container .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border-radius: 30px;
         }
-        .admin-table tr:hover {
-            background-color: rgba(255, 255, 255, 0.08);
+        .status-message {
+            margin-top: 30px;
         }
-        .status-button {
-            padding: 5px 10px;
-            border-radius: 5px;
-            border: none;
+        /* Gaya untuk sorting dropdown */
+        .sort-controls {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        .sort-controls label {
+            color: var(--secondary-text-color);
+            margin-right: 10px;
+        }
+        .sort-controls select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.95em;
             cursor: pointer;
-            color: white;
-            font-weight: bold;
-            transition: background-color 0.2s ease;
         }
-        .status-pending { background-color: #FFA500; }
-        .status-processing { background-color: #007bff; }
-        .status-completed { background-color: #28a745; }
-        .status-cancelled { background-color: #dc3545; }
-        .status-unknown { background-color: #6c757d; }
-
-        /* Responsive */
+        .sort-controls select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(255,165,0,0.3);
+        }
+        /* Responsive untuk sorting */
         @media (max-width: 768px) {
-            .admin-dashboard-layout {
-                flex-direction: column;
-            }
-            .admin-sidebar {
-                width: 100%;
-                padding: 15px;
-            }
-            .admin-sidebar ul {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-            }
-            .admin-sidebar ul li a {
-                padding: 8px 12px;
-                font-size: 0.9em;
-            }
-            .admin-content {
-                padding: 20px;
-            }
-            .dashboard-stats {
-                grid-template-columns: 1fr;
+            .sort-controls {
+                text-align: center;
+                margin-top: 20px;
             }
         }
     </style>
@@ -232,12 +163,23 @@
                         <p id="completed-orders">0</p>
                     </div>
                 </div>
-                <!-- Anda bisa menambahkan grafik atau statistik lain di sini -->
             </div>
 
             <!-- Manage Orders Content -->
             <div id="manage-orders-content" style="display: none;">
                 <h2>Manage Orders</h2>
+                <div class="sort-controls">
+                    <label for="sort-orders-by">Sort by:</label>
+                    <select id="sort-orders-by">
+                        <option value="order_date DESC">Latest Order</option>
+                        <option value="order_id ASC">Order ID (Asc)</option>
+                        <option value="order_id DESC">Order ID (Desc)</option>
+                        <option value="status ASC">Status (Asc)</option>
+                        <option value="status DESC">Status (Desc)</option>
+                        <option value="amount DESC">Amount (High to Low)</option>
+                        <option value="amount ASC">Amount (Low to High)</option>
+                    </select>
+                </div>
                 <div class="admin-table-container">
                     <table class="admin-table">
                         <thead>
