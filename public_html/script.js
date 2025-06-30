@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // PASTIKAN BARIS INI ADA
+
 
 
     function updateNavbarLoginStatus() {
@@ -98,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mobileNavUserGreeting) mobileNavUserGreeting.style.display = 'none';
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
             if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = 'none';
+            
         }
     }
     updateNavbarLoginStatus(); 
