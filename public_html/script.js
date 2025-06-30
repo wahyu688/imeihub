@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const authToken = localStorage.getItem('authToken');
         // PASTIKAN INI MEMBANDINGKAN DENGAN STRING 'true'
         const isAdmin = localStorage.getItem('isAdmin') === 'true'; 
-        console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`); // DEBUG LOG
+        console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
         if (!authToken || !isAdmin) {
             alert('Akses Ditolak: Anda harus login sebagai Admin.');
             localStorage.setItem('redirectAfterLogin', window.location.href);
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentUserName = localStorage.getItem('userName');
         const currentIsAdmin = localStorage.getItem('isAdmin') === 'true'; // Pastikan ini membaca string 'true'
 
-        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!currentAuthToken}, Current UserName: ${currentUserName}, Current IsAdmin: ${currentIsAdmin}`); // DEBUG LOG
+        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!currentAuthToken}, Current UserName: ${currentUserName}, Current IsAdmin: ${currentIsAdmin}`);
         if (currentAuthToken && currentUserName) {
             // Desktop Navbar
             if (navLoginRegister) navLoginRegister.style.display = 'none';
