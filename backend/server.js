@@ -430,7 +430,8 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
                 <li>Service: ${serviceType}</li>
                 <li>IMEI: ${imei}</li>
                 <li>Amount: Rp ${amount.toLocaleString('id-ID')}</li>
-                <li>Status: ${initialStatus}</li> <li>Customer Phone: ${phone}</li>
+                <li>Status: ${initialStatus}</li> <!-- Status di email admin -->
+                <li>Customer Phone: ${phone}</li>
             </ul>
             <p>Check admin dashboard for more details: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
         `;
