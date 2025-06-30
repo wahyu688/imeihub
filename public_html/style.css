@@ -216,7 +216,7 @@ a:hover {
 .main-content-area {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px; /* Padding samping */
+    padding: 20px;
     box-sizing: border-box;
 }
 
@@ -262,7 +262,6 @@ a:hover {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     box-shadow: 0 6px 15px rgba(255, 165, 0, 0.4);
-    display: inline-block; /* Pastikan tombol bisa di-center */
 }
 
 .cta-button:hover {
@@ -293,7 +292,7 @@ a:hover {
     font-size: 2.8em;
     color: var(--text-color);
     text-align: center;
-    margin-bottom: 50px; /* Jarak bawah judul */
+    margin-bottom: 50px;
     font-weight: 700;
 }
 
@@ -308,11 +307,6 @@ a:hover {
 .content-container-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px var(--shadow-color);
-}
-
-/* PENGATURAN BAGIAN KONTAK */
-.contact-preview {
-    text-align: center; /* Membuat semua elemen di dalamnya menjadi tengah */
 }
 
 .card-grid {
@@ -332,7 +326,6 @@ a:hover {
     border-radius: 20px;
     box-shadow: 0 4px 15px var(--shadow-color);
 
-    /* --- PENYESUAIAN MARGIN KIRI KANAN --- */
     margin: 0 20px; /* margin-top dan margin-bottom 0, margin-left dan margin-right 20px */
 }
 
@@ -416,7 +409,7 @@ a:hover {
     top: 0;
 }
 
-/* IMPORTANT NOTES SPECIFICS - REVISED TO GRID */
+/* Important Notes Specifics */
 .important-notes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -426,7 +419,6 @@ a:hover {
     border-radius: 20px;
     box-shadow: 0 4px 15px var(--shadow-color);
 
-    /* --- PENYESUAIAN MARGIN KIRI KANAN --- */
     margin: 0 20px; /* margin-top dan margin-bottom 0, margin-left dan margin-right 20px */
 }
 
@@ -455,10 +447,9 @@ a:hover {
 }
 
 .important-note-details ul li {
-    color: var(--secondary-text-color);
-    margin-bottom: 5px;
     position: relative;
     padding-left: 20px;
+    margin-bottom: 5px;
 }
 
 .important-note-details ul li::before {
@@ -470,10 +461,6 @@ a:hover {
     line-height: 1;
     top: 0;
 }
-
-/* HAPUS GAYA LAMA UNTUK CARD-LIST DAN NOTE-ITEM (jika tidak digunakan di tempat lain) */
-/* .card-list, .note-item { display: none; } */
-/* .note-icon { ... } */
 
 
 /* Best For Specifics */
@@ -631,9 +618,26 @@ footer {
 .footer-content {
     max-width: 1000px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
-/* Menghapus .social-links karena sudah tidak digunakan */
+.social-links {
+    display: flex;
+    gap: 25px;
+}
+
+.social-links a {
+    color: var(--secondary-text-color);
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.social-links a:hover {
+    color: var(--accent-color);
+}
 
 
 /* Responsive Adjustments */

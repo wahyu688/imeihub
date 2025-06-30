@@ -8,6 +8,7 @@
     <link rel="icon" href="imeihub_logo.png" type="image/png"> 
 </head>
 <body>
+    <!-- TOP NAVBAR -->
     <nav class="top-navbar">
         <div class="navbar-left">
             <div class="brand-logo">
@@ -19,11 +20,12 @@
                 <li><a href="order.html">Order</a></li>
                 <li><a href="my-orders.html">My Orders</a></li>
                 <li><a href="contact.html">Contact</a></li>
+                <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li> <!-- BARU: Link Admin Dashboard -->
             </ul>
         </div>
 
         <div class="navbar-right">
-            <div id="nav-login-register"><a href="login.html" class="nav-link-button">Login</a></div>
+            <div id="nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div>
             <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
                 <span>Hi, <strong id="username-display"></strong>!</span>
                 <img src="avatar_placeholder.jpg" alt="User Avatar" class="user-avatar">
@@ -31,11 +33,13 @@
             <button id="logout-btn-navbar" class="nav-link-button" style="display: none;">Logout</button>
         </div>
 
+        <!-- Mobile Hamburger Menu (hidden on desktop) -->
         <button class="hamburger-menu" aria-label="Toggle navigation">
             ☰
         </button>
     </nav>
 
+    <!-- Mobile Navigation Overlay (hidden on desktop) -->
     <div class="mobile-nav-overlay">
         <button class="close-mobile-nav">✖</button>
         <ul class="mobile-nav-links">
@@ -44,7 +48,8 @@
             <li><a href="order.html">Order</a></li>
             <li><a href="my-orders.html">My Orders</a></li>
             <li><a href="contact.html">Contact</a></li>
-            <li id="mobile-nav-login-register"><a href="login.html">Login</a></li>
+            <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li> <!-- BARU: Link Admin Dashboard Mobile -->
+            <li id="mobile-nav-login-register"><a href="login.html">Login/Register</a></li>
             <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
             <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
         </ul>
@@ -52,6 +57,7 @@
 
 
     <main>
+        <!-- HERO SECTION - IMEI Unlock for Tourists -->
         <section class="hero-section main-container-card">
             <div class="hero-text-content">
                 <h1>IMEI Unlock for Tourists – <span class="accent-text">3-Month Network Access</span> in Indonesia</h1>
@@ -64,9 +70,11 @@
             </div>
         </section>
 
+        <!-- WHAT WE OFFER SECTION -->
         <section class="section-container">
             <h2 class="section-title">What We Offer:</h2>
-            <div class="offer-single-grid content-container-card"> <div class="offer-item">
+            <div class="offer-single-grid content-container-card">
+                <div class="offer-item">
                     <span class="offer-icon">⚡</span>
                     <div class="offer-details">
                         <h3>Temporary IMEI Activation (Up to 90 Days)</h3>
@@ -102,7 +110,8 @@
             </div>
         </section>
 
-         <section class="section-container">
+        <!-- IMPORTANT NOTES SECTION -->
+        <section class="section-container">
             <h2 class="section-title">Important Notes:</h2>
             <div class="important-notes-grid content-container-card">
                 <div class="important-note-item">
@@ -131,6 +140,7 @@
             </div>
         </section>
 
+        <!-- BEST FOR SECTION -->
         <section class="section-container">
             <h2 class="section-title">Best For:</h2>
             <div class="card-grid">
@@ -150,9 +160,16 @@
         </section>
     </main>
 
+    <!-- FOOTER -->
     <footer class="main-container-card">
         <div class="footer-content">
             <p>&copy; 2025 ImeiHub. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://instagram.com/yourimeihub" target="_blank">Instagram</a>
+                <a href="https://facebook.com/yourimeihub" target="_blank">Facebook</a>
+                <a href="https://twitter.com/yourimeihub" target="_blank">Twitter</a>
+                <a href="https://t.me/yourimeihub" target="_blank">Telegram</a>
+            </div>
         </div>
     </footer>
 
