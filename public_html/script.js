@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- PENTING: GANTI DENGAN URL API BACKEND ANDA SAAT DEPLOY! ---
-    const API_BASE_URL = 'https://back.imeihub.id';
+    const API_BASE_URL = 'https://back.imeihub.id'; 
 
     // --- ADMIN API KEY (Ini akan digunakan oleh admin_create_user.html) ---
     const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI DENGAN KUNCI RAHASIA ANDA
@@ -31,9 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Proteksi halaman Admin Dashboard dan Admin Create User
     if (currentPage.startsWith('admin_')) {
         const authToken = localStorage.getItem('authToken');
-        const isAdmin = localStorage.getItem('isAdmin') === 'true';
+        const isAdmin = localStorage.getItem('isAdmin') === 'true'; // Cek flag isAdmin dari localStorage
+        console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin: ${isAdmin}`); // DEBUG LOG
         if (!authToken || !isAdmin) {
             alert('Akses Ditolak: Anda harus login sebagai Admin.');
             localStorage.setItem('redirectAfterLogin', window.location.href);
@@ -62,9 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const authTokenOnLoad = localStorage.getItem('authToken');
     const userNameOnLoad = localStorage.getItem('userName');
-    const isAdminOnLoad = localStorage.getItem('isAdmin') === 'true';
+    const isAdminOnLoad = localStorage.getItem('isAdmin') === 'true'; // Ambil isAdmin dari localStorage
 
     function updateNavbarLoginStatus() {
+        console.log(`DEBUG_FRONTEND: Updating Navbar. AuthToken: ${!!authTokenOnLoad}, UserName: ${userNameOnLoad}, IsAdmin: ${isAdminOnLoad}`); // DEBUG LOG
         if (authTokenOnLoad && userNameOnLoad) {
             // Desktop Navbar
             if (navLoginRegister) navLoginRegister.style.display = 'none';
@@ -106,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userId');
             localStorage.removeItem('userName');
-            localStorage.removeItem('isAdmin');
+            localStorage.removeItem('isAdmin'); // Hapus juga isAdmin
             updateNavbarLoginStatus(); 
             window.location.href = 'login.html';
         });
@@ -117,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userId');
             localStorage.removeItem('userName');
-            localStorage.removeItem('isAdmin');
+            localStorage.removeItem('isAdmin'); // Hapus juga isAdmin
             updateNavbarLoginStatus();
             mobileNavOverlay.classList.remove('open');
             window.location.href = 'login.html';
@@ -179,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             console.log('DEBUG: Default form submission prevented.');
 
-            orderStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Submitting your order...</p>`;
+            orderStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Memproses pesanan Anda dan menginisiasi pembayaran...</p>`;
             orderStatusDiv.classList.remove('error');
             orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
             orderStatusDiv.style.borderColor = 'var(--accent-color)';
@@ -295,7 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('userName', data.userName);
-                    localStorage.setItem('isAdmin', data.isAdmin);
+                    localStorage.setItem('isAdmin', data.isAdmin); // Simpan isAdmin flag
+                    console.log(`DEBUG_FRONTEND: Login successful. IsAdmin: ${data.isAdmin}`); // DEBUG LOG
                     loginStatusDiv.innerHTML = '<p style="color: green;">Login berhasil! Mengarahkan...</p>';
                     loginStatusDiv.classList.remove('error');
                     loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
@@ -399,6 +403,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const createUserLink = document.getElementById('create-user-link');
 
     if (currentPage === 'admin_dashboard.html') {
+        // Proteksi tambahan untuk dashboard admin jika user mencoba akses langsung tanpa isAdmin=true
+        if (!isAdminOnLoad) { // Menggunakan isAdminOnLoad dari awal script
+            alert('Akses Ditolak: Anda harus login sebagai Admin.');
+            localStorage.setItem('redirectAfterLogin', window.location.href);
+            window.location.href = 'login.html';
+            return;
+        }
+
         function showSection(sectionId) {
             dashboardOverviewContent.style.display = 'none';
             manageOrdersContent.style.display = 'none';
@@ -429,6 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dashboardLink) dashboardLink.addEventListener('click', (e) => { e.preventDefault(); showSection('dashboard-overview'); });
         if (manageOrdersLink) manageOrdersLink.addEventListener('click', (e) => { e.preventDefault(); showSection('manage-orders'); });
         if (manageUsersLink) manageUsersLink.addEventListener('click', (e) => { e.preventDefault(); showSection('manage-users'); });
+        if (createUserLink) createUserLink.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'admin_create_user.html'; }); // Ensure create user link works
 
         async function fetchDashboardStats() {
             try {
@@ -577,7 +590,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        showSection('dashboard-overview');
+
+        showSection('dashboard-overview'); // Tampilkan dashboard overview saat halaman dimuat
     }
     // --- End Admin Dashboard Logic ---
 
@@ -608,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <p style="color: var(--secondary-text-color);"><strong>Layanan:</strong> ${order.serviceType}</p>
                                     <p style="color: var(--secondary-text-color);"><strong>IMEI:</strong> ${order.imei}</p>
                                     <p style="color: var(--secondary-text-color);"><strong>Status:</strong> <span style="font-weight: bold; color: ${order.status === 'Selesai' ? 'green' : order.status === 'Diproses' ? 'orange' : 'grey'};">${order.status}</span></p>
-                                    <p style="color: var(--secondary-text-color);"><strong>Metode Pembayaran:</strong> ${order.paymentMethod || 'N/A'}</p> <!-- Metode pembayaran bisa null jika tidak ada -->
+                                    <p style="color: var(--secondary-text-color);"><strong>Metode Pembayaran:</strong> ${order.paymentMethod || 'N/A'}</p>
                                     <p style="font-size: 0.8em; color: var(--secondary-text-color);">Tanggal Pesan: ${new Date(order.orderDate).toLocaleDateString()} ${new Date(order.orderDate).toLocaleTimeString()}</p>
                                     <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p>
                                 </div>

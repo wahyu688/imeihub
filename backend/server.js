@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const fetch = require('node-fetch');
-const crypto = require('crypto'); // Masih dibutuhkan untuk potensi HMAC lain (misal di masa depan)
+const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
 const app = express();
@@ -19,7 +19,7 @@ const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
 const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICATION_CHANNEL_ID;
 const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
 
-// --- Tripay API Credentials (DIHAPUS, GANTI DENGAN KOMENTAR) ---
+// --- Tripay API Credentials (DIHAPUS KARENA TIDAK DIGUNAKAN) ---
 // const TRIPAY_API_KEY = process.env.TRIPAY_API_KEY;
 // const TRIPAY_PRIVATE_KEY = process.env.TRIPAY_PRIVATE_KEY;
 // const TRIPAY_MERCHANT_CODE = process.env.TRIPAY_MERCHANT_CODE;
@@ -61,11 +61,10 @@ transporter.verify(function(error, success) {
 const FIXED_IMEI_PRICE = 250000; // Harga 1 IMEI = Rp 250.000
 const SERVICE_PRICES = {
     "Temporary IMEI Activation (90 Days)": FIXED_IMEI_PRICE,
-    "Permanent Unlock iPhone": FIXED_IMEI_PRICE, // Set semua ke harga fixed per IMEI
+    "Permanent Unlock iPhone": FIXED_IMEI_PRICE,
     "Permanent Unlock Android": FIXED_IMEI_PRICE,
     "IMEI History Check": FIXED_IMEI_PRICE,
     "Other Service": FIXED_IMEI_PRICE,
-    // Jika ada layanan yang harganya berbeda, definisikan di sini
 };
 
 // --- Database Configuration (MySQL) ---
@@ -102,7 +101,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.set('trust proxy', true);
-app.use(bodyParser.json()); // Body parser untuk JSON requests
+app.use(bodyParser.json());
 
 // --- Fungsi Helper untuk Mengirim Email ---
 async function sendEmail(to, subject, htmlContent) {
@@ -307,7 +306,6 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
     }
 
     try {
-        // Ambil email user terkait order untuk notifikasi
         const [orderRows] = await pool.query('SELECT o.customer_email, o.customer_name, u.username, o.service_type FROM orders o JOIN users u ON o.user_id = u.id WHERE o.order_id = ?', [orderId]);
         const order = orderRows[0];
 
@@ -321,7 +319,7 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
         if (result.affectedRows > 0) {
             console.log(`Order ${orderId} updated to status: ${newStatus} by Admin.`);
 
-            if (order.customer_email) { // Kirim email hanya jika email pelanggan tersedia
+            if (order.customer_email) {
                 const mailSubject = `Order Status Update: ${orderId} - ${newStatus}`;
                 const mailHtml = `
                     <p>Dear ${order.customerName || order.username},</p>
@@ -375,176 +373,44 @@ app.post('/api/payment/initiate', authenticateToken, async (req, res) => {
         );
         console.log(`Order ${orderId} saved to database.`);
 
-        const tripayRequest = {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${TRIPAY_API_KEY}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                method: paymentMethod,
-                merchant_ref: merchantRef,
-                amount: amountInCents,
-                customer_name: name,
-                customer_email: email,
-                customer_phone: phone,
-                order_items: [{
-                    sku: serviceType.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().substring(0, 15),
-                    name: serviceType,
-                    price: amountInCents,
-                    quantity: 1
-                }],
-                callback_url: `https://back.imeihub.id/api/payment-callback`,
-                return_url: `https://imeihub.id/my-orders.html`,
-                expired_time: (Date.now() / 1000) + (24 * 60 * 60)
-            })
-        };
-
-        const tripayResponse = await fetch(`${TRIPAY_BASE_URL}/transaction/create`, tripayRequest);
-        const tripayData = await tripayResponse.json();
-
-        if (tripayResponse.ok && tripayData.success) {
-            console.log('DEBUG: Tripay transaction created successfully:', tripayData.data);
-            
-            const adminMailSubject = `New Order Received: ${orderId} (${serviceType})`;
-            const adminMailHtml = `
-                <p>New order received from ${name} (${email}):</p>
-                <ul>
-                    <li>Order ID: <b>${orderId}</b></li>
-                    <li>Service: ${serviceType}</li>
-                    <li>IMEI: ${imei}</li>
-                    <li>Amount: Rp ${amountInCents.toLocaleString('id-ID')}</li>
-                    <li>Payment Method: ${paymentMethod}</li>
-                    <li>Status: Menunggu Pembayaran</li>
-                    <li>Customer Phone: ${phone}</li>
-                </ul>
-                <p>Check admin dashboard for more details: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
-            `;
-            console.log('DEBUG: Attempting to send email for new order notification.');
-            await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
-            console.log('DEBUG: Email sent for new order notification.');
+        // --- Kirim Notifikasi Pesanan Baru ke Email Admin ---
+        const adminMailSubject = `New Order Received: ${orderId} (${serviceType})`;
+        const adminMailHtml = `
+            <p>New order received from ${name} (${email}):</p>
+            <ul>
+                <li>Order ID: <b>${orderId}</b></li>
+                <li>Service: ${serviceType}</li>
+                <li>IMEI: ${imei}</li>
+                <li>Amount: Rp ${amountInCents.toLocaleString('id-ID')}</li>
+                <li>Payment Method: ${paymentMethod}</li>
+                <li>Status: Menunggu Pembayaran</li>
+                <li>Customer Phone: ${phone}</li>
+            </ul>
+            <p>Check admin dashboard for more details: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
+        `;
+        console.log('DEBUG: Attempting to send email for new order notification.');
+        await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
+        console.log('DEBUG: Email sent for new order notification.');
 
 
-            res.status(200).json({
-                success: true,
-                message: 'Payment initiated successfully.',
-                orderId: orderId,
-                reference: tripayData.data.reference,
-                amount: tripayData.data.amount,
-                checkout_url: tripayData.data.checkout_url,
-                qr_string: tripayData.data.qr_string || null,
-                va_number: tripayData.data.pay_code || null,
-                va_bank: tripayData.data.pay_code ? tripayData.data.payment_method_code : null,
-                instructions: tripayData.data.instructions ? tripayData.data.instructions[0]?.steps.join('\n') : null
-            });
+        res.status(200).json({
+            success: true,
+            message: 'Order submitted successfully.', // Pesan diubah
+            orderId: orderId, // Sertakan orderId untuk frontend
+            amount: amountInCents, // Sertakan amount untuk frontend
+        });
 
-        } else {
-            console.error('ERROR: Tripay API error during transaction creation:', tripayData.message || tripayResponse.statusText);
-            res.status(500).json({ success: false, message: tripayData.message || 'Failed to create Tripay transaction.' });
-        }
     } catch (error) {
-        console.error('ERROR: Payment initiation request failed:', error);
-        res.status(500).json({ success: false, message: 'Internal server error during payment initiation.' });
+        console.error('ERROR: Order submission request failed:', error);
+        res.status(500).json({ success: false, message: 'Internal server error during order submission.' });
     }
 });
 
-// POST /api/payment-callback - Endpoint untuk Menerima Notifikasi Pembayaran (Tripay Webhook)
-app.post('/api/payment-callback', async (req, res) => {
-    console.log('DEBUG: Tripay callback received!');
-    console.log('DEBUG: Tripay callback headers:', req.headers);
-    console.log('DEBUG: Tripay callback raw body:', JSON.stringify(req.body, null, 2));
-
-    const jsonBody = req.body;
-
-    const tripaySignature = req.headers['x-callback-signature'];
-    const tripayEvent = req.headers['x-callback-event'];
-    
-    // Penting: Tripay mengirim raw JSON body untuk HMAC. Gunakan body-parser.raw() khusus untuk endpoint ini.
-    // Jika tidak, JSON.stringify(req.body) mungkin tidak menghasilkan string yang sama dengan raw body.
-    // Untuk tujuan demo ini, kita akan asumsikan body-parser.json sudah menangani dan body adalah objek.
-    // Jika ada masalah signature, Anda mungkin perlu mengubah bodyParser untuk endpoint ini.
-    const calculatedSignature = crypto.createHmac('sha256', TRIPAY_PRIVATE_KEY)
-                                      .update(JSON.stringify(jsonBody)) 
-                                      .digest('hex');
-
-    if (calculatedSignature !== tripaySignature) {
-        console.warn('DEBUG: Invalid Tripay callback signature!');
-        return res.status(400).json({ success: false, message: 'Invalid signature.' });
-    }
-
-    if (tripayEvent !== 'transaction_updated') {
-        console.warn(`DEBUG: Unhandled Tripay event: ${tripayEvent}`);
-        return res.status(200).json({ success: true, message: 'Event ignored.' });
-    }
-
-    const { reference, status, amount } = jsonBody.data;
-
-    console.log(`DEBUG: Tripay callback valid for reference ${reference}, status ${status}, amount ${amount}`);
-
-    try {
-        const [orders] = await pool.query('SELECT customer_email, customer_name, username, service_type, status FROM orders WHERE order_id = ?', [reference]);
-        const order = orders[0];
-
-        if (!order) {
-            console.warn(`DEBUG: Order with ID ${reference} not found in database for callback.`);
-            return res.status(404).json({ success: false, message: 'Order not found.' });
-        }
-
-        let newStatus = order.status; 
-        let notificationSubject = `Order Update: ${reference} - ${status}`;
-        let notificationHtml = '';
-
-        if (status === 'PAID' || status === 'SETTLEMENT') {
-            newStatus = 'Diproses';
-            notificationSubject = `Pembayaran Berhasil untuk Order ID: ${reference}`;
-            notificationHtml = `
-                <p>Halo ${order.customerName || order.username},</p>
-                <p>Pembayaran Anda untuk Order ID <b>${reference}</b> sebesar Rp ${amount.toLocaleString('id-ID')} telah berhasil!</p>
-                <p>Status pesanan Anda telah diperbarui menjadi: <b>${newStatus}</b>.</p>
-                <p>Layanan: ${order.service_type}</p>
-                <p>Kami akan segera memproses pesanan Anda.</p>
-                <p>Cek status terbaru Anda di <a href="https://imeihub.id/my-orders.html">Dashboard Pesanan Saya</a>.</p>
-                <p>Terima kasih atas pembayaran Anda.</p>
-            `;
-        } else if (status === 'EXPIRED' || status === 'FAILED' || status === 'REFUND') {
-            newStatus = 'Dibatalkan';
-            notificationSubject = `Pembayaran Gagal/Kadaluarsa untuk Order ID: ${reference}`;
-            notificationHtml = `
-                <p>Halo ${order.customerName || order.username},</p>
-                <p>Pembayaran Anda untuk Order ID <b>${reference}</b> telah gagal atau kedaluwarsa.</p>
-                <p>Status pesanan Anda telah diperbarui menjadi: <b>${newStatus}</b>.</p>
-                <p>Jika Anda ingin melanjutkan, mohon buat pesanan baru.</p>
-                <p>Cek status terbaru Anda di <a href="https://imeihub.id/my-orders.html">Dashboard Pesanan Saya</a>.</p>
-            `;
-        } else if (status === 'PENDING') {
-            newStatus = 'Menunggu Pembayaran'; 
-        } else {
-            console.warn(`DEBUG: Unhandled Tripay transaction status: ${status} for order ${reference}. No status update.`);
-            return res.status(200).json({ success: true, message: 'Status handled.' }); 
-        }
-
-        if (newStatus !== order.status) {
-            await pool.query('UPDATE orders SET status = ?, payment_method = ?, amount = ? WHERE order_id = ?', [newStatus, order.payment_method, amount, reference]);
-            console.log(`DEBUG: Order ${reference} status updated to ${newStatus} via Tripay callback.`);
-
-            if (order.customer_email && notificationHtml) {
-                await sendEmail(order.customer_email, notificationSubject, notificationHtml);
-            } else {
-                console.warn(`DEBUG: No email sent for order ${reference}, customer email missing or notification HTML not generated.`);
-            }
-        }
-
-        res.status(200).json({ success: true, message: 'Callback received and processed.' });
-
-    } catch (error) {
-        console.error('ERROR: Tripay callback processing error:', error);
-        res.status(500).json({ success: false, message: 'Internal server error during callback processing.', error: error.message });
-    }
-});
+// POST /api/payment-callback - Endpoint ini sekarang TIDAK DIGUNAKAN
+// app.post('/api/payment-callback', async (req, res) => { ... });
 
 
-// --- Endpoint untuk Discord Bot memanggil backend untuk update status ---
+// --- Endpoint untuk Discord Bot memanggil backend untuk update status (tidak digunakan) ---
 app.post('/api/discord-webhook-commands', async (req, res) => {
     const { type, payload } = req.body;
 
