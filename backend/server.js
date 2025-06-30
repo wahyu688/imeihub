@@ -299,7 +299,7 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
     if (!orderId || !newStatus) {
         return res.status(400).json({ message: 'Order ID and new status are required.' });
     }
-
+    
     const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan'];
     if (!validStatuses.includes(newStatus)) {
         return res.status(400).json({ message: 'Invalid status provided.' });
@@ -315,10 +315,10 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
         }
 
         const [result] = await pool.query('UPDATE orders SET status = ? WHERE order_id = ?', [newStatus, orderId]);
-
+        
         if (result.affectedRows > 0) {
             console.log(`Order ${orderId} updated to status: ${newStatus} by Admin.`);
-
+            
             if (order.customer_email) {
                 const mailSubject = `Order Status Update: ${orderId} - ${newStatus}`;
                 const mailHtml = `
@@ -330,7 +330,7 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
                 `;
                 await sendEmail(order.customer_email, mailSubject, mailHtml);
             } else {
-                console.warn(`DEBUG: No customer email found for order ${orderId}, skipping email notification.`);
+                console.warn(`DEBUG: No email sent for order ${orderId}, customer email missing or notification HTML not generated.`);
             }
 
             res.json({ success: true, message: `Status for order ${orderId} updated to ${newStatus}.` });
@@ -346,18 +346,18 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
 
 
 // POST /api/order/submit - Endpoint untuk Submit Order (Tanpa Payment Gateway)
-app.post('/api/order/submit', authenticateToken, async (req, res) => { // Endpoint diubah
+app.post('/api/order/submit', authenticateToken, async (req, res) => {
     console.log('DEBUG: Order submission request received.');
     const userId = req.user.userId;
-    const { name, email, phone, imei, serviceType } = req.body; // amount tidak lagi dari request
+    const { name, email, phone, imei, serviceType } = req.body;
 
-    const amount = SERVICE_PRICES[serviceType]; // Harga ditentukan backend
+    const amount = SERVICE_PRICES[serviceType];
     if (!amount) {
         console.warn(`DEBUG: Invalid or undefined amount for service type: ${serviceType}`);
         return res.status(400).json({ success: false, message: `Price not defined for service: ${serviceType}` });
     }
 
-    if (!name || !email || !phone || !imei || !serviceType) { // paymentMethod tidak lagi wajib
+    if (!name || !email || !phone || !imei || !serviceType) {
         return res.status(400).json({ message: 'All order fields are required.' });
     }
 
@@ -366,12 +366,11 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => { // Endpoi
 
     try {
         await pool.query(
-            'INSERT INTO orders(id, order_id, user_id, customer_name, customer_email, customer_phone, imei, service_type, status, order_date, amount) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)', // payment_method dihapus
+            'INSERT INTO orders(id, order_id, user_id, customer_name, customer_email, customer_phone, imei, service_type, status, order_date, amount) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
             [newOrderId, orderId, userId, name, email, phone, imei, serviceType, 'Menunggu Pembayaran', amount]
         );
         console.log(`Order ${orderId} saved to database.`);
 
-        // --- Kirim Notifikasi Order Baru ke Email Admin ---
         const adminMailSubject = `New Order Received: ${orderId} (${serviceType})`;
         const adminMailHtml = `
             <p>New order received from ${name} (${email}):</p>
@@ -438,4 +437,7 @@ app.post('/api/discord-webhook-commands', async (req, res) => {
 // --- Start Server ---
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Backend server running on http://0.0.0.0:${PORT}`);
+    if (JWT_SECRET === 'your_super_secret_jwt_key_please_change_this_to_a_random_string_in_production') {
+        console.warn('WARNING: JWT_SECRET is not changed. Please update it in your .env file for production!');
+    }
 });
