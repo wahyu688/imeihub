@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND;
 
-// --- Discord Configurations (Tidak lagi digunakan, tapi konstanta tetap ada) ---
+// --- Discord Configurations (Konstanta tetap ada, tapi tidak digunakan) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
 const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICATION_CHANNEL_ID;
 const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
@@ -236,7 +236,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Middleware to ensure user is logged in for /order access and /orders/:userId
-app.use('/api/order', authenticateToken);
+app.use('/api/order', authenticateToken); 
 app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
     if (req.user.userId !== req.params.userId) {
         return res.status(403).json({ message: 'Forbidden: You can only view your own orders.' });
@@ -345,35 +345,33 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
 });
 
 
-// POST /api/payment/initiate - Endpoint untuk Inisiasi Pembayaran (Tripay)
-app.post('/api/payment/initiate', authenticateToken, async (req, res) => {
-    console.log('DEBUG: Payment initiate request received.');
+// POST /api/order/submit - Endpoint untuk Submit Order (Tanpa Payment Gateway)
+app.post('/api/order/submit', authenticateToken, async (req, res) => { // Endpoint diubah
+    console.log('DEBUG: Order submission request received.');
     const userId = req.user.userId;
-    const { name, email, phone, imei, serviceType, paymentMethod } = req.body;
+    const { name, email, phone, imei, serviceType } = req.body; // amount tidak lagi dari request
 
-    const amount = SERVICE_PRICES[serviceType];
+    const amount = SERVICE_PRICES[serviceType]; // Harga ditentukan backend
     if (!amount) {
         console.warn(`DEBUG: Invalid or undefined amount for service type: ${serviceType}`);
         return res.status(400).json({ success: false, message: `Price not defined for service: ${serviceType}` });
     }
-    const amountInCents = Math.round(amount);
 
-    if (!name || !email || !phone || !imei || !serviceType || !paymentMethod) {
-        return res.status(400).json({ message: 'All order fields are required for payment initiation.' });
+    if (!name || !email || !phone || !imei || !serviceType) { // paymentMethod tidak lagi wajib
+        return res.status(400).json({ message: 'All order fields are required.' });
     }
 
     const orderId = `ORD-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 100)}`;
-    const merchantRef = `${orderId}-${Date.now()}`;
     const newOrderId = uuidv4();
 
     try {
         await pool.query(
-            'INSERT INTO orders(id, order_id, user_id, customer_name, customer_email, customer_phone, imei, service_type, payment_method, status, order_date, amount) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
-            [newOrderId, orderId, userId, name, email, phone, imei, serviceType, paymentMethod, 'Menunggu Pembayaran', amountInCents]
+            'INSERT INTO orders(id, order_id, user_id, customer_name, customer_email, customer_phone, imei, service_type, status, order_date, amount) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)', // payment_method dihapus
+            [newOrderId, orderId, userId, name, email, phone, imei, serviceType, 'Menunggu Pembayaran', amount]
         );
         console.log(`Order ${orderId} saved to database.`);
 
-        // --- Kirim Notifikasi Pesanan Baru ke Email Admin ---
+        // --- Kirim Notifikasi Order Baru ke Email Admin ---
         const adminMailSubject = `New Order Received: ${orderId} (${serviceType})`;
         const adminMailHtml = `
             <p>New order received from ${name} (${email}):</p>
@@ -381,8 +379,7 @@ app.post('/api/payment/initiate', authenticateToken, async (req, res) => {
                 <li>Order ID: <b>${orderId}</b></li>
                 <li>Service: ${serviceType}</li>
                 <li>IMEI: ${imei}</li>
-                <li>Amount: Rp ${amountInCents.toLocaleString('id-ID')}</li>
-                <li>Payment Method: ${paymentMethod}</li>
+                <li>Amount: Rp ${amount.toLocaleString('id-ID')}</li>
                 <li>Status: Menunggu Pembayaran</li>
                 <li>Customer Phone: ${phone}</li>
             </ul>
@@ -395,20 +392,16 @@ app.post('/api/payment/initiate', authenticateToken, async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Order submitted successfully.', // Pesan diubah
-            orderId: orderId, // Sertakan orderId untuk frontend
-            amount: amountInCents, // Sertakan amount untuk frontend
+            message: 'Order submitted successfully.',
+            orderId: orderId,
+            amount: amount,
         });
 
     } catch (error) {
         console.error('ERROR: Order submission request failed:', error);
-        res.status(500).json({ success: false, message: 'Internal server error during order submission.' });
+        res.status(500).json({ success: false, message: 'Internal server error during order submission.', error: error.message });
     }
 });
-
-// POST /api/payment-callback - Endpoint ini sekarang TIDAK DIGUNAKAN
-// app.post('/api/payment-callback', async (req, res) => { ... });
-
 
 // --- Endpoint untuk Discord Bot memanggil backend untuk update status (tidak digunakan) ---
 app.post('/api/discord-webhook-commands', async (req, res) => {
