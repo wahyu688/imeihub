@@ -14,15 +14,17 @@
 
     /* Warna spesifik untuk status button di dashboard */
     --status-pending-bg: #FFA500; /* Oranye untuk Menunggu Pembayaran */
-    --status-pending-text: #000000;
-    --status-processing-bg: #007bff; /* Biru untuk Diproses */
-    --status-processing-text: #FFFFFF;
-    --status-completed-bg: #28a745; /* Hijau untuk Selesai */
-    --status-completed-text: #FFFFFF;
-    --status-cancelled-bg: #dc3545; /* Merah untuk Dibatalkan */
-    --status-cancelled-text: #FFFFFF;
-    --status-unknown-bg: #6c757d; /* Abu-abu untuk Unknown/User */
+    --status-pending-text: #000000; /* Teks hitam agar kontras */
+    --status-diproses-bg: #007bff; /* Biru untuk Diproses */
+    --status-diproses-text: #FFFFFF; /* Teks putih */
+    --status-selesai-bg: #28a745; /* Hijau untuk Selesai */
+    --status-selesai-text: #FFFFFF; /* Teks putih */
+    --status-dibatalkan-bg: #dc3545; /* Merah untuk Dibatalkan */
+    --status-dibatalkan-text: #FFFFFF; /* Teks putih */
+    --status-unknown-bg: #6c757d; /* Default jika status tidak dikenal */
     --status-unknown-text: #FFFFFF;
+    --status-menunggu-proses-besok-bg: #800080; /* Ungu untuk Menunggu Proses Besok */
+    --status-menunggu-proses-besok-text: #FFFFFF;
 }
 
 body {
@@ -110,7 +112,7 @@ a:hover {
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: 20px; /* Jarak antara info user/tombol */
+    gap: 20px; /* Jarak antar info user/tombol */
 }
 
 .user-greeting-container {
@@ -163,7 +165,7 @@ a:hover {
 .mobile-nav-overlay {
     display: none; /* Default hidden */
     position: fixed;
-    top: 0;
+    bottom: 0; /* Ubah dari top ke bottom */
     left: 0;
     width: 100%;
     height: 100%;
