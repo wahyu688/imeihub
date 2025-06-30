@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Proteksi halaman Admin Dashboard dan Admin Create User
     if (currentPage.startsWith('admin_')) {
         const { authToken, isAdmin } = checkAuthAndAdminStatus();
         console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
@@ -56,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Manajemen Status Login di Navbar (Top & Mobile Overlay) ---
-    // Deklarasikan semua elemen navbar di scope DOMContentLoaded agar selalu tersedia
     const navLoginRegister = document.getElementById('nav-login-register');
     const navUserGreeting = document.getElementById('nav-user-greeting');
     const usernameDisplay = document.getElementById('username-display');
@@ -70,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // Pastikan ini dideklarasikan
+    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); 
 
 
     function updateNavbarLoginStatus() {
@@ -110,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = 'none';
         }
     }
-    updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
+    updateNavbarLoginStatus(); 
 
     // Event Listener untuk Logout Button (Global)
     if (logoutBtnNavbar) {
@@ -312,6 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('userName', data.userName);
+                    // PERBAIKAN DI SINI: Pastikan data.isAdmin adalah boolean sebelum disimpan
                     localStorage.setItem('isAdmin', String(data.isAdmin === true || data.isAdmin === 1)); 
                     console.log(`DEBUG_FRONTEND: Login successful. IsAdmin: ${data.isAdmin} (Stored as: ${localStorage.getItem('isAdmin')})`);
                     loginStatusDiv.innerHTML = '<p style="color: green;">Login berhasil! Mengarahkan...</p>';
