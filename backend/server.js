@@ -219,7 +219,7 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
-        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET); // Hapus expiresIn
         console.log('User logged in:', user.username);
         res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
     } catch (error) {
@@ -275,7 +275,23 @@ app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
     if (!validSortColumns.includes(column) || !['ASC', 'DESC'].includes(order)) {
         console.warn(`DEBUG: Invalid sortBy parameter received: ${sortBy}. Using default.`);
         // Fallback ke default jika parameter tidak valid
-        const defaultOrders = await pool.query("SELECT id, order_id AS orderId, user_id, customer_name AS customerName, customer_email AS customerEmail, customer_phone AS customerPhone, imei, service_type AS serviceType, status, order_date AS orderDate, amount FROM orders ORDER BY order_date DESC");
+        const defaultOrders = await pool.query(`
+            SELECT 
+                o.id, 
+                o.order_id AS orderId, 
+                o.user_id, 
+                COALESCE(o.customer_name, u.username) AS customerName, 
+                o.customer_email AS customerEmail, 
+                o.customer_phone AS customerPhone, 
+                o.imei, 
+                o.service_type AS serviceType, 
+                o.status, 
+                o.order_date AS orderDate, 
+                o.amount 
+            FROM orders o
+            LEFT JOIN users u ON o.user_id = u.id
+            ORDER BY order_date DESC
+        `);
         return res.json({ success: true, orders: defaultOrders[0] });
     }
 
@@ -286,7 +302,7 @@ app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
                 o.id, 
                 o.order_id AS orderId, 
                 o.user_id, 
-                COALESCE(o.customer_name, u.username) AS customerName, -- Gunakan username jika customer_name kosong
+                COALESCE(o.customer_name, u.username) AS customerName, 
                 o.customer_email AS customerEmail, 
                 o.customer_phone AS customerPhone, 
                 o.imei, 
@@ -322,7 +338,7 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
         return res.status(400).json({ message: 'Order ID and new status are required.' });
     }
 
-    const validStatuses = ['Menunggu Pembayaran', 'Menunggu Proses Besok', 'Diproses', 'Selesai', 'Dibatalkan']; // Tambah status baru
+    const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan', 'Menunggu Proses Besok'];
     if (!validStatuses.includes(newStatus)) {
         return res.status(400).json({ message: 'Invalid status provided.' });
     }
@@ -352,7 +368,7 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
                 `;
                 await sendEmail(order.customer_email, mailSubject, mailHtml);
             } else {
-                console.warn(`DEBUG: No customer email found for order ${orderId}, skipping email notification.`);
+                console.warn(`DEBUG: No email sent for order ${orderId}, customer email missing or notification HTML not generated.`);
             }
 
             res.json({ success: true, message: `Status for order ${orderId} updated to ${newStatus}.` });
@@ -414,8 +430,7 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
                 <li>Service: ${serviceType}</li>
                 <li>IMEI: ${imei}</li>
                 <li>Amount: Rp ${amount.toLocaleString('id-ID')}</li>
-                <li>Status: ${initialStatus}</li> <!-- Status di email admin -->
-                <li>Customer Phone: ${phone}</li>
+                <li>Status: ${initialStatus}</li> <li>Customer Phone: ${phone}</li>
             </ul>
             <p>Check admin dashboard for more details: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
         `;
