@@ -58,8 +58,9 @@
     <main class="main-content-area">
         <section class="order-form content-container-card">
             <h1>Place Your Order</h1>
-            <p style="text-align: center; margin-bottom: 30px; color: var(--secondary-text-color);">Fill in the form below to order our IMEI unlock service. Please ensure all data is correct.</p>
-            <form id="order-submission-form" method="POST" action="/api/payment/initiate"> 
+            <p style="text-align: center; margin-bottom: 30px; color: var(--secondary-text-color);">Fill in the form below to order our IMEI unlock service. Price per IMEI: Rp 250,000.</p>
+            <!-- Form ini akan mengirim data ke backend untuk submit order -->
+            <form id="order-submission-form" method="POST" action="/api/order/submit"> 
                 <label for="name">Full Name:</label>
                 <input type="text" id="name" name="name" required> 
 
@@ -81,20 +82,8 @@
                     <option value="IMEI History Check">IMEI History Check</option>
                     <option value="Other Service">Other Service</option>
                 </select>
-
-                <label for="payment-method">Payment Method:</label>
-                <select id="payment-method" name="paymentMethod" required> 
-                    <option value="">-- Select Payment Method --</option>
-                    <option value="BRIVA">BRI Virtual Account</option>
-                    <option value="BNIVA">BNI Virtual Account</option>
-                    <option value="MANDIRIVA">Mandiri Virtual Account</option>
-                    <option value="PERMATAVA">Permata Virtual Account</option>
-                    <option value="ALFAMART">Alfamart</option>
-                    <option value="INDOMARET">Indomaret</option>
-                    <option value="QRIS">QRIS</option>
-                </select>
                 
-                <button type="submit" class="btn">Initiate Payment</button>
+                <button type="submit" class="btn">Submit Order</button> <!-- Tombol diubah -->
             </form>
             <div id="order-status" class="status-message" style="margin-top: 20px;"></div>
         </section>

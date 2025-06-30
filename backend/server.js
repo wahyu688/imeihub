@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const fetch = require('node-fetch');
-const crypto = require('crypto');
+const crypto = require('crypto'); // Masih dibutuhkan untuk potensi HMAC lain (misal di masa depan)
 const nodemailer = require('nodemailer');
 
 const app = express();
@@ -14,116 +14,103 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND;
 
-// --- Discord Configurations ---
+// --- Discord Configurations (Tidak lagi digunakan, tapi konstanta tetap ada) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
 const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICATION_CHANNEL_ID;
 const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
 
-// --- Tripay API Credentials ---
-const TRIPAY_API_KEY = process.env.TRIPAY_API_KEY;
-const TRIPAY_PRIVATE_KEY = process.env.TRIPAY_PRIVATE_KEY;
-const TRIPAY_MERCHANT_CODE = process.env.TRIPAY_MERCHANT_CODE;
-const TRIPAY_BASE_URL = process.env.TRIPAY_BASE_URL; 
-const TRIPAY_MODE = process.env.TRIPAY_MODE;
+// --- Tripay API Credentials (DIHAPUS, GANTI DENGAN KOMENTAR) ---
+// const TRIPAY_API_KEY = process.env.TRIPAY_API_KEY;
+// const TRIPAY_PRIVATE_KEY = process.env.TRIPAY_PRIVATE_KEY;
+// const TRIPAY_MERCHANT_CODE = process.env.TRIPAY_MERCHANT_CODE;
+// const TRIPAY_BASE_URL = process.env.TRIPAY_BASE_URL;
+// const TRIPAY_MODE = process.env.TRIPAY_MODE;
 
 // --- Email Configuration (Nodemailer) ---
-const EMAIL_SERVICE = process.env.EMAIL_SERVICE; 
-const EMAIL_HOST = process.env.EMAIL_HOST; // BARU: HOST SMTP eksplisit
-const EMAIL_PORT_SMTP = process.env.EMAIL_PORT_SMTP; // BARU: PORT SMTP eksplisit
-const EMAIL_SECURE = process.env.EMAIL_SECURE === 'true'; // BARU: Gunakan SSL/TLS (biasanya true untuk port 465, false untuk 587)
+const EMAIL_SERVICE = process.env.EMAIL_SERVICE;
+const EMAIL_HOST = process.env.EMAIL_HOST;
+const EMAIL_PORT_SMTP = process.env.EMAIL_PORT_SMTP;
+const EMAIL_SECURE = process.env.EMAIL_SECURE === 'true';
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const ADMIN_EMAIL_RECEIVER = process.env.ADMIN_EMAIL_RECEIVER;
 
-console.log('DEBUG: Nodemailer config: Service:', EMAIL_SERVICE, 'User:', EMAIL_USER, 'Host:', EMAIL_HOST, 'Port:', EMAIL_PORT_SMTP);
 const transporter = nodemailer.createTransport({
-    // Jika EMAIL_HOST dan EMAIL_PORT_SMTP diisi, gunakan itu daripada 'service'
-    host: EMAIL_HOST || null, 
+    host: EMAIL_HOST || null,
     port: EMAIL_PORT_SMTP ? parseInt(EMAIL_PORT_SMTP, 10) : null,
-    secure: EMAIL_SECURE, // true for 465, false for other ports (587)
+    secure: EMAIL_SECURE,
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASSWORD,
     },
-    // Opsi timeout untuk koneksi SMTP
-    connectionTimeout: 10 * 1000, // 10 detik
-    socketTimeout: 30 * 1000 // 30 detik
+    connectionTimeout: 10 * 1000,
+    socketTimeout: 30 * 1000
 });
 
-// Test koneksi Nodemailer saat startup (untuk debugging)
 transporter.verify(function(error, success) {
     if (error) {
         console.error('ERROR: Nodemailer transporter verification failed:', error);
         console.error('ERROR: Please check EMAIL_SERVICE, EMAIL_HOST, EMAIL_PORT_SMTP, EMAIL_SECURE, EMAIL_USER, EMAIL_PASSWORD in Dokploy Environment Variables.');
-        process.exit(1); // Crash jika email tidak bisa terhubung (untuk debugging cepat)
+        process.exit(1);
     } else {
         console.log('DEBUG: Nodemailer transporter is ready to send emails.');
     }
 });
 
 // --- DEFINISI HARGA LAYANAN (DIKELOLA DI BACKEND) ---
+const FIXED_IMEI_PRICE = 250000; // Harga 1 IMEI = Rp 250.000
 const SERVICE_PRICES = {
-    "Temporary IMEI Activation (90 Days)": 100000, // Harga dalam IDR (misal: Rp 100.000)
-    "Permanent Unlock iPhone": 500000,
-    "Permanent Unlock Android": 300000,
-    "IMEI History Check": 50000,
-    "Other Service": 75000,
+    "Temporary IMEI Activation (90 Days)": FIXED_IMEI_PRICE,
+    "Permanent Unlock iPhone": FIXED_IMEI_PRICE, // Set semua ke harga fixed per IMEI
+    "Permanent Unlock Android": FIXED_IMEI_PRICE,
+    "IMEI History Check": FIXED_IMEI_PRICE,
+    "Other Service": FIXED_IMEI_PRICE,
+    // Jika ada layanan yang harganya berbeda, definisikan di sini
 };
 
 // --- Database Configuration (MySQL) ---
-const mysql = require('mysql2/promise'); // Import driver mysql2/promise
+const mysql = require('mysql2/promise');
 
-const pool = mysql.createPool({ // Membuat koneksi pool MySQL
-    host: process.env.DB_HOST, // Host database dari variabel lingkungan
-    user: process.env.DB_USER, // User database dari variabel lingkungan
-    database: process.env.DB_NAME, // Nama database dari variabel lingkungan
-    password: process.env.DB_PASSWORD, // Password database dari variabel lingkungan
-    port: process.env.DB_PORT, // Port database dari variabel lingkungan
-    waitForConnections: true, // Menunggu koneksi jika pool habis
-    connectionLimit: 10, // Batas koneksi di pool
+const pool = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+    waitForConnections: true,
+    connectionLimit: 10,
     queueLimit: 0
 });
 
-// Test koneksi database saat startup
 pool.getConnection()
     .then(connection => {
         console.log('DEBUG: Successfully connected to MySQL database.');
-        connection.release(); // Melepas koneksi setelah tes
+        connection.release();
     })
     .catch(err => {
         console.error('ERROR: Failed to connect to MySQL database:', err);
         console.error('ERROR: Please check your DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME in Dokploy Environment Variables.');
-        process.exit(1); // Keluar dari proses jika koneksi database gagal
+        process.exit(1);
     });
 
 // --- Middleware ---
 const corsOptions = {
-    // URL frontend yang diizinkan untuk mengakses backend ini. Pastikan menggunakan HTTPS.
-    origin: 'https://imeihub.id', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Metode HTTP yang diizinkan
-    credentials: true, // Mengizinkan pengiriman kredensial (seperti token JWT)
-    optionsSuccessStatus: 204 // Status untuk preflight OPTIONS request
+    origin: 'https://imeihub.id', // Pastikan ini sama persis dengan URL frontend Anda
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204
 };
-app.use(cors(corsOptions)); // Menerapkan middleware CORS
-app.set('trust proxy', true); // Penting jika backend di belakang proxy/load balancer (Dokploy/Traefik)
-app.use(bodyParser.json()); // Middleware untuk mem-parse JSON body request
-
-
-// --- Fungsi Helper untuk Generate Tripay Signature ---
-function generateTripaySignature(reference, amount, privateKey) {
-    const data = `${TRIPAY_MERCHANT_CODE}${reference}${amount}`;
-    const hmac = crypto.createHmac('sha256', privateKey); // Membuat HMAC SHA256
-    hmac.update(data); // Mengupdate dengan data
-    return hmac.digest('hex'); // Mengembalikan hasil dalam format hex
-}
+app.use(cors(corsOptions));
+app.set('trust proxy', true);
+app.use(bodyParser.json()); // Body parser untuk JSON requests
 
 // --- Fungsi Helper untuk Mengirim Email ---
 async function sendEmail(to, subject, htmlContent) {
     const mailOptions = {
-        from: EMAIL_USER, // Alamat pengirim email
-        to: to, // Alamat penerima email
-        subject: subject, // Subjek email
-        html: htmlContent, // Konten email dalam format HTML
+        from: EMAIL_USER,
+        to: to,
+        subject: subject,
+        html: htmlContent,
     };
     try {
         await transporter.sendMail(mailOptions);
@@ -135,108 +122,67 @@ async function sendEmail(to, subject, htmlContent) {
 
 // --- Middleware Autentikasi JWT ---
 const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization']; // Mengambil header Authorization
-    const token = authHeader && authHeader.split(' ')[1]; // Mengambil token (Bearer <token>)
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
-    if (token == null) { // Jika token tidak ada
+    if (token == null) {
         return res.status(401).json({ message: 'Unauthorized: No token provided.' });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, user) => { // Memverifikasi token JWT
+    jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) {
             console.error('JWT verification error:', err.message);
             return res.status(403).json({ message: 'Forbidden: Invalid or expired token.' });
         }
-        req.user = user; // Menambahkan data user dari token ke request
-        next(); // Lanjut ke middleware/route selanjutnya
+        req.user = user;
+        next();
     });
 };
 
 // --- Middleware Autentikasi Admin ---
 const authenticateAdmin = (req, res, next) => {
-    authenticateToken(req, res, () => { // Pertama, otentikasi user dengan JWT
-        if (req.user && req.user.isAdmin) { // Kemudian cek apakah user memiliki flag isAdmin
-            next(); // User adalah admin, lanjutkan
+    authenticateToken(req, res, () => {
+        if (req.user && req.user.isAdmin) {
+            next();
         } else {
-            return res.status(403).json({ message: 'Forbidden: Admin access required.' }); // Bukan admin, tolak
+            return res.status(403).json({ message: 'Forbidden: Admin access required.' });
         }
     });
 };
 
-// --- Fungsi untuk Mengirim Notifikasi ke Discord Bot (Tidak lagi digunakan untuk notifikasi utama, tapi tetap ada di code) ---
-async function notifyDiscordBot(type, payload) {
-    // Implementasi ini tidak akan dipanggil jika kita beralih ke email untuk notifikasi utama
-    console.warn("Discord Bot notification function called, but Discord integration is replaced by email for primary notifications.");
-    return { success: true, message: "Discord notification skipped." };
-    /*
-    // Jika Anda ingin mengaktifkan kembali Discord:
-    if (!DISCORD_BOT_UPDATE_API_URL) {
-        console.warn("Discord Bot Update API URL not configured. Notification not sent.");
-        return { success: false, message: "Discord Bot API not configured." };
-    }
-
-    try {
-        const response = await fetch(DISCORD_BOT_UPDATE_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', },
-            body: JSON.stringify({ type, payload })
-        });
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Failed to notify Discord Bot for ${type}:`, response.status, errorText);
-            return { success: false, message: `Failed to notify Discord Bot for ${type}: ${response.status} - ${errorText}` };
-        }
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            console.log(`Discord Bot notified for ${type}:`, data);
-            return { success: true, data: data };
-        } else {
-            console.log(`Discord Bot notified for ${type}: (No JSON response body)`);
-            return { success: true, message: "Notification sent, no JSON response from bot." };
-        }
-    } catch (error) {
-        console.error(`Error notifying Discord Bot for ${type}:`, error);
-        return { success: false, message: error.message || "Internal server error during Discord Bot notification." };
-    }
-    */
-}
+// --- Fungsi untuk Mengirim Notifikasi ke Discord Bot (dihapus karena tidak digunakan) ---
+// async function notifyDiscordBot(type, payload) { ... }
 
 
 // --- API Endpoints ---
 
 // POST /api/admin/create-user - Endpoint Admin untuk Membuat Akun User
-// Endpoint ini dilindungi oleh authenticateAdmin
 app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
-    // ADMIN_API_KEY_BACKEND tidak lagi diperlukan di sini karena sudah dilindungi oleh JWT admin
     console.log('DEBUG: POST /api/admin/create-user received by ADMIN.');
     console.log('DEBUG: Request body:', req.body);
 
     const { username, fullname, email, password } = req.body;
 
-    if (!username || !password) { // Hanya username dan password yang wajib
+    if (!username || !password) {
         console.warn('DEBUG: Missing required fields (username, password) for admin user creation.');
         return res.status(400).json({ message: 'Username and password are required.' });
     }
 
     try {
-        // Cek apakah username sudah ada di database
         const [existingUsers] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
         if (existingUsers.length > 0) {
-            return res.status(409).json({ message: 'Username already taken.' }); // Pesan diubah
+            return res.status(409).json({ message: 'Username already taken.' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUserId = uuidv4(); // Menghasilkan UUID baru
-        
-        // Masukkan user baru ke database, dengan username, fullname, dan email opsional
+        const newUserId = uuidv4();
+
         const [result] = await pool.query(
-            'INSERT INTO users(id, username, name, email, password, is_admin) VALUES(?, ?, ?, ?, ?, ?)', 
-            [newUserId, username, fullname || null, email || null, hashedPassword, false] // is_admin default FALSE
+            'INSERT INTO users(id, username, name, email, password, is_admin) VALUES(?, ?, ?, ?, ?, ?)',
+            [newUserId, username, fullname || null, email || null, hashedPassword, false]
         );
 
         console.log('New user created by admin:', username);
-        // Kirim email notifikasi ke admin tentang user baru
         const adminMailSubject = `New User Account Created: ${username}`;
         const adminMailHtml = `
             <p>A new user account has been created via the admin panel:</p>
@@ -269,47 +215,137 @@ app.post('/api/login', async (req, res) => {
     }
 
     try {
-        // Cari user di database berdasarkan username
         const [users] = await pool.query('SELECT id, username, name, email, password, is_admin FROM users WHERE username = ?', [username]);
         const user = users[0];
 
-        if (!user) { // Jika user tidak ditemukan
+        if (!user) {
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) { // Jika password tidak cocok
+        if (!isPasswordValid) {
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
-        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET, { expiresIn: '1h' }); // Sertakan isAdmin di JWT
+        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET, { expiresIn: '1h' });
         console.log('User logged in:', user.username);
-        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin }); // Kembalikan isAdmin
+        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Error logging in.', error: error.message });
     }
 });
 
-// Middleware untuk memastikan user login untuk akses /order dan /orders/:userId
-app.use('/api/order', authenticateToken); 
+// Middleware to ensure user is logged in for /order access and /orders/:userId
+app.use('/api/order', authenticateToken);
 app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
     if (req.user.userId !== req.params.userId) {
         return res.status(403).json({ message: 'Forbidden: You can only view your own orders.' });
     }
 
     try {
-        // Mengambil orders dari database untuk user tertentu
         const [userOrders] = await pool.query('SELECT order_id AS orderId, service_type AS serviceType, imei, status, payment_method AS paymentMethod, order_date AS orderDate, amount FROM orders WHERE user_id = ? ORDER BY order_date DESC', [req.params.userId]);
-        
+
         console.log(`Fetching orders for user ${req.params.userId}. Found ${userOrders.length} orders.`);
-        res.json({ success: true, orders: userOrders }); // Tambah success:true
+        res.json({ success: true, orders: userOrders });
     }
      catch (error) {
         console.error('Error fetching orders:', error);
         res.status(500).json({ message: 'Error fetching orders.', error: error.message });
     }
 });
+
+// --- Admin Dashboard Endpoints (Dilindungi oleh authenticateAdmin) ---
+app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
+    try {
+        const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran'");
+        const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
+
+        res.json({
+            success: true,
+            totalOrders: totalOrdersResult[0].count,
+            pendingOrders: pendingOrdersResult[0].count,
+            completedOrders: completedOrdersResult[0].count
+        });
+    } catch (error) {
+        console.error('ERROR: Failed to fetch admin stats:', error);
+        res.status(500).json({ message: 'Error fetching dashboard stats.', error: error.message });
+    }
+});
+
+app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
+    try {
+        const [orders] = await pool.query("SELECT id, order_id AS orderId, user_id, customer_name AS customerName, customer_email AS customerEmail, customer_phone AS customerPhone, imei, service_type AS serviceType, payment_method AS paymentMethod, status, order_date AS orderDate, amount FROM orders ORDER BY order_date DESC");
+        res.json({ success: true, orders: orders });
+    } catch (error) {
+        console.error('ERROR: Failed to fetch all orders for admin:', error);
+        res.status(500).json({ message: 'Error fetching all orders.', error: error.message });
+    }
+});
+
+app.get('/api/admin/users', authenticateAdmin, async (req, res) => {
+    try {
+        const [users] = await pool.query("SELECT id, username, name, email, is_admin FROM users ORDER BY created_at DESC");
+        res.json({ success: true, users: users });
+    } catch (error) {
+        console.error('ERROR: Failed to fetch all users for admin:', error);
+        res.status(500).json({ message: 'Error fetching all users.', error: error.message });
+    }
+});
+
+app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) => {
+    const { orderId, newStatus, initiator } = req.body;
+
+    if (!orderId || !newStatus) {
+        return res.status(400).json({ message: 'Order ID and new status are required.' });
+    }
+
+    const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan'];
+    if (!validStatuses.includes(newStatus)) {
+        return res.status(400).json({ message: 'Invalid status provided.' });
+    }
+
+    try {
+        // Ambil email user terkait order untuk notifikasi
+        const [orderRows] = await pool.query('SELECT o.customer_email, o.customer_name, u.username, o.service_type FROM orders o JOIN users u ON o.user_id = u.id WHERE o.order_id = ?', [orderId]);
+        const order = orderRows[0];
+
+        if (!order) {
+            console.warn(`DEBUG: Order ${orderId} not found for status update.`);
+            return res.status(404).json({ success: false, message: `Order ${orderId} not found.` });
+        }
+
+        const [result] = await pool.query('UPDATE orders SET status = ? WHERE order_id = ?', [newStatus, orderId]);
+
+        if (result.affectedRows > 0) {
+            console.log(`Order ${orderId} updated to status: ${newStatus} by Admin.`);
+
+            if (order.customer_email) { // Kirim email hanya jika email pelanggan tersedia
+                const mailSubject = `Order Status Update: ${orderId} - ${newStatus}`;
+                const mailHtml = `
+                    <p>Dear ${order.customerName || order.username},</p>
+                    <p>Your order status for Order ID <b>${orderId}</b> has been updated to <b>${newStatus}</b>.</p>
+                    <p>Service: ${order.service_type}</p>
+                    <p>You can check the full details on your dashboard: <a href="https://imeihub.id/my-orders.html">My Orders</a></p>
+                    <p>Thank you for your patience.</p>
+                `;
+                await sendEmail(order.customer_email, mailSubject, mailHtml);
+            } else {
+                console.warn(`DEBUG: No customer email found for order ${orderId}, skipping email notification.`);
+            }
+
+            res.json({ success: true, message: `Status for order ${orderId} updated to ${newStatus}.` });
+        } else {
+            console.warn(`DEBUG: Order ${orderId} not found for status update (no rows affected).`);
+            res.status(404).json({ success: false, message: `Order ${orderId} not found.` });
+        }
+    } catch (error) {
+        console.error('ERROR: Error updating order status from admin dashboard:', error);
+        res.status(500).json({ success: false, message: 'Error updating order status.', error: error.message });
+    }
+});
+
 
 // POST /api/payment/initiate - Endpoint untuk Inisiasi Pembayaran (Tripay)
 app.post('/api/payment/initiate', authenticateToken, async (req, res) => {
@@ -339,7 +375,6 @@ app.post('/api/payment/initiate', authenticateToken, async (req, res) => {
         );
         console.log(`Order ${orderId} saved to database.`);
 
-        // --- Panggil Tripay API untuk Inisiasi Pembayaran ---
         const tripayRequest = {
             method: 'POST',
             headers: {
@@ -360,9 +395,9 @@ app.post('/api/payment/initiate', authenticateToken, async (req, res) => {
                     price: amountInCents,
                     quantity: 1
                 }],
-                callback_url: `https://back.imeihub.id/api/payment-callback`, // URL callback untuk notifikasi Tripay
-                return_url: `https://imeihub.id/my-orders.html`, // URL redirect setelah pembayaran
-                expired_time: (Date.now() / 1000) + (24 * 60 * 60) // 24 jam dari sekarang
+                callback_url: `https://back.imeihub.id/api/payment-callback`,
+                return_url: `https://imeihub.id/my-orders.html`,
+                expired_time: (Date.now() / 1000) + (24 * 60 * 60)
             })
         };
 
@@ -372,7 +407,6 @@ app.post('/api/payment/initiate', authenticateToken, async (req, res) => {
         if (tripayResponse.ok && tripayData.success) {
             console.log('DEBUG: Tripay transaction created successfully:', tripayData.data);
             
-            // --- Kirim Notifikasi Pesanan Baru ke Email Admin ---
             const adminMailSubject = `New Order Received: ${orderId} (${serviceType})`;
             const adminMailHtml = `
                 <p>New order received from ${name} (${email}):</p>
@@ -391,10 +425,11 @@ app.post('/api/payment/initiate', authenticateToken, async (req, res) => {
             await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
             console.log('DEBUG: Email sent for new order notification.');
 
+
             res.status(200).json({
                 success: true,
                 message: 'Payment initiated successfully.',
-                orderId: orderId, // Sertakan orderId untuk frontend
+                orderId: orderId,
                 reference: tripayData.data.reference,
                 amount: tripayData.data.amount,
                 checkout_url: tripayData.data.checkout_url,
@@ -425,6 +460,10 @@ app.post('/api/payment-callback', async (req, res) => {
     const tripaySignature = req.headers['x-callback-signature'];
     const tripayEvent = req.headers['x-callback-event'];
     
+    // Penting: Tripay mengirim raw JSON body untuk HMAC. Gunakan body-parser.raw() khusus untuk endpoint ini.
+    // Jika tidak, JSON.stringify(req.body) mungkin tidak menghasilkan string yang sama dengan raw body.
+    // Untuk tujuan demo ini, kita akan asumsikan body-parser.json sudah menangani dan body adalah objek.
+    // Jika ada masalah signature, Anda mungkin perlu mengubah bodyParser untuk endpoint ini.
     const calculatedSignature = crypto.createHmac('sha256', TRIPAY_PRIVATE_KEY)
                                       .update(JSON.stringify(jsonBody)) 
                                       .digest('hex');

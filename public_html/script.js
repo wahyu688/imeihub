@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- PENTING: GANTI DENGAN URL API BACKEND ANDA SAAT DEPLOY! ---
-    const API_BASE_URL = 'https://back.imeihub.id'; 
+    const API_BASE_URL = 'https://back.imeihub.id';
 
     // --- ADMIN API KEY (Ini akan digunakan oleh admin_create_user.html) ---
     const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI DENGAN KUNCI RAHASIA ANDA
@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const currentPage = getCurrentPageName();
 
-    // Proteksi halaman Order
     if (currentPage === 'order.html') {
         const authToken = localStorage.getItem('authToken');
         if (!authToken) {
@@ -22,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Proteksi halaman My Orders
     if (currentPage === 'my-orders.html') {
         const authToken = localStorage.getItem('authToken');
         const userId = localStorage.getItem('userId');
@@ -33,12 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Proteksi halaman Admin Dashboard dan Admin Create User
-    if (currentPage.startsWith('admin_')) { // Semua halaman yang dimulai dengan 'admin_'
+    if (currentPage.startsWith('admin_')) {
         const authToken = localStorage.getItem('authToken');
-        const isAdmin = localStorage.getItem('isAdmin') === 'true'; // Cek flag isAdmin
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
         if (!authToken || !isAdmin) {
-            alert('Akses Ditolak: Anda harus login sebagai Admin.'); // Notifikasi sederhana
+            alert('Akses Ditolak: Anda harus login sebagai Admin.');
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
             return;
@@ -52,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navUserGreeting = document.getElementById('nav-user-greeting');
     const usernameDisplay = document.getElementById('username-display');
     const logoutBtnNavbar = document.getElementById('logout-btn-navbar');
-    const navAdminDashboard = document.getElementById('nav-admin-dashboard'); // Link Admin Dashboard Desktop
+    const navAdminDashboard = document.getElementById('nav-admin-dashboard');
     
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
@@ -61,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // Link Admin Dashboard Mobile
 
 
     const authTokenOnLoad = localStorage.getItem('authToken');
@@ -77,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (usernameDisplay) usernameDisplay.textContent = userNameOnLoad;
             }
             if (logoutBtnNavbar) logoutBtnNavbar.style.display = 'block';
-            if (navAdminDashboard) navAdminDashboard.style.display = isAdminOnLoad ? 'block' : 'none'; // Tampilkan hanya jika admin
+            if (navAdminDashboard) navAdminDashboard.style.display = isAdminOnLoad ? 'block' : 'none';
 
             // Mobile Overlay Navbar
             if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = 'none';
@@ -86,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = userNameOnLoad;
             }
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
-            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = isAdminOnLoad ? 'list-item' : 'none'; // Tampilkan hanya jika admin
+            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = isAdminOnLoad ? 'list-item' : 'none';
 
         } else {
             // Desktop Navbar
@@ -110,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userId');
             localStorage.removeItem('userName');
-            localStorage.removeItem('isAdmin'); // Hapus juga isAdmin
+            localStorage.removeItem('isAdmin');
             updateNavbarLoginStatus(); 
             window.location.href = 'login.html';
         });
@@ -121,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userId');
             localStorage.removeItem('userName');
-            localStorage.removeItem('isAdmin'); // Hapus juga isAdmin
+            localStorage.removeItem('isAdmin');
             updateNavbarLoginStatus();
             mobileNavOverlay.classList.remove('open');
             window.location.href = 'login.html';
@@ -150,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Page-specific JavaScript Logic ---
 
-    // Order and Payment Submission (Only on order.html)
+    // Order Submission (Only on order.html)
     const orderForm = document.getElementById('order-submission-form');
     console.log('DEBUG: orderForm element found:', orderForm);
     
@@ -183,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             console.log('DEBUG: Default form submission prevented.');
 
-            orderStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Memproses pesanan Anda dan menginisiasi pembayaran...</p>`;
+            orderStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Submitting your order...</p>`;
             orderStatusDiv.classList.remove('error');
             orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
             orderStatusDiv.style.borderColor = 'var(--accent-color)';
@@ -194,18 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let [key, value] of formData.entries()) {
                 orderData[key] = value;
             }
-            let amount = 0;
-            switch(orderData.serviceType) {
-                case 'Temporary IMEI Activation (90 Days)': amount = 100000; break;
-                case 'Permanent Unlock iPhone': amount = 500000; break;
-                case 'Permanent Unlock Android': amount = 300000; break;
-                case 'IMEI History Check': amount = 50000; break;
-                case 'Other Service': amount = 75000; break;
-                default: amount = 10000;
-            }
-            orderData.amount = amount;
+            // Harga akan ditentukan oleh backend (fixed Rp 250.000 per IMEI)
+            // orderData.amount tidak lagi dikirim dari frontend
 
-            console.log('DEBUG: Order data collected for payment initiation:', orderData);
+            console.log('DEBUG: Order data collected for submission:', orderData);
 
             const userId = localStorage.getItem('userId');
             if (userId) {
@@ -221,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const targetApiUrl = `${API_BASE_URL}/api/payment/initiate`;
-                console.log('DEBUG: Attempting to fetch payment initiation API from:', targetApiUrl);
+                const targetApiUrl = `${API_BASE_URL}/api/order/submit`; // Endpoint baru untuk submit order
+                console.log('DEBUG: Attempting to fetch order submission API from:', targetApiUrl);
                 
                 const response = await fetch(targetApiUrl, {
                     method: 'POST',
@@ -232,25 +220,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify(orderData)
                 });
-                console.log('DEBUG: Payment initiation API response received. Status:', response.status);
+                console.log('DEBUG: Order submission API response received. Status:', response.status);
 
                 const contentType = response.headers.get('content-type');
                 let result = {};
                 if (contentType && contentType.includes('application/json')) {
                     result = await response.json();
                 } else {
-                    console.warn('DEBUG: Payment initiation API did not return JSON. Status:', response.status, 'Content-Type:', contentType);
+                    console.warn('DEBUG: Order submission API did not return JSON. Status:', response.status, 'Content-Type:', contentType);
                     result.message = await response.text() || `Response status: ${response.status}`;
                 }
-                console.log('DEBUG: Payment initiation API response parsed (or text):', result);
+                console.log('DEBUG: Order submission API response parsed (or text):', result);
 
                 if (response.ok && result.success) {
-                    const selectedPaymentMethod = orderData.paymentMethod;
-
                     orderStatusDiv.innerHTML = `
-                        <p style="color: green;">Inisiasi pembayaran berhasil! Tunggu pengalihan...</p>
-                        <p style="color: var(--secondary-text-color);">Nomor referensi: <strong>${result.reference}</strong></p>
-                        <p style="color: var(--secondary-text-color);">Metode: <strong>${orderData.paymentMethod}</strong></p>
+                        <p style="color: green;">Pesanan Anda berhasil dibuat! Nomor Pesanan: <strong>${result.orderId}</strong></p>
+                        <p style="color: var(--secondary-text-color);">Total Harga: <strong>Rp ${result.amount.toLocaleString('id-ID')}</strong> (per IMEI)</p>
+                        <p style="color: var(--secondary-text-color);">Detail pesanan telah kami terima.</p>
+                        <p style="font-size: 0.9em; margin-top: 15px; color: var(--secondary-text-color);">Kami akan segera memproses pesanan Anda.</p>
+                        <p><a href="my-orders.html" class="cta-button" style="margin-top: 15px;">Lihat Status Pesanan Saya</a></p>
                     `;
                     orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
                     orderStatusDiv.style.borderColor = 'var(--accent-color)';
@@ -258,45 +246,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     orderStatusDiv.classList.remove('error');
                     
                     orderForm.reset();
-
-                    // --- Penanganan Respons Tripay ---
-                    if (result.checkout_url) {
-                        console.log('DEBUG: Redirecting to Tripay checkout URL:', result.checkout_url);
-                        window.location.href = result.checkout_url;
-                    } else if (result.qr_string) {
-                        orderStatusDiv.innerHTML += `
-                            <p style="font-size: 1.1em; margin-top: 20px; font-weight: bold; color: var(--accent-color);">Scan QRIS ini:</p>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(result.qr_string)}" alt="QRIS Code" style="margin: 10px auto; display: block;">
-                            <p style="color: var(--secondary-text-color);">Instruksi pembayaran: ${result.instructions || 'Lihat aplikasi pembayaran Anda.'}</p>
-                            <p><a href="my-orders.html" class="cta-button" style="margin-top: 15px;">Lihat Status Pesanan Saya</a></p>
-                        `;
-                        orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                        orderStatusDiv.style.borderColor = 'var(--accent-color)';
-                        orderStatusDiv.style.color = 'var(--text-color)';
-                    } else if (result.va_number) {
-                        orderStatusDiv.innerHTML += `
-                            <p style="font-size: 1.1em; margin-top: 20px; font-weight: bold; color: var(--accent-color);">Detail Virtual Account:</p>
-                            <p style="color: var(--secondary-text-color);">Bank: <strong>${result.va_bank}</strong></p>
-                            <p style="color: var(--secondary-text-color);">Nomor VA: <strong>${result.va_number}</strong></p>
-                            <p style="color: var(--secondary-text-color);">Total: <strong>Rp ${result.amount}</strong></p>
-                            <p style="color: var(--secondary-text-color);">Instruksi pembayaran: ${result.instructions || 'Cek aplikasi pembayaran Anda.'}</p>
-                            <p><a href="my-orders.html" class="cta-button" style="margin-top: 15px;">Lihat Status Pesanan Saya</a></p>
-                        `;
-                        orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                        orderStatusDiv.style.borderColor = 'var(--accent-color)';
-                        orderStatusDiv.style.color = 'var(--text-color)';
-                    } else {
-                        orderStatusDiv.innerHTML += `
-                            <p style="color: var(--secondary-text-color);">Silakan tunggu konfirmasi pembayaran.</p>
-                            <p><a href="my-orders.html" class="cta-button" style="margin-top: 15px;">Lihat Status Pesanan Saya</a></p>
-                        `;
-                        orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                        orderStatusDiv.style.borderColor = 'var(--accent-color)';
-                        orderStatusDiv.style.color = 'var(--text-color)';
-                    }
                 } else {
-                    const errorMessage = result.message || `Gagal menginisiasi pembayaran. Status: ${response.status}.`;
-                    console.error('DEBUG: Payment initiation API responded with error:', errorMessage);
+                    const errorMessage = result.message || `Gagal membuat pesanan. Status: ${response.status}.`;
+                    console.error('DEBUG: Order submission API responded with error:', errorMessage);
                     orderStatusDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${errorMessage}</p>`;
                     orderStatusDiv.classList.add('error');
                     orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
@@ -304,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     orderStatusDiv.style.color = 'red';
                 }
             } catch (error) {
-                console.error('DEBUG: Error initiating payment (fetch failed/network issue):', error);
+                console.error('DEBUG: Error submitting order (fetch failed/network issue):', error);
                 orderStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
                 orderStatusDiv.classList.add('error');
                 orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
@@ -343,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('userName', data.userName);
-                    localStorage.setItem('isAdmin', data.isAdmin); // Simpan isAdmin flag
+                    localStorage.setItem('isAdmin', data.isAdmin);
                     loginStatusDiv.innerHTML = '<p style="color: green;">Login berhasil! Mengarahkan...</p>';
                     loginStatusDiv.classList.remove('error');
                     loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
@@ -444,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashboardLink = document.getElementById('dashboard-link');
     const manageOrdersLink = document.getElementById('manage-orders-link');
     const manageUsersLink = document.getElementById('manage-users-link');
-    const createUserLink = document.getElementById('create-user-link'); // Create User link in sidebar
+    const createUserLink = document.getElementById('create-user-link');
 
     if (currentPage === 'admin_dashboard.html') {
         function showSection(sectionId) {
@@ -452,7 +404,6 @@ document.addEventListener('DOMContentLoaded', () => {
             manageOrdersContent.style.display = 'none';
             manageUsersContent.style.display = 'none';
 
-            // Remove active class from all sidebar links
             document.querySelectorAll('.admin-sidebar ul li a').forEach(link => {
                 link.classList.remove('active');
             });
@@ -475,13 +426,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Event Listeners for Sidebar Navigation
         if (dashboardLink) dashboardLink.addEventListener('click', (e) => { e.preventDefault(); showSection('dashboard-overview'); });
         if (manageOrdersLink) manageOrdersLink.addEventListener('click', (e) => { e.preventDefault(); showSection('manage-orders'); });
         if (manageUsersLink) manageUsersLink.addEventListener('click', (e) => { e.preventDefault(); showSection('manage-users'); });
-        // Create User link redirects to admin_create_user.html, no need for showSection
 
-        // --- Fetch Admin Dashboard Stats ---
         async function fetchDashboardStats() {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/admin/stats`, {
@@ -502,7 +450,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- Fetch Admin Orders ---
         async function fetchAdminOrders() {
             const adminOrdersTableBody = document.getElementById('admin-orders-table-body');
             adminOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading orders...</td></tr>';
@@ -540,14 +487,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             adminOrdersTableBody.innerHTML += row;
                         });
-                        // Add event listeners for status select dropdowns
                         document.querySelectorAll('.admin-status-select').forEach(select => {
                             select.addEventListener('change', async (e) => {
                                 const orderId = e.target.dataset.orderId;
                                 const newStatus = e.target.value;
                                 if (newStatus && orderId) {
                                     await updateOrderStatusAdmin(orderId, newStatus);
-                                    e.target.value = ''; // Reset dropdown
+                                    e.target.value = '';
                                 }
                             });
                         });
@@ -564,7 +510,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- Fetch Admin Users ---
         async function fetchAdminUsers() {
             const adminUsersTableBody = document.getElementById('admin-users-table-body');
             adminUsersTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>';
@@ -587,7 +532,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <button class="status-button status-${user.is_admin ? 'completed' : 'unknown'}" data-user-id="${user.id}" data-is-admin="${user.is_admin}">
                                             ${user.is_admin ? 'Admin' : 'User'}
                                         </button>
-                                        <!-- Opsi untuk mengubah peran admin atau menghapus user bisa ditambahkan di sini -->
                                     </td>
                                 </tr>
                             `;
@@ -606,24 +550,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- Update Order Status via Admin Dashboard ---
         async function updateOrderStatusAdmin(orderId, newStatus) {
             if (!confirm(`Are you sure you want to update order ${orderId} to ${newStatus}?`)) {
-                return; // Batalkan jika admin tidak yakin
+                return;
             }
             try {
                 const response = await fetch(`${API_BASE_URL}/api/admin/update-order-status`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Authenticate admin
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                     },
                     body: JSON.stringify({ orderId, newStatus, initiator: localStorage.getItem('userName') || 'Admin' })
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
                     alert(`Order ${orderId} updated to ${newStatus} successfully!`);
-                    fetchAdminOrders(); // Reload orders table
+                    fetchAdminOrders();
                 } else {
                     alert(`Failed to update order ${orderId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update order status:', data.message || 'Error');
@@ -634,8 +577,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-
-        // Initialize dashboard view
         showSection('dashboard-overview');
     }
     // --- End Admin Dashboard Logic ---
@@ -661,17 +602,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.orders && data.orders.length > 0) {
                         orderListDiv.innerHTML = '';
                         data.orders.forEach(order => {
-                            orderListDiv.innerHTML += `
+                            const row = `
                                 <div class="service-card content-container-card" style="text-align: left;">
                                     <h3>Order ID: ${order.orderId}</h3>
                                     <p style="color: var(--secondary-text-color);"><strong>Layanan:</strong> ${order.serviceType}</p>
                                     <p style="color: var(--secondary-text-color);"><strong>IMEI:</strong> ${order.imei}</p>
                                     <p style="color: var(--secondary-text-color);"><strong>Status:</strong> <span style="font-weight: bold; color: ${order.status === 'Selesai' ? 'green' : order.status === 'Diproses' ? 'orange' : 'grey'};">${order.status}</span></p>
-                                    <p style="color: var(--secondary-text-color);"><strong>Metode Pembayaran:</strong> ${order.paymentMethod}</p>
+                                    <p style="color: var(--secondary-text-color);"><strong>Metode Pembayaran:</strong> ${order.paymentMethod || 'N/A'}</p> <!-- Metode pembayaran bisa null jika tidak ada -->
                                     <p style="font-size: 0.8em; color: var(--secondary-text-color);">Tanggal Pesan: ${new Date(order.orderDate).toLocaleDateString()} ${new Date(order.orderDate).toLocaleTimeString()}</p>
-                                    <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p> <!-- Tampilkan jumlah pembayaran -->
+                                    <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p>
                                 </div>
                             `;
+                            orderListDiv.innerHTML += row;
                         });
                     } else {
                         orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Anda belum memiliki pesanan.</p>';
