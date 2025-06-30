@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- PENTING: GANTI DENGAN URL API BACKEND ANDA SAAT DEPLOY! ---
-    const API_BASE_URL = 'https://back.imeihub.id';
+    const API_BASE_URL = 'https://back.imeihub.id'; 
 
     // --- ADMIN API KEY (Ini akan digunakan oleh admin_create_user.html) ---
     const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI DENGAN KUNCI RAHASIA ANDA
@@ -59,38 +59,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // Pastikan ini dideklarasikan
 
 
-    // Variabel ini sekarang akan dibaca di dalam fungsi updateNavbarLoginStatus()
-    // const authTokenOnLoad = localStorage.getItem('authToken');
-    // const userNameOnLoad = localStorage.getItem('userName');
-    // const isAdminOnLoad = localStorage.getItem('isAdmin') === 'true';
+    const authTokenOnLoad = localStorage.getItem('authToken');
+    const userNameOnLoad = localStorage.getItem('userName');
+    const isAdminOnLoad = localStorage.getItem('isAdmin') === 'true';
 
     function updateNavbarLoginStatus() {
-        // BACA STATUS TERBARU DARI LOCALSTORAGE SETIAP KALI FUNGSI INI DIPANGGIL
-        const currentAuthToken = localStorage.getItem('authToken');
-        const currentUserName = localStorage.getItem('userName');
-        const currentIsAdmin = localStorage.getItem('isAdmin') === 'true';
-
-        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!currentAuthToken}, Current UserName: ${currentUserName}, Current IsAdmin: ${currentIsAdmin}`);
-        if (currentAuthToken && currentUserName) {
+        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!authTokenOnLoad}, Current UserName: ${userNameOnLoad}, Current IsAdmin: ${isAdminOnLoad}`);
+        if (authTokenOnLoad && userNameOnLoad) {
             // Desktop Navbar
             if (navLoginRegister) navLoginRegister.style.display = 'none';
             if (navUserGreeting) {
                 navUserGreeting.style.display = 'flex';
-                if (usernameDisplay) usernameDisplay.textContent = currentUserName;
+                if (usernameDisplay) usernameDisplay.textContent = userNameOnLoad;
             }
             if (logoutBtnNavbar) logoutBtnNavbar.style.display = 'block';
-            if (navAdminDashboard) navAdminDashboard.style.display = currentIsAdmin ? 'block' : 'none';
+            if (navAdminDashboard) navAdminDashboard.style.display = isAdminOnLoad ? 'block' : 'none';
 
             // Mobile Overlay Navbar
             if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = 'none';
             if (mobileNavUserGreeting) {
                 mobileNavUserGreeting.style.display = 'list-item';
-                if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = currentUserName;
+                if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = userNameOnLoad;
             }
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
-            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = currentIsAdmin ? 'list-item' : 'none';
+            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = isAdminOnLoad ? 'list-item' : 'none';
 
         } else {
             // Desktop Navbar
@@ -106,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = 'none';
         }
     }
-    updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
+    updateNavbarLoginStatus();
 
     // Event Listener untuk Logout Button (Global)
     if (logoutBtnNavbar) {
@@ -115,10 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userId');
             localStorage.removeItem('userName');
-            localStorage.removeItem('isAdmin'); // Hapus juga isAdmin
-            console.log('DEBUG_FRONTEND: LocalStorage cleared. AuthToken:', localStorage.getItem('authToken'));
-            updateNavbarLoginStatus(); // Panggil lagi untuk segera update UI
-            window.location.href = 'login.html'; // Redirect
+            localStorage.removeItem('isAdmin');
+            updateNavbarLoginStatus(); 
+            window.location.href = 'login.html';
         });
     }
     // Event Listener untuk Logout Button Mobile
@@ -130,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('userName');
             localStorage.removeItem('isAdmin');
             updateNavbarLoginStatus();
-            mobileNavOverlay.classList.remove('open'); // Tutup overlay
+            mobileNavOverlay.classList.remove('open');
             window.location.href = 'login.html';
         });
     }
@@ -201,8 +195,16 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let [key, value] of formData.entries()) {
                 orderData[key] = value;
             }
-            // Harga akan ditentukan oleh backend (fixed Rp 250.000 per IMEI)
-            // orderData.amount tidak lagi dikirim dari frontend
+            let amount = 0;
+            switch(orderData.serviceType) {
+                case 'Temporary IMEI Activation (90 Days)': amount = 100000; break;
+                case 'Permanent Unlock iPhone': amount = 500000; break;
+                case 'Permanent Unlock Android': amount = 300000; break;
+                case 'IMEI History Check': amount = 50000; break;
+                case 'Other Service': amount = 75000; break;
+                default: amount = 10000;
+            }
+            orderData.amount = amount;
 
             console.log('DEBUG: Order data collected for submission:', orderData);
 
@@ -306,8 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('userName', data.userName);
-                    localStorage.setItem('isAdmin', data.isAdmin);
-                    console.log(`DEBUG_FRONTEND: Login successful. IsAdmin: ${data.isAdmin}`);
+                    localStorage.setItem('isAdmin', data.isAdmin); // Simpan isAdmin flag
+                    console.log(`DEBUG_FRONTEND: Login successful. IsAdmin: ${data.isAdmin}`); // DEBUG LOG
                     loginStatusDiv.innerHTML = '<p style="color: green;">Login berhasil! Mengarahkan...</p>';
                     loginStatusDiv.classList.remove('error');
                     loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
