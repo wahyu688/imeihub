@@ -243,7 +243,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
     }
 
     try {
-        const [userOrders] = await pool.query('SELECT order_id AS orderId, service_type AS serviceType, imei, status, payment_method AS paymentMethod, order_date AS orderDate, amount FROM orders WHERE user_id = ? ORDER BY order_date DESC', [req.params.userId]);
+        const [userOrders] = await pool.query('SELECT order_id AS orderId, service_type AS serviceType, imei, status, order_date AS orderDate, amount FROM orders WHERE user_id = ? ORDER BY order_date DESC', [req.params.userId]);
 
         console.log(`Fetching orders for user ${req.params.userId}. Found ${userOrders.length} orders.`);
         res.json({ success: true, orders: userOrders });
