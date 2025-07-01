@@ -1,18 +1,18 @@
-require('dotenv').config(); // Memuat variabel lingkungan dari file .env
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser'); // Middleware untuk mem-parse body request
-const cors = require('cors'); // Middleware untuk Cross-Origin Resource Sharing
-const jwt = require('jsonwebtoken'); // Library untuk JSON Web Tokens
-const bcrypt = require('bcryptjs'); // Library untuk hashing password
-const { v4: uuidv4 } = require('uuid'); // Library untuk menghasilkan UUID
-const fetch = require('node-fetch'); // Untuk melakukan HTTP requests
-const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi (HMAC SHA256)
-const nodemailer = require('nodemailer'); // Library untuk mengirim email
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
+const fetch = require('node-fetch');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Port server dari variabel lingkungan atau default 3000
-const JWT_SECRET = process.env.JWT_SECRET; // Secret key untuk JWT dari variabel lingkungan
-const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
+const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND;
 
 // --- Discord Configurations (Konstanta tetap ada, tapi tidak digunakan) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
@@ -92,9 +92,9 @@ const corsOptions = {
     credentials: true,
     optionsSuccessStatus: 204
 };
-app.use(cors(corsOptions)); // Menerapkan middleware CORS
-app.set('trust proxy', true); // Penting jika backend di belakang proxy/load balancer (Dokploy/Traefik)
-app.use(bodyParser.json()); // Middleware untuk mem-parse JSON body request
+app.use(cors(corsOptions));
+app.set('trust proxy', true);
+app.use(bodyParser.json());
 
 // --- Fungsi Helper untuk Mengirim Email ---
 async function sendEmail(to, subject, htmlContent) {
@@ -149,7 +149,6 @@ const authenticateAdmin = (req, res, next) => {
 // --- API Endpoints ---
 
 // POST /api/admin/create-user - Endpoint Admin untuk Membuat Akun User
-// Endpoint ini dilindungi oleh authenticateAdmin
 app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
     console.log('DEBUG: POST /api/admin/create-user received by ADMIN.');
     console.log('DEBUG: Request body:', req.body);
@@ -178,7 +177,6 @@ app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
         );
 
         console.log('New user created by admin:', username);
-        // Kirim email notifikasi ke admin tentang user baru
         const adminMailSubject = `New User Account Created: ${username}`;
         const adminMailHtml = `
             <p>A new user account has been created via the admin panel:</p>
@@ -211,7 +209,6 @@ app.post('/api/login', async (req, res) => {
     }
 
     try {
-        // Cari user di database berdasarkan username
         const [users] = await pool.query('SELECT id, username, name, email, password, is_admin FROM users WHERE username = ?', [username]);
         const user = users[0];
 
@@ -224,7 +221,7 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
-        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET); // Hapus expiresIn
+        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET);
         console.log('User logged in:', user.username);
         res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
     } catch (error) {
@@ -256,7 +253,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
-        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok'"); // Hitung status baru
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok'");
         const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
 
         res.json({
@@ -273,15 +270,14 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
 
 app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
     const sortBy = req.query.sortBy || 'order_date DESC';
-    const searchName = req.query.searchName || ''; // Ambil parameter searchName
+    const searchName = req.query.searchName || '';
 
-    console.log(`DEBUG_BACKEND: Fetching admin orders. SortBy: ${sortBy}, SearchName: ${searchName}`); // DEBUG LOG
+    console.log(`DEBUG_BACKEND: Fetching admin orders. SortBy: ${sortBy}, SearchName: ${searchName}`);
 
     const validSortColumns = ['order_date', 'order_id', 'customer_name', 'status', 'amount'];
     const [column, order] = sortBy.split(' ');
     if (!validSortColumns.includes(column) || !['ASC', 'DESC'].includes(order)) {
         console.warn(`DEBUG_BACKEND: Invalid sortBy parameter received: ${sortBy}. Using default.`);
-        // Fallback ke default jika parameter tidak valid
         const defaultOrders = await pool.query(`
             SELECT 
                 o.id, 
