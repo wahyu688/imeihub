@@ -213,18 +213,21 @@ app.post('/api/login', async (req, res) => {
         const [users] = await pool.query('SELECT id, username, name, email, password, is_admin FROM users WHERE username = ?', [username]);
         const user = users[0];
 
-        if (!user) { // Jika user tidak ditemukan
+        if (!user) {
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) { // Jika password tidak cocok
+        if (!isPasswordValid) {
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
         const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET);
         console.log('User logged in:', user.username);
-        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
+        // Pastikan userName dikembalikan dengan benar.
+        // user.name adalah nama lengkap (opsional), user.username adalah username login.
+        // Gunakan user.username jika user.name kosong.
+        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin }); 
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Error logging in.', error: error.message });
