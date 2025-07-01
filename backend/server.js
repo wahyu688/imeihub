@@ -1,18 +1,18 @@
-require('dotenv').config();
+require('dotenv').config(); // Memuat variabel lingkungan dari file .env
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
-const fetch = require('node-fetch');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
+const bodyParser = require('body-parser'); // Middleware untuk mem-parse body request
+const cors = require('cors'); // Middleware untuk Cross-Origin Resource Sharing
+const jwt = require('jsonwebtoken'); // Library untuk JSON Web Tokens
+const bcrypt = require('bcryptjs'); // Library untuk hashing password
+const { v4: uuidv4 } = require('uuid'); // Library untuk menghasilkan UUID
+const fetch = require('node-fetch'); // Untuk melakukan HTTP requests
+const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi (HMAC SHA256)
+const nodemailer = require('nodemailer'); // Library untuk mengirim email
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET;
-const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND;
+const PORT = process.env.PORT || 3000; // Port server dari variabel lingkungan atau default 3000
+const JWT_SECRET = process.env.JWT_SECRET; // Secret key untuk JWT dari variabel lingkungan
+const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin
 
 // --- Discord Configurations (Konstanta tetap ada, tapi tidak digunakan) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
@@ -92,17 +92,17 @@ const corsOptions = {
     credentials: true,
     optionsSuccessStatus: 204
 };
-app.use(cors(corsOptions));
-app.set('trust proxy', true);
-app.use(bodyParser.json());
+app.use(cors(corsOptions)); // Menerapkan middleware CORS
+app.set('trust proxy', true); // Penting jika backend di belakang proxy/load balancer (Dokploy/Traefik)
+app.use(bodyParser.json()); // Middleware untuk mem-parse JSON body request
 
 // --- Fungsi Helper untuk Mengirim Email ---
 async function sendEmail(to, subject, htmlContent) {
     const mailOptions = {
-        from: EMAIL_USER,
-        to: to,
-        subject: subject,
-        html: htmlContent,
+        from: EMAIL_USER, // Alamat pengirim email
+        to: to, // Alamat penerima email
+        subject: subject, // Subjek email
+        html: htmlContent, // Konten email dalam format HTML
     };
     try {
         await transporter.sendMail(mailOptions);
@@ -114,30 +114,30 @@ async function sendEmail(to, subject, htmlContent) {
 
 // --- Middleware Autentikasi JWT ---
 const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const authHeader = req.headers['authorization']; // Mengambil header Authorization
+    const token = authHeader && authHeader.split(' ')[1]; // Mengambil token (Bearer <token>)
 
-    if (token == null) {
+    if (token == null) { // Jika token tidak ada
         return res.status(401).json({ message: 'Unauthorized: No token provided.' });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT_SECRET, (err, user) => { // Memverifikasi token JWT
         if (err) {
             console.error('JWT verification error:', err.message);
             return res.status(403).json({ message: 'Forbidden: Invalid or expired token.' });
         }
-        req.user = user;
-        next();
+        req.user = user; // Menambahkan data user dari token ke request
+        next(); // Lanjut ke middleware/route selanjutnya
     });
 };
 
 // --- Middleware Autentikasi Admin ---
 const authenticateAdmin = (req, res, next) => {
     authenticateToken(req, res, () => {
-        if (req.user && req.user.isAdmin) {
-            next();
+        if (req.user && req.user.isAdmin) { // Cek apakah user memiliki flag isAdmin
+            next(); // User adalah admin, lanjutkan
         } else {
-            return res.status(403).json({ message: 'Forbidden: Admin access required.' });
+            return res.status(403).json({ message: 'Forbidden: Admin access required.' }); // Bukan admin, tolak
         }
     });
 };
@@ -149,32 +149,36 @@ const authenticateAdmin = (req, res, next) => {
 // --- API Endpoints ---
 
 // POST /api/admin/create-user - Endpoint Admin untuk Membuat Akun User
+// Endpoint ini dilindungi oleh authenticateAdmin
 app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
     console.log('DEBUG: POST /api/admin/create-user received by ADMIN.');
     console.log('DEBUG: Request body:', req.body);
 
     const { username, fullname, email, password } = req.body;
 
-    if (!username || !password) {
+    if (!username || !password) { // Hanya username dan password yang wajib
         console.warn('DEBUG: Missing required fields (username, password) for admin user creation.');
         return res.status(400).json({ message: 'Username and password are required.' });
     }
 
     try {
+        // Cek apakah username sudah ada di database
         const [existingUsers] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
         if (existingUsers.length > 0) {
-            return res.status(409).json({ message: 'Username already taken.' });
+            return res.status(409).json({ message: 'Username already taken.' }); // Pesan diubah
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUserId = uuidv4();
-
+        const newUserId = uuidv4(); // Menghasilkan UUID baru
+        
+        // Masukkan user baru ke database, dengan username, fullname, dan email opsional
         const [result] = await pool.query(
             'INSERT INTO users(id, username, name, email, password, is_admin) VALUES(?, ?, ?, ?, ?, ?)',
-            [newUserId, username, fullname || null, email || null, hashedPassword, false]
+            [newUserId, username, fullname || null, email || null, hashedPassword, false] // is_admin default FALSE
         );
 
         console.log('New user created by admin:', username);
+        // Kirim email notifikasi ke admin tentang user baru
         const adminMailSubject = `New User Account Created: ${username}`;
         const adminMailHtml = `
             <p>A new user account has been created via the admin panel:</p>
@@ -207,19 +211,20 @@ app.post('/api/login', async (req, res) => {
     }
 
     try {
+        // Cari user di database berdasarkan username
         const [users] = await pool.query('SELECT id, username, name, email, password, is_admin FROM users WHERE username = ?', [username]);
         const user = users[0];
 
-        if (!user) {
+        if (!user) { // Jika user tidak ditemukan
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
+        if (!isPasswordValid) { // Jika password tidak cocok
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
-        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET);
+        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET); // Hapus expiresIn
         console.log('User logged in:', user.username);
         res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
     } catch (error) {
@@ -228,7 +233,7 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Middleware to ensure user is logged in for /order access and /orders/:userId
+// Middleware untuk memastikan user login untuk akses /order dan /orders/:userId
 app.use('/api/order', authenticateToken); 
 app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
     if (req.user.userId !== req.params.userId) {
@@ -251,7 +256,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
-        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok'");
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok'"); // Hitung status baru
         const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
 
         res.json({
@@ -500,4 +505,5 @@ app.post('/api/discord-webhook-commands', async (req, res) => {
 // --- Start Server ---
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Backend server running on http://0.0.0.0:${PORT}`);
+
 });

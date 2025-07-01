@@ -844,7 +844,7 @@ footer {
     transition: background-color 0.2s ease;
     min-width: 90px; /* Lebar minimum agar konsisten */
 }
-.status-menunggu.pembayaran { /* Menunggu Pembayaran */
+.status-menunggu-pembayaran { /* Menunggu Pembayaran */
     background-color: var(--status-pending-bg);
     color: var(--status-pending-text);
 }
@@ -863,6 +863,10 @@ footer {
 .status-unknown { /* Default jika status tidak dikenal */
     background-color: var(--status-unknown-bg);
     color: var(--status-unknown-text);
+}
+.status-menunggu-proses-besok { /* Menunggu Proses Besok */
+    background-color: var(--status-menunggu-proses-besok-bg);
+    color: var(--status-menunggu-proses-besok-text);
 }
 
 
@@ -891,9 +895,17 @@ footer {
     .dashboard-stats {
         grid-template-columns: 1fr;
     }
-    .sort-controls {
+    .table-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    .sort-controls, .search-controls {
+        width: 100%;
+        justify-content: center;
+    }
+    .total-amount-display {
         text-align: center;
-        margin-top: 20px;
+        padding-right: 0;
     }
 }
 
