@@ -74,12 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); 
 
 
+    // Fungsi untuk memperbarui tampilan navbar berdasarkan status login
     function updateNavbarLoginStatus() {
         const { authToken, userName, isAdmin } = checkAuthAndAdminStatus();
 
         console.log(`DEBUG_FRONTEND: Inside updateNavbarLoginStatus. AuthToken: ${!!authToken}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         
         // Desktop Navbar
+        // Tambahkan null check untuk setiap elemen sebelum mencoba mengakses propertinya
         if (navLoginRegister) navLoginRegister.style.display = (authToken && userName) ? 'none' : 'block';
         if (navUserGreeting) {
             navUserGreeting.style.display = (authToken && userName) ? 'flex' : 'none';
@@ -96,6 +98,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (mobileLogoutBtn) mobileLogoutBtn.style.display = (authToken && userName) ? 'block' : 'none';
         if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = (authToken && userName && isAdmin) ? 'list-item' : 'none';
+
+        // Pindahkan event listener hamburger menu dan close ke sini
+        // agar mereka hanya ditambahkan setelah elemen dipastikan ada di DOM
+        if (hamburgerMenu) {
+            hamburgerMenu.addEventListener('click', () => {
+                if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
+            });
+        }
+        if (closeMobileNav) {
+            closeMobileNav.addEventListener('click', () => {
+                if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+            });
+        }
+        // Pastikan mobileNavOverlay ada sebelum mencoba querySelectorAll di dalamnya
+        if (mobileNavOverlay) { 
+            mobileNavOverlay.querySelectorAll('.mobile-nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+                });
+            });
+        }
     }
     updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
 
@@ -122,22 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Akhir Manajemen Status Login ---
 
     // --- Hamburger Menu Logic ---
-    // Pindahkan event listener hamburger menu ke sini (DOM Ready)
-    if (hamburgerMenu) {
-        hamburgerMenu.addEventListener('click', () => {
-            if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
-        });
-    }
-    if (closeMobileNav) {
-        closeMobileNav.addEventListener('click', () => {
-            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
-        });
-    }
-    document.querySelectorAll('.mobile-nav-links a').forEach(link => {
-        link.addEventListener('click', () => {
-            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
-        });
-    });
+    // Logika ini dipindahkan ke dalam updateNavbarLoginStatus() untuk memastikan elemen ada
+    // if (hamburgerMenu) { ... }
+    // if (closeMobileNav) { ... }
+    // document.querySelectorAll('.mobile-nav-links a').forEach(link => { ... });
     // --- End Hamburger Menu Logic ---
 
 
@@ -159,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let serviceToSelect = '';
                 switch(serviceParam) {
                     case 'Temporary IMEI Activation (90 Days)': serviceToSelect = 'Temporary IMEI Activation (90 Days)'; break;
-                    case 'Permanent Unlock iPhone': serviceToToSelect = 'Permanent Unlock iPhone'; break;
+                    case 'Permanent Unlock iPhone': serviceToSelect = 'Permanent Unlock iPhone'; break; // Perbaikan typo
                     case 'Permanent Unlock Android': serviceToSelect = 'Permanent Unlock IMEI Android'; break; 
                     case 'IMEI History Check': serviceToSelect = 'IMEI History Check'; break;
                     case 'Other Service': serviceToSelect = 'Other Service'; break;
@@ -695,6 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             try {
+                console.log(`DEBUG_FRONTEND: Sending update user role request for userId: ${userId}, isAdmin: ${isAdmin}`); // DEBUG LOG
                 const response = await fetch(`${API_BASE_URL}/api/admin/users/update-role`, {
                     method: 'POST',
                     headers: {

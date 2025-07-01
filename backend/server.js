@@ -1,18 +1,18 @@
-require('dotenv').config();
+require('dotenv').config(); // Memuat variabel lingkungan dari file .env
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
-const fetch = require('node-fetch');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
+const bodyParser = require('body-parser'); // Middleware untuk mem-parse body request
+const cors = require('cors'); // Middleware untuk Cross-Origin Resource Sharing
+const jwt = require('jsonwebtoken'); // Library untuk JSON Web Tokens
+const bcrypt = require('bcryptjs'); // Library untuk hashing password
+const { v4: uuidv4 } = require('uuid'); // Library untuk menghasilkan UUID
+const fetch = require('node-fetch'); // Untuk melakukan HTTP requests
+const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi (HMAC SHA256)
+const nodemailer = require('nodemailer'); // Library untuk mengirim email
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET;
-const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND;
+const PORT = process.env.PORT || 3000; // Port server dari variabel lingkungan atau default 3000
+const JWT_SECRET = process.env.JWT_SECRET; // Secret key untuk JWT dari variabel lingkungan
+const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin
 
 // --- Discord Configurations (Konstanta tetap ada, tapi tidak digunakan) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
@@ -92,9 +92,9 @@ const corsOptions = {
     credentials: true,
     optionsSuccessStatus: 204
 };
-app.use(cors(corsOptions));
-app.set('trust proxy', true);
-app.use(bodyParser.json());
+app.use(cors(corsOptions)); // Menerapkan middleware CORS
+app.set('trust proxy', true); // Penting jika backend di belakang proxy/load balancer (Dokploy/Traefik)
+app.use(bodyParser.json()); // Middleware untuk mem-parse JSON body request
 
 // --- Fungsi Helper untuk Mengirim Email ---
 async function sendEmail(to, subject, htmlContent) {
@@ -177,6 +177,7 @@ app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
         );
 
         console.log('New user created by admin:', username);
+        // Kirim email notifikasi ke admin tentang user baru
         const adminMailSubject = `New User Account Created: ${username}`;
         const adminMailHtml = `
             <p>A new user account has been created via the admin panel:</p>
@@ -191,7 +192,7 @@ app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
         await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
         console.log('DEBUG: Email sent for new admin user notification.');
 
-        res.status(201).json({ message: `User "${username}" created successfully!`, userId: newUserId, userName: username });
+        res.status(200).json({ message: `User "${username}" created successfully!`, userId: newUserId, userName: username }); // Status 200 OK
     } catch (error) {
         console.error('ERROR: Admin user creation error:', error);
         res.status(500).json({ message: 'Error creating user.', error: error.message });
@@ -230,7 +231,7 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Middleware untuk memastikan user login untuk akses /order dan /orders/:userId
+// Middleware to ensure user is logged in for /order access and /orders/:userId
 app.use('/api/order', authenticateToken); 
 app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
     if (req.user.userId !== req.params.userId) {
@@ -342,6 +343,39 @@ app.get('/api/admin/users', authenticateAdmin, async (req, res) => {
         res.status(500).json({ message: 'Error fetching all users.', error: error.message });
     }
 });
+
+// POST /api/admin/users/update-role - Endpoint Admin untuk Mengupdate Role User
+app.post('/api/admin/users/update-role', authenticateAdmin, async (req, res) => {
+    console.log('DEBUG_BACKEND: Update user role request received.');
+    const { userId, isAdmin } = req.body; // isAdmin akan berupa boolean true/false
+
+    if (!userId || typeof isAdmin !== 'boolean') {
+        console.warn('DEBUG_BACKEND: Invalid payload for update user role.');
+        return res.status(400).json({ success: false, message: 'User ID and isAdmin (boolean) are required.' });
+    }
+
+    try {
+        // Pastikan user yang diupdate bukan admin yang sedang login
+        if (req.user.userId === userId && !isAdmin) {
+            console.warn(`DEBUG_BACKEND: Admin ${req.user.username} tried to demote self.`);
+            return res.status(403).json({ success: false, message: 'Cannot demote your own admin role.' });
+        }
+
+        const [result] = await pool.query('UPDATE users SET is_admin = ? WHERE id = ?', [isAdmin, userId]);
+
+        if (result.affectedRows > 0) {
+            console.log(`DEBUG_BACKEND: User ${userId} role updated to isAdmin: ${isAdmin}.`);
+            res.json({ success: true, message: `User role updated to ${isAdmin ? 'Admin' : 'User'} successfully!` });
+        } else {
+            console.warn(`DEBUG_BACKEND: User ${userId} not found for role update.`);
+            res.status(404).json({ success: false, message: `User ${userId} not found.` });
+        }
+    } catch (error) {
+        console.error('ERROR: Error updating user role:', error);
+        res.status(500).json({ success: false, message: 'Error updating user role.', error: error.message });
+    }
+});
+
 
 app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) => {
     const { orderId, newStatus, initiator } = req.body;
