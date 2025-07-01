@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Proteksi halaman Admin Dashboard dan Admin Create User
     if (currentPage.startsWith('admin_')) {
         const { authToken, isAdmin } = checkAuthAndAdminStatus();
         console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
@@ -69,34 +68,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard');
+    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); 
 
 
     function updateNavbarLoginStatus() {
-        // BACA STATUS TERBARU DARI LOCALSTORAGE SETIAP KALI FUNGSI INI DIPANGGIL
-        const currentAuthToken = localStorage.getItem('authToken');
-        const currentUserName = localStorage.getItem('userName');
-        const currentIsAdmin = localStorage.getItem('isAdmin') === 'true'; 
+        const { authToken, userName, isAdmin } = checkAuthAndAdminStatus();
 
-        console.log(`DEBUG_FRONTEND: Inside updateNavbarLoginStatus. AuthToken: ${!!currentAuthToken}, UserName: ${currentUserName}, IsAdmin: ${currentIsAdmin}`); // DEBUG LOG
-        if (currentAuthToken && currentUserName) {
+        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!authToken}, Current UserName: ${userName}, Current IsAdmin: ${isAdmin}`);
+        if (authToken && userName) {
             // Desktop Navbar
             if (navLoginRegister) navLoginRegister.style.display = 'none';
             if (navUserGreeting) {
                 navUserGreeting.style.display = 'flex';
-                if (usernameDisplay) usernameDisplay.textContent = currentUserName;
+                if (usernameDisplay) usernameDisplay.textContent = userName;
             }
             if (logoutBtnNavbar) logoutBtnNavbar.style.display = 'block';
-            if (navAdminDashboard) navAdminDashboard.style.display = currentIsAdmin ? 'block' : 'none';
+            if (navAdminDashboard) navAdminDashboard.style.display = isAdmin ? 'block' : 'none';
 
             // Mobile Overlay Navbar
             if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = 'none';
             if (mobileNavUserGreeting) {
                 mobileNavUserGreeting.style.display = 'list-item';
-                if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = currentUserName;
+                if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = userName;
             }
             if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
-            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = currentIsAdmin ? 'list-item' : 'none';
+            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = isAdmin ? 'list-item' : 'none';
 
         } else {
             // Desktop Navbar
@@ -112,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = 'none';
         }
     }
-    updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
+    updateNavbarLoginStatus(); 
 
     // Event Listener untuk Logout Button (Global)
     if (logoutBtnNavbar) {
@@ -314,6 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('userName', data.userName);
+                    // PERBAIKAN DI SINI: Pastikan data.isAdmin adalah boolean sebelum disimpan
                     localStorage.setItem('isAdmin', String(data.isAdmin === true || data.isAdmin === 1)); 
                     console.log(`DEBUG_FRONTEND: Login successful. IsAdmin: ${data.isAdmin} (Stored as: ${localStorage.getItem('isAdmin')})`);
                     loginStatusDiv.innerHTML = '<p style="color: green;">Login berhasil! Mengarahkan...</p>';
@@ -340,9 +337,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('DEBUG: Login error (fetch failed/network issue):', error);
                 loginStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
                 loginStatusDiv.classList.add('error');
-                loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                loginStatusDiv.style.borderColor = 'red';
-                loginStatusDiv.style.color = 'red';
+                orderStatusDiv.style.backgroundColor = 'var(--card-bg)'; // Ini harusnya loginStatusDiv
+                orderStatusDiv.style.borderColor = 'red'; // Ini harusnya loginStatusDiv
+                orderStatusDiv.style.color = 'red'; // Ini harusnya loginStatusDiv
                 return;
             }
         });
@@ -504,9 +501,9 @@ document.addEventListener('DOMContentLoaded', () => {
         async function fetchAdminOrders(sortBy = 'order_date DESC', searchName = '') { // Tambah parameter searchName
             console.log(`DEBUG_FRONTEND: Fetching admin orders. SortBy: ${sortBy}, SearchName: ${searchName}`); // DEBUG LOG
             const adminOrdersTableBody = document.getElementById('admin-orders-table-body');
-            const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount'); // Ambil span total amount
+            const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount');
             adminOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading orders...</td></tr>';
-            totalDisplayedAmountSpan.textContent = 'Rp 0'; // Reset total amount
+            totalDisplayedAmountSpan.textContent = 'Rp 0';
 
             try {
                 let url = `${API_BASE_URL}/api/admin/orders?sortBy=${encodeURIComponent(sortBy)}`;
@@ -522,7 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok && data.success) {
                     adminOrdersTableBody.innerHTML = '';
-                    let totalAmountForDisplay = 0; // Inisialisasi total amount
+                    let totalAmountForDisplay = 0;
 
                     if (data.orders && data.orders.length > 0) {
                         // Group orders by date (Today vs. Tomorrow)
@@ -718,11 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <h3>Order ID: ${order.orderId}</h3>
                                     <p style="color: var(--secondary-text-color);"><strong>Layanan:</strong> ${order.serviceType}</p>
                                     <p style="color: var(--secondary-text-color);"><strong>IMEI:</strong> ${order.imei}</p>
-                                    <td>
-                                        <button class="status-button status-${order.status.toLowerCase().replace(/\s/g, '-')}" data-order-id="${order.orderId}" data-current-status="${order.status}">
-                                            ${order.status}
-                                        </button>
-                                    </td>
+                                    <p style="color: var(--secondary-text-color);"><strong>Status:</strong> <span style="font-weight: bold; color: ${order.status === 'Selesai' ? 'green' : order.status === 'Diproses' ? 'orange' : 'grey'};">${order.status}</span></p>
                                     <p style="color: var(--secondary-text-color);"><strong>Metode Pembayaran:</strong> ${order.paymentMethod || 'N/A'}</p>
                                     <p style="font-size: 0.8em; color: var(--secondary-text-color);">Tanggal Pesan: ${new Date(order.orderDate).toLocaleDateString()} ${new Date(order.orderDate).toLocaleTimeString()}</p>
                                     <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p>
