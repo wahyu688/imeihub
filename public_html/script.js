@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const API_BASE_URL = 'https://back.imeihub.id'; 
 
     // --- ADMIN API KEY (Ini akan digunakan oleh admin_create_user.html) ---
-    const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI DENGAN KUNCI RAHASIA ANDA
+    const ADMIN_API_KEY = 'mafiaBadungBrok'; // <-- GANTI INI DENGAN KUNCI RAHASIA ANDA
 
     // --- LOGIKA PROTEKSI HALAMAN ---
     // Fungsi untuk mendapatkan nama file HTML saat ini dari URL
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (navUserGreeting) console.log('  navUserGreeting:', navUserGreeting.style.display, 'Username:', usernameDisplay ? usernameDisplay.textContent : 'N/A');
         if (navAdminDashboard) console.log('  navAdminDashboard:', navAdminDashboard.style.display);
         }
-        
+
     updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
 
     // Event Listener untuk Logout Button (Global)
