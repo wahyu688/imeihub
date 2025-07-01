@@ -12,8 +12,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const currentPage = getCurrentPageName();
 
-    if (currentPage === 'order.html') {
+    // Fungsi untuk memeriksa status login dan admin
+    const checkAuthAndAdminStatus = () => {
         const authToken = localStorage.getItem('authToken');
+        const userId = localStorage.getItem('userId');
+        const isAdmin = localStorage.getItem('isAdmin') === 'true'; // Pastikan membaca string 'true'
+
+        return { authToken, userId, isAdmin };
+    };
+
+    // Proteksi halaman Order
+    if (currentPage === 'order.html') {
+        const { authToken } = checkAuthAndAdminStatus();
         if (!authToken) {
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
@@ -21,9 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Proteksi halaman My Orders
     if (currentPage === 'my-orders.html') {
-        const authToken = localStorage.getItem('authToken');
-        const userId = localStorage.getItem('userId');
+        const { authToken, userId } = checkAuthAndAdminStatus();
         if (!authToken || !userId) {
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
@@ -32,8 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (currentPage.startsWith('admin_')) {
-        const authToken = localStorage.getItem('authToken');
-        const isAdmin = localStorage.getItem('isAdmin') === 'true'; 
+        const { authToken, isAdmin } = checkAuthAndAdminStatus();
         console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
         if (!authToken || !isAdmin) {
             alert('Akses Ditolak: Anda harus login sebagai Admin.');
@@ -59,35 +68,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // PASTIKAN BARIS INI ADA
+    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard');
 
 
     function updateNavbarLoginStatus() {
-        const currentAuthToken = localStorage.getItem('authToken');
-        const currentUserName = localStorage.getItem('userName');
-        const currentIsAdmin = localStorage.getItem('isAdmin') === 'true'; 
+        const { authToken, userName, isAdmin } = checkAuthAndAdminStatus();
 
-        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!currentAuthToken}, Current UserName: ${currentUserName}, Current IsAdmin: ${currentIsAdmin}`);
+        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!authToken}, Current UserName: ${userName}, Current IsAdmin: ${isAdmin}`);
         
-        if (navLoginRegister) navLoginRegister.style.display = (currentAuthToken && currentUserName) ? 'none' : 'block';
+        if (navLoginRegister) navLoginRegister.style.display = (authToken && userName) ? 'none' : 'block';
         if (navUserGreeting) {
-            navUserGreeting.style.display = (currentAuthToken && currentUserName) ? 'flex' : 'none';
-            if (usernameDisplay) usernameDisplay.textContent = currentUserName;
+            navUserGreeting.style.display = (authToken && userName) ? 'flex' : 'none';
+            if (usernameDisplay) usernameDisplay.textContent = userName;
         }
-        if (logoutBtnNavbar) logoutBtnNavbar.style.display = (currentAuthToken && currentUserName) ? 'block' : 'none';
-        if (navAdminDashboard) navAdminDashboard.style.display = (currentAuthToken && currentUserName && currentIsAdmin) ? 'block' : 'none';
+        if (logoutBtnNavbar) logoutBtnNavbar.style.display = (authToken && userName) ? 'block' : 'none';
+        if (navAdminDashboard) navAdminDashboard.style.display = (authToken && userName && isAdmin) ? 'block' : 'none';
 
-        // Mobile Overlay Navbar
-        if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = (currentAuthToken && currentUserName) ? 'none' : 'list-item';
+        // Mobile Navbar
+        if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = (authToken && userName) ? 'none' : 'list-item';
         if (mobileNavUserGreeting) {
-            mobileNavUserGreeting.style.display = (currentAuthToken && currentUserName) ? 'list-item' : 'none';
-            if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = currentUserName;
+            mobileNavUserGreeting.style.display = (authToken && userName) ? 'list-item' : 'none';
+            if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = userName;
         }
-        if (mobileLogoutBtn) mobileLogoutBtn.style.display = (currentAuthToken && currentUserName) ? 'block' : 'none';
-        if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = (currentAuthToken && currentUserName && currentIsAdmin) ? 'list-item' : 'none';
+        if (mobileLogoutBtn) mobileLogoutBtn.style.display = (authToken && userName) ? 'block' : 'none';
+        if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = (authToken && userName && isAdmin) ? 'list-item' : 'none';
 
         // Pastikan elemen-elemen ini ada sebelum mencoba menggunakannya
-        // Ini adalah perbaikan yang paling penting untuk ReferenceError
         if (hamburgerMenu) {
             hamburgerMenu.addEventListener('click', () => {
                 if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
@@ -104,25 +110,25 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
+    updateNavbarLoginStatus();
 
     // Event Listener untuk Logout Button (Global)
     if (logoutBtnNavbar) {
         logoutBtnNavbar.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Logout button clicked.');
-            localStorage.clear(); // Hapus semua item terkait sesi
+            localStorage.clear();
             console.log('DEBUG_FRONTEND: LocalStorage cleared. AuthToken:', localStorage.getItem('authToken'));
-            updateNavbarLoginStatus(); // Panggil lagi untuk segera update UI
-            window.location.href = 'login.html'; // Redirect
+            updateNavbarLoginStatus();
+            window.location.href = 'login.html';
         });
     }
     // Event Listener untuk Logout Button Mobile
     if (mobileLogoutBtn) {
         mobileLogoutBtn.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Mobile Logout button clicked.');
-            localStorage.clear(); // Hapus semua item terkait sesi
+            localStorage.clear();
             updateNavbarLoginStatus();
-            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open'); // Tutup overlay
+            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
             window.location.href = 'login.html';
         });
     }
@@ -506,6 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     let totalAmountForDisplay = 0;
 
                     if (data.orders && data.orders.length > 0) {
+                        // Group orders by date (Today vs. Tomorrow)
                         const now = new Date();
                         const todayCutoffHour = 17; // 5 PM in 24-hour format
                         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -669,7 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok && data.success) {
                     alert(`Order ${orderId} updated to ${newStatus} successfully!`);
-                    fetchAdminOrders(sortOrdersBySelect.value, searchOrdersInput.value); // Panggil ulang dengan sorting dan search aktif
+                    fetchAdminOrders(sortOrdersBySelect.value, searchOrdersInput.value);
                 } else {
                     alert(`Failed to update order ${orderId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update order status:', data.message || 'Error');
