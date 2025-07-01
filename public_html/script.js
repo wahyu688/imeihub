@@ -12,18 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const currentPage = getCurrentPageName();
 
-    // Fungsi untuk memeriksa status login dan admin
-    const checkAuthAndAdminStatus = () => {
-        const authToken = localStorage.getItem('authToken');
-        const userId = localStorage.getItem('userId');
-        const isAdmin = localStorage.getItem('isAdmin') === 'true'; // Pastikan membaca string 'true'
-
-        return { authToken, userId, isAdmin };
-    };
-
-    // Proteksi halaman Order
     if (currentPage === 'order.html') {
-        const { authToken } = checkAuthAndAdminStatus();
+        const authToken = localStorage.getItem('authToken');
         if (!authToken) {
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
@@ -31,9 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Proteksi halaman My Orders
     if (currentPage === 'my-orders.html') {
-        const { authToken, userId } = checkAuthAndAdminStatus();
+        const authToken = localStorage.getItem('authToken');
+        const userId = localStorage.getItem('userId');
         if (!authToken || !userId) {
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
@@ -42,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (currentPage.startsWith('admin_')) {
-        const { authToken, isAdmin } = checkAuthAndAdminStatus();
+        const authToken = localStorage.getItem('authToken');
+        const isAdmin = localStorage.getItem('isAdmin') === 'true'; 
         console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
         if (!authToken || !isAdmin) {
             alert('Akses Ditolak: Anda harus login sebagai Admin.');
@@ -68,47 +59,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); 
+    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); // PASTIKAN BARIS INI ADA
 
 
     function updateNavbarLoginStatus() {
-        const { authToken, userName, isAdmin } = checkAuthAndAdminStatus();
+        const currentAuthToken = localStorage.getItem('authToken');
+        const currentUserName = localStorage.getItem('userName');
+        const currentIsAdmin = localStorage.getItem('isAdmin') === 'true'; 
 
-        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!authToken}, Current UserName: ${userName}, Current IsAdmin: ${isAdmin}`);
-        if (authToken && userName) {
-            // Desktop Navbar
-            if (navLoginRegister) navLoginRegister.style.display = 'none';
-            if (navUserGreeting) {
-                navUserGreeting.style.display = 'flex';
-                if (usernameDisplay) usernameDisplay.textContent = userName;
-            }
-            if (logoutBtnNavbar) logoutBtnNavbar.style.display = 'block';
-            if (navAdminDashboard) navAdminDashboard.style.display = isAdmin ? 'block' : 'none';
-
-            // Mobile Overlay Navbar
-            if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = 'none';
-            if (mobileNavUserGreeting) {
-                mobileNavUserGreeting.style.display = 'list-item';
-                if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = userName;
-            }
-            if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
-            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = isAdmin ? 'list-item' : 'none';
-
-        } else {
-            // Desktop Navbar
-            if (navLoginRegister) navLoginRegister.style.display = 'block';
-            if (navUserGreeting) navUserGreeting.style.display = 'none';
-            if (logoutBtnNavbar) logoutBtnNavbar.style.display = 'none';
-            if (navAdminDashboard) navAdminDashboard.style.display = 'none';
-
-            // Mobile Overlay Navbar
-            if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = 'list-item';
-            if (mobileNavUserGreeting) mobileNavUserGreeting.style.display = 'none';
-            if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
-            if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = 'none';
+        console.log(`DEBUG_FRONTEND: Updating Navbar. Current AuthToken: ${!!currentAuthToken}, Current UserName: ${currentUserName}, Current IsAdmin: ${currentIsAdmin}`);
+        
+        if (navLoginRegister) navLoginRegister.style.display = (currentAuthToken && currentUserName) ? 'none' : 'block';
+        if (navUserGreeting) {
+            navUserGreeting.style.display = (currentAuthToken && currentUserName) ? 'flex' : 'none';
+            if (usernameDisplay) usernameDisplay.textContent = currentUserName;
         }
+        if (logoutBtnNavbar) logoutBtnNavbar.style.display = (currentAuthToken && currentUserName) ? 'block' : 'none';
+        if (navAdminDashboard) navAdminDashboard.style.display = (currentAuthToken && currentUserName && currentIsAdmin) ? 'block' : 'none';
+
+        // Mobile Overlay Navbar
+        if (mobileNavLoginRegister) mobileNavLoginRegister.style.display = (currentAuthToken && currentUserName) ? 'none' : 'list-item';
+        if (mobileNavUserGreeting) {
+            mobileNavUserGreeting.style.display = (currentAuthToken && currentUserName) ? 'list-item' : 'none';
+            if (mobileUsernameDisplay) mobileUsernameDisplay.textContent = currentUserName;
+        }
+        if (mobileLogoutBtn) mobileLogoutBtn.style.display = (currentAuthToken && currentUserName) ? 'block' : 'none';
+        if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = (currentAuthToken && currentUserName && currentIsAdmin) ? 'list-item' : 'none';
+
+        // Pastikan elemen-elemen ini ada sebelum mencoba menggunakannya
+        // Ini adalah perbaikan yang paling penting untuk ReferenceError
+        if (hamburgerMenu) {
+            hamburgerMenu.addEventListener('click', () => {
+                if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
+            });
+        }
+        if (closeMobileNav) {
+            closeMobileNav.addEventListener('click', () => {
+                if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+            });
+        }
+        document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+            });
+        });
     }
-    updateNavbarLoginStatus(); 
+    updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
 
     // Event Listener untuk Logout Button (Global)
     if (logoutBtnNavbar) {
@@ -133,21 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Akhir Manajemen Status Login ---
 
     // --- Hamburger Menu Logic ---
-    if (hamburgerMenu) {
-        hamburgerMenu.addEventListener('click', () => {
-            if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
-        });
-    }
-    if (closeMobileNav) {
-        closeMobileNav.addEventListener('click', () => {
-            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
-        });
-    }
-    document.querySelectorAll('.mobile-nav-links a').forEach(link => {
-        link.addEventListener('click', () => {
-            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
-        });
-    });
+    // Logika ini dipindahkan ke dalam updateNavbarLoginStatus() untuk memastikan elemen ada
+    // if (hamburgerMenu) { ... }
+    // if (closeMobileNav) { ... }
+    // document.querySelectorAll('.mobile-nav-links a').forEach(link => { ... });
     // --- End Hamburger Menu Logic ---
 
 
@@ -169,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let serviceToSelect = '';
                 switch(serviceParam) {
                     case 'Temporary IMEI Activation (90 Days)': serviceToSelect = 'Temporary IMEI Activation (90 Days)'; break;
-                    case 'Permanent Unlock iPhone': serviceToSelect = 'Permanent Unlock iPhone'; break;
+                    case 'Permanent Unlock iPhone': serviceToToSelect = 'Permanent Unlock iPhone'; break;
                     case 'Permanent Unlock Android': serviceToSelect = 'Permanent Unlock IMEI Android'; break; 
                     case 'IMEI History Check': serviceToSelect = 'IMEI History Check'; break;
                     case 'Other Service': serviceToSelect = 'Other Service'; break;
@@ -310,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('userName', data.userName);
-                    // PERBAIKAN DI SINI: Pastikan data.isAdmin adalah boolean sebelum disimpan
                     localStorage.setItem('isAdmin', String(data.isAdmin === true || data.isAdmin === 1)); 
                     console.log(`DEBUG_FRONTEND: Login successful. IsAdmin: ${data.isAdmin} (Stored as: ${localStorage.getItem('isAdmin')})`);
                     loginStatusDiv.innerHTML = '<p style="color: green;">Login berhasil! Mengarahkan...</p>';
@@ -337,9 +321,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('DEBUG: Login error (fetch failed/network issue):', error);
                 loginStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
                 loginStatusDiv.classList.add('error');
-                orderStatusDiv.style.backgroundColor = 'var(--card-bg)'; // Ini harusnya loginStatusDiv
-                orderStatusDiv.style.borderColor = 'red'; // Ini harusnya loginStatusDiv
-                orderStatusDiv.style.color = 'red'; // Ini harusnya loginStatusDiv
+                loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
+                loginStatusDiv.style.borderColor = 'red';
+                loginStatusDiv.style.color = 'red';
                 return;
             }
         });
@@ -462,16 +446,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortOrdersBySelect = document.getElementById('sort-orders-by');
         if (sortOrdersBySelect) {
             sortOrdersBySelect.addEventListener('change', () => {
-                const searchOrdersInput = document.getElementById('search-orders-by'); // Ambil di sini
-                fetchAdminOrders(sortOrdersBySelect.value, searchOrdersInput ? searchOrdersInput.value : ''); // Panggil dengan nilai sorting dan search
+                const searchOrdersInput = document.getElementById('search-orders-by');
+                fetchAdminOrders(sortOrdersBySelect.value, searchOrdersInput ? searchOrdersInput.value : '');
             });
         }
         // Event Listener for Search Input
         const searchOrdersInput = document.getElementById('search-orders-by');
         if (searchOrdersInput) {
-            searchOrdersInput.addEventListener('input', () => { // Gunakan 'input' untuk real-time search
-                const sortOrdersBySelect = document.getElementById('sort-orders-by'); // Ambil di sini
-                fetchAdminOrders(sortOrdersBySelect ? sortOrdersBySelect.value : 'order_date DESC', searchOrdersInput.value); // Panggil dengan nilai sorting dan search
+            searchOrdersInput.addEventListener('input', () => {
+                const sortOrdersBySelect = document.getElementById('sort-orders-by');
+                fetchAdminOrders(sortOrdersBySelect ? sortOrdersBySelect.value : 'order_date DESC', searchOrdersInput.value);
             });
         }
 
@@ -498,8 +482,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- Fetch Admin Orders ---
-        async function fetchAdminOrders(sortBy = 'order_date DESC', searchName = '') { // Tambah parameter searchName
-            console.log(`DEBUG_FRONTEND: Fetching admin orders. SortBy: ${sortBy}, SearchName: ${searchName}`); // DEBUG LOG
+        async function fetchAdminOrders(sortBy = 'order_date DESC', searchName = '') {
+            console.log(`DEBUG_FRONTEND: Fetching admin orders. SortBy: ${sortBy}, SearchName: ${searchName}`);
             const adminOrdersTableBody = document.getElementById('admin-orders-table-body');
             const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount');
             adminOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading orders...</td></tr>';
@@ -508,9 +492,9 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 let url = `${API_BASE_URL}/api/admin/orders?sortBy=${encodeURIComponent(sortBy)}`;
                 if (searchName) {
-                    url += `&searchName=${encodeURIComponent(searchName)}`; // Tambah parameter search
+                    url += `&searchName=${encodeURIComponent(searchName)}`;
                 }
-                console.log('DEBUG_FRONTEND: Fetching orders from URL:', url); // DEBUG LOG
+                console.log('DEBUG_FRONTEND: Fetching orders from URL:', url);
 
                 const response = await fetch(url, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
@@ -522,7 +506,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     let totalAmountForDisplay = 0;
 
                     if (data.orders && data.orders.length > 0) {
-                        // Group orders by date (Today vs. Tomorrow)
                         const now = new Date();
                         const todayCutoffHour = 17; // 5 PM in 24-hour format
                         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -637,13 +620,25 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <td>${user.email || 'N/A'}</td>
                                     <td>${user.id}</td>
                                     <td>
-                                        <button class="status-button status-${user.is_admin ? 'completed' : 'unknown'}" data-user-id="${user.id}" data-is-admin="${user.is_admin}">
-                                            ${user.is_admin ? 'Admin' : 'User'}
-                                        </button>
+                                        <select class="admin-role-select" data-user-id="${user.id}" data-current-role="${user.is_admin ? 'admin' : 'user'}">
+                                            <option value="">Set Role</option>
+                                            <option value="user" ${!user.is_admin ? 'selected' : ''}>User</option>
+                                            <option value="admin" ${user.is_admin ? 'selected' : ''}>Admin</option>
+                                        </select>
                                     </td>
                                 </tr>
                             `;
                             adminUsersTableBody.innerHTML += row;
+                        });
+                        document.querySelectorAll('.admin-role-select').forEach(select => {
+                            select.addEventListener('change', async (e) => {
+                                const userId = e.target.dataset.userId;
+                                const newRole = e.target.value;
+                                if (newRole && userId) {
+                                    await updateUserRoleAdmin(userId, newRole === 'admin');
+                                    e.target.value = '';
+                                }
+                            });
                         });
                     } else {
                         adminUsersTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--secondary-text-color);">No users found.</td></tr>';
@@ -715,7 +710,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <h3>Order ID: ${order.orderId}</h3>
                                     <p style="color: var(--secondary-text-color);"><strong>Layanan:</strong> ${order.serviceType}</p>
                                     <p style="color: var(--secondary-text-color);"><strong>IMEI:</strong> ${order.imei}</p>
-                                    <p style="color: var(--secondary-text-color);"><strong>Status:</strong> <span style="font-weight: bold; color: ${order.status === 'Selesai' ? 'green' : order.status === 'Diproses' ? 'orange' : 'grey'};">${order.status}</span></p>
+                                    <td>
+                                        <button class="status-button status-${order.status.toLowerCase().replace(/\s/g, '-')}" data-order-id="${order.orderId}" data-current-status="${order.status}">
+                                            ${order.status}
+                                        </button>
+                                    </td>
                                     <p style="color: var(--secondary-text-color);"><strong>Metode Pembayaran:</strong> ${order.paymentMethod || 'N/A'}</p>
                                     <p style="font-size: 0.8em; color: var(--secondary-text-color);">Tanggal Pesan: ${new Date(order.orderDate).toLocaleDateString()} ${new Date(order.orderDate).toLocaleTimeString()}</p>
                                     <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p>
