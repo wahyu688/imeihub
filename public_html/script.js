@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (navUserGreeting) console.log('  navUserGreeting:', navUserGreeting.style.display, 'Username:', usernameDisplay ? usernameDisplay.textContent : 'N/A');
         if (navAdminDashboard) console.log('  navAdminDashboard:', navAdminDashboard.style.display);
         }
+        
     updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
 
     // Event Listener untuk Logout Button (Global)
