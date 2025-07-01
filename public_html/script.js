@@ -17,9 +17,9 @@
         const checkAuthAndAdminStatus = () => {
             const authToken = localStorage.getItem('authToken');
             const userId = localStorage.getItem('userId');
-            const isAdmin = localStorage.getItem('isAdmin') === 'true'; // Pastikan membaca string 'true'
-
-            return { authToken, userId, isAdmin };
+            const userName = localStorage.getItem('userName'); // ✅ tambahkan ini
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+            return { authToken, userId, userName, isAdmin };
         };
 
         // Proteksi halaman Order
