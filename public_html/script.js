@@ -338,8 +338,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 loginStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
                 loginStatusDiv.classList.add('error');
                 loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                loginStatusDiv.style.borderColor = 'red';
-                loginStatusDiv.style.color = 'red';
+                orderStatusDiv.style.borderColor = 'red'; // Ini harusnya loginStatusDiv
+                orderStatusDiv.style.color = 'red'; // Ini harusnya loginStatusDiv
                 return;
             }
         });
@@ -686,9 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok && data.success) {
                     alert(`Order ${orderId} updated to ${newStatus} successfully!`);
-                    // Pastikan searchOrdersInput ada saat memanggil fetchAdminOrders
-                    const currentSearchName = document.getElementById('search-orders-by') ? document.getElementById('search-orders-by').value : '';
-                    fetchAdminOrders(sortOrdersBySelect.value, currentSearchName);
+                    fetchAdminOrders(sortOrdersBySelect.value, searchOrdersInput.value);
                 } else {
                     alert(`Failed to update order ${orderId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update order status:', data.message || 'Error');
