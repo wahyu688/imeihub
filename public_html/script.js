@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fungsi untuk memperbarui tampilan navbar berdasarkan status login
     function updateNavbarLoginStatus() {
         const { authToken, userName, isAdmin } = checkAuthAndAdminStatus();
-
         console.log(`DEBUG_FRONTEND: Inside updateNavbarLoginStatus. AuthToken: ${!!authToken}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         
         // Desktop Navbar
@@ -119,7 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
         }
-    }
+
+            console.log('DEBUG_FRONTEND: Navbar elements display status after update:');
+        if (navLoginRegister) console.log('  navLoginRegister:', navLoginRegister.style.display);
+        if (navUserGreeting) console.log('  navUserGreeting:', navUserGreeting.style.display, 'Username:', usernameDisplay ? usernameDisplay.textContent : 'N/A');
+        if (navAdminDashboard) console.log('  navAdminDashboard:', navAdminDashboard.style.display);
+        }
     updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
 
     // Event Listener untuk Logout Button (Global)
