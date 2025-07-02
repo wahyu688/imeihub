@@ -5,16 +5,16 @@ const cors = require('cors'); // Middleware untuk Cross-Origin Resource Sharing
 const jwt = require('jsonwebtoken'); // Library untuk JSON Web Tokens
 const bcrypt = require('bcryptjs'); // Library untuk hashing password
 const { v4: uuidv4 } = require('uuid'); // Library untuk menghasilkan UUID
-const fetch = require('node-fetch'); // Untuk melakukan HTTP requests
-const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi (HMAC SHA256)
+const fetch = require('node-fetch'); // Untuk melakukan HTTP requests (tetap ada meskipun Discord bot dihapus, untuk potensi penggunaan lain)
+const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi (HMAC SHA256) (tetap ada untuk potensi penggunaan lain)
 const nodemailer = require('nodemailer'); // Library untuk mengirim email
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Port server dari variabel lingkungan atau default 3000
 const JWT_SECRET = process.env.JWT_SECRET; // Secret key untuk JWT dari variabel lingkungan
-const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin
+const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin (digunakan di frontend untuk admin_create_user.html)
 
-// --- Discord Configurations (Konstanta tetap ada, tapi tidak digunakan) ---
+// --- Discord Configurations (Konstanta tetap ada, tapi tidak digunakan dalam logika saat ini) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
 const DISCORD_ORDER_NOTIFICATION_CHANNEL_ID = process.env.DISCORD_ORDER_NOTIFICATION_CHANNEL_ID;
 const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
@@ -23,28 +23,31 @@ const ADMIN_DISCORD_USER_ID = process.env.ADMIN_DISCORD_USER_ID;
 const EMAIL_SERVICE = process.env.EMAIL_SERVICE;
 const EMAIL_HOST = process.env.EMAIL_HOST;
 const EMAIL_PORT_SMTP = process.env.EMAIL_PORT_SMTP;
-const EMAIL_SECURE = process.env.EMAIL_SECURE === 'true';
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
-const ADMIN_EMAIL_RECEIVER = process.env.ADMIN_EMAIL_RECEIVER;
+const EMAIL_SECURE = process.env.EMAIL_SECURE === 'true'; // Pastikan ini string 'true' atau 'false'
+const EMAIL_USER = process.env.EMAIL_USER; // Email pengirim (email bisnis Anda)
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD; // Password email pengirim
+const ADMIN_EMAIL_RECEIVER = process.env.ADMIN_EMAIL_RECEIVER; // Email admin utama (bisa juga diambil dari DB)
 
+// Konfigurasi transporter email
 const transporter = nodemailer.createTransport({
-    host: EMAIL_HOST || null,
-    port: EMAIL_PORT_SMTP ? parseInt(EMAIL_PORT_SMTP, 10) : null,
-    secure: EMAIL_SECURE,
+    host: EMAIL_HOST || null, // Gunakan host eksplisit jika disediakan
+    port: EMAIL_PORT_SMTP ? parseInt(EMAIL_PORT_SMTP, 10) : null, // Parse port sebagai integer
+    secure: EMAIL_SECURE, // true untuk SSL (port 465), false untuk TLS (port 587)
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASSWORD,
     },
-    connectionTimeout: 10 * 1000,
-    socketTimeout: 30 * 1000
+    // Opsi timeout untuk koneksi SMTP, membantu mendiagnosis masalah koneksi
+    connectionTimeout: 10 * 1000, // 10 detik
+    socketTimeout: 30 * 1000 // 30 detik
 });
 
+// Test koneksi Nodemailer saat startup (untuk debugging awal)
 transporter.verify(function(error, success) {
     if (error) {
         console.error('ERROR: Nodemailer transporter verification failed:', error);
         console.error('ERROR: Please check EMAIL_SERVICE, EMAIL_HOST, EMAIL_PORT_SMTP, EMAIL_SECURE, EMAIL_USER, EMAIL_PASSWORD in Dokploy Environment Variables.');
-        process.exit(1);
+        process.exit(1); // Keluar dari proses jika koneksi email gagal saat startup
     } else {
         console.log('DEBUG: Nodemailer transporter is ready to send emails.');
     }
@@ -61,36 +64,37 @@ const SERVICE_PRICES = {
 };
 
 // --- Database Configuration (MySQL) ---
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2/promise'); // Import driver mysql2/promise
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-    waitForConnections: true,
-    connectionLimit: 10,
+const pool = mysql.createPool({ // Membuat koneksi pool MySQL
+    host: process.env.DB_HOST, // Host database dari variabel lingkungan
+    user: process.env.DB_USER, // User database dari variabel lingkungan
+    database: process.env.DB_NAME, // Nama database dari variabel lingkungan
+    password: process.env.DB_PASSWORD, // Password database dari variabel lingkungan
+    port: process.env.DB_PORT, // Port database dari variabel lingkungan
+    waitForConnections: true, // Menunggu koneksi jika pool habis
+    connectionLimit: 10, // Batas koneksi di pool
     queueLimit: 0
 });
 
+// Test koneksi database saat startup
 pool.getConnection()
     .then(connection => {
         console.log('DEBUG: Successfully connected to MySQL database.');
-        connection.release();
+        connection.release(); // Melepas koneksi setelah tes
     })
     .catch(err => {
         console.error('ERROR: Failed to connect to MySQL database:', err);
         console.error('ERROR: Please check your DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME in Dokploy Environment Variables.');
-        process.exit(1);
+        process.exit(1); // Keluar dari proses jika koneksi database gagal
     });
 
 // --- Middleware ---
 const corsOptions = {
-    origin: 'https://imeihub.id', // Pastikan ini sama persis dengan URL frontend Anda
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    optionsSuccessStatus: 204
+    origin: 'https://imeihub.id', // URL frontend yang diizinkan untuk mengakses backend ini. Pastikan menggunakan HTTPS.
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Metode HTTP yang diizinkan
+    credentials: true, // Mengizinkan pengiriman kredensial (seperti token JWT)
+    optionsSuccessStatus: 204 // Status untuk preflight OPTIONS request
 };
 app.use(cors(corsOptions)); // Menerapkan middleware CORS
 app.set('trust proxy', true); // Penting jika backend di belakang proxy/load balancer (Dokploy/Traefik)
@@ -99,7 +103,7 @@ app.use(bodyParser.json()); // Middleware untuk mem-parse JSON body request
 // --- Fungsi Helper untuk Mengirim Email ---
 async function sendEmail(to, subject, htmlContent) {
     const mailOptions = {
-        from: EMAIL_USER, // Alamat pengirim email
+        from: EMAIL_USER, // Alamat pengirim email (email bisnis Anda)
         to: to, // Alamat penerima email
         subject: subject, // Subjek email
         html: htmlContent, // Konten email dalam format HTML
@@ -152,6 +156,7 @@ const authenticateAdmin = (req, res, next) => {
 // --- API Endpoints ---
 
 // POST /api/admin/create-user - Endpoint Admin untuk Membuat Akun User
+// Endpoint ini dilindungi oleh authenticateAdmin
 app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
     console.log('DEBUG: POST /api/admin/create-user received by ADMIN.');
     console.log('DEBUG: Request body:', req.body);
@@ -257,7 +262,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
-        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok'");
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok' OR status = 'Proses Aktif'"); // Hitung status baru
         const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
 
         res.json({
@@ -354,7 +359,7 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
         return res.status(400).json({ message: 'Order ID and new status are required.' });
     }
 
-    const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan', 'Menunggu Proses Besok', 'Proses Aktif']; // Tambah status baru
+    const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan', 'Menunggu Proses Besok', 'Proses Aktif'];
     if (!validStatuses.includes(newStatus)) {
         return res.status(400).json({ message: 'Invalid status provided.' });
     }
@@ -440,6 +445,7 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
         );
         console.log(`Order ${orderId} saved to database.`);
 
+        // --- Kirim Notifikasi Order Baru ke Email Admin ---
         const adminMailSubject = `New Order Received: ${orderId} (${serviceType})`;
         const adminMailHtml = `
             <p>New order received from ${name} (${email}):</p>
@@ -454,8 +460,38 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
             <p>Check admin dashboard for more details: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
         `;
         console.log('DEBUG: Attempting to send email for new order notification.');
-        await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
-        console.log('DEBUG: Email sent for new order notification.');
+        await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml); // Kirim ke admin utama
+        console.log('DEBUG: Email sent for new order notification to primary admin.');
+
+        // --- Kirim Notifikasi Order Baru ke SEMUA Admin Lainnya (dari database) ---
+        const [allAdmins] = await pool.query("SELECT email FROM users WHERE is_admin = TRUE AND email IS NOT NULL AND email != ?", [ADMIN_EMAIL_RECEIVER]);
+        for (const admin of allAdmins) {
+            if (admin.email) {
+                console.log(`DEBUG: Sending new order notification to additional admin: ${admin.email}`);
+                await sendEmail(admin.email, adminMailSubject, adminMailHtml);
+            }
+        }
+        console.log('DEBUG: Email sent for new order notification to all additional admins.');
+
+        // --- Kirim Notifikasi Order Baru ke Email User ---
+        if (email) { // Pastikan email user ada
+            const userMailSubject = `Order Confirmation: ${orderId}`;
+            const userMailHtml = `
+                <p>Dear ${name},</p>
+                <p>Thank you for your order! Your order ID is <b>${orderId}</b>.</p>
+                <p>Service: ${serviceType}</p>
+                <p>IMEI: ${imei}</p>
+                <p>Amount: Rp ${amount.toLocaleString('id-ID')}</p>
+                <p>Initial Status: ${initialStatus}</p>
+                <p>You can track your order status here: <a href="https://imeihub.id/my-orders.html">My Orders</a></p>
+                <p>We will process your order soon.</p>
+            `;
+            console.log('DEBUG: Attempting to send email order confirmation to user.');
+            await sendEmail(email, userMailSubject, userMailHtml);
+            console.log('DEBUG: Email sent for new order confirmation to user.');
+        } else {
+            console.warn(`DEBUG: User email not available for order ${orderId}, skipping user email confirmation.`);
+        }
 
 
         res.status(200).json({
@@ -482,8 +518,7 @@ app.post('/api/orders/cancel', authenticateToken, async (req, res) => {
     }
 
     try {
-        // Ambil order untuk memverifikasi kepemilikan dan status
-        const [orderRows] = await pool.query('SELECT status, user_id FROM orders WHERE order_id = ?', [orderId]);
+        const [orderRows] = await pool.query('SELECT status, user_id, customer_email, customer_name, service_type FROM orders WHERE order_id = ?', [orderId]);
         const order = orderRows[0];
 
         if (!order) {
@@ -491,7 +526,6 @@ app.post('/api/orders/cancel', authenticateToken, async (req, res) => {
             return res.status(404).json({ success: false, message: `Order ${orderId} not found.` });
         }
 
-        // Verifikasi bahwa user yang mencoba membatalkan adalah pemilik order
         if (order.user_id !== userId) {
             console.warn(`DEBUG_BACKEND: User ${userId} tried to cancel order ${orderId} which belongs to ${order.user_id}.`);
             return res.status(403).json({ success: false, message: 'Forbidden: You can only cancel your own orders.' });
@@ -503,35 +537,35 @@ app.post('/api/orders/cancel', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, message: `Order cannot be cancelled. Current status: ${order.status}.` });
         }
 
-        // Update status order menjadi Dibatalkan
         const newStatus = 'Dibatalkan';
         const [result] = await pool.query('UPDATE orders SET status = ? WHERE order_id = ?', [newStatus, orderId]);
 
         if (result.affectedRows > 0) {
             console.log(`DEBUG_BACKEND: Order ${orderId} cancelled by user ${userId}.`);
-            // Opsional: Kirim email notifikasi ke user atau admin tentang pembatalan
-            // Untuk user:
-            const userMailSubject = `Order Cancellation Confirmation: ${orderId}`;
-            const userMailHtml = `
-                <p>Dear user,</p>
-                <p>Your order <b>${orderId}</b> has been successfully cancelled.</p>
-                <p>You can view your orders here: <a href="https://imeihub.id/my-orders.html">My Orders</a></p>
-            `;
-            // Ambil email user dari database jika perlu
-            const [userEmailRow] = await pool.query('SELECT email FROM users WHERE id = ?', [userId]);
-            if (userEmailRow[0] && userEmailRow[0].email) {
-                await sendEmail(userEmailRow[0].email, userMailSubject, userMailHtml);
+            // Notifikasi ke user yang membatalkan
+            if (order.customer_email) {
+                const userMailSubject = `Order Cancellation Confirmation: ${orderId}`;
+                const userMailHtml = `
+                    <p>Dear ${order.customerName || 'user'},</p>
+                    <p>Your order <b>${orderId}</b> has been successfully cancelled.</p>
+                    <p>You can view your orders here: <a href="https://imeihub.id/my-orders.html">My Orders</a></p>
+                `;
+                await sendEmail(order.customer_email, userMailSubject, userMailHtml);
             }
 
-            // Untuk admin:
+            // Notifikasi ke semua admin tentang pembatalan order oleh user
             const adminMailSubject = `Order Cancelled by User: ${orderId}`;
             const adminMailHtml = `
-                <p>Order <b>${orderId}</b> has been cancelled by user ${userId}.</p>
+                <p>Order <b>${orderId}</b> (Service: ${order.service_type}) has been cancelled by user ${order.customerName || order.username} (ID: ${userId}).</p>
                 <p>Current status: Dibatalkan.</p>
                 <p>Check admin dashboard: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
             `;
-            await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
-
+            const [allAdmins] = await pool.query("SELECT email FROM users WHERE is_admin = TRUE AND email IS NOT NULL");
+            for (const admin of allAdmins) {
+                if (admin.email) {
+                    await sendEmail(admin.email, adminMailSubject, adminMailHtml);
+                }
+            }
 
             res.json({ success: true, message: `Order ${orderId} cancelled successfully.` });
         } else {
@@ -580,7 +614,4 @@ app.post('/api/discord-webhook-commands', async (req, res) => {
 // --- Start Server ---
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Backend server running on http://0.0.0.0:${PORT}`);
-    if (JWT_SECRET === 'your_super_secret_jwt_key_please_change_this_to_a_random_string_in_production') {
-        console.warn('WARNING: JWT_SECRET is not changed. Please update it in your .env file for production!');
-    }
 });
