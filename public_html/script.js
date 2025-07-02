@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Manajemen Status Login di Navbar (Top & Mobile Overlay) ---
+    // Deklarasikan semua elemen navbar di scope DOMContentLoaded agar selalu tersedia
     const navLoginRegister = document.getElementById('nav-login-register');
     const navUserGreeting = document.getElementById('nav-user-greeting');
     const usernameDisplay = document.getElementById('username-display');
@@ -73,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+    // Pastikan mobileNavAdminDashboard dideklarasikan di sini
     const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); 
 
 
@@ -81,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log(`DEBUG_FRONTEND: Inside updateNavbarLoginStatus. AuthToken: ${!!authToken}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         
+        // Desktop Navbar
         if (navLoginRegister) navLoginRegister.style.display = (authToken && userName) ? 'none' : 'block';
         if (navUserGreeting) {
             navUserGreeting.style.display = (authToken && userName) ? 'flex' : 'none';
@@ -99,25 +102,25 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`DEBUG_FRONTEND: Mobile Username Display Set: ${mobileUsernameDisplay ? mobileUsernameDisplay.textContent : 'N/A'}`);
         }
         if (mobileLogoutBtn) mobileLogoutBtn.style.display = (authToken && userName) ? 'block' : 'none';
+        // Tambahkan null check untuk mobileNavAdminDashboard di sini
         if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = (authToken && userName && isAdmin) ? 'list-item' : 'none';
         console.log(`DEBUG_FRONTEND: Mobile Admin Dashboard Display Set: ${mobileNavAdminDashboard ? mobileNavAdminDashboard.style.display : 'N/A'}`);
 
-        if (hamburgerMenu) {
+        // Pastikan elemen hamburgerMenu, mobileNavOverlay, closeMobileNav ada sebelum menambahkan event listener
+        if (hamburgerMenu && mobileNavOverlay && closeMobileNav) {
             hamburgerMenu.addEventListener('click', () => {
-                if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
+                mobileNavOverlay.classList.toggle('open');
             });
-        }
-        if (closeMobileNav) {
             closeMobileNav.addEventListener('click', () => {
-                if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+                mobileNavOverlay.classList.remove('open');
             });
-        }
-        if (mobileNavOverlay) { 
-            document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+            mobileNavOverlay.querySelectorAll('.mobile-nav-links a').forEach(link => {
                 link.addEventListener('click', () => {
-                    if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+                    mobileNavOverlay.classList.remove('open');
                 });
             });
+        } else {
+            console.warn('DEBUG_FRONTEND: Mobile navigation elements not found. Hamburger menu functionality may be limited.');
         }
     }
     updateNavbarLoginStatus();
@@ -462,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const manageUsersLink = document.getElementById('manage-users-link');
     const createUserLink = document.getElementById('create-user-link');
 
-    if (currentPage === 'admin_dashboard') {
+    if (currentPage === 'admin_dashboard') { // Diubah dari admin_dashboard.html
         const isAdminCheck = localStorage.getItem('isAdmin') === 'true'; 
         console.log(`DEBUG_FRONTEND: Admin Dashboard access check. IsAdmin: ${isAdminCheck}`);
         if (!isAdminCheck) { 
@@ -705,13 +708,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                     await updateUserRoleAdmin(userId, newRole === 'admin');
                                     e.target.value = '';
                                 }
-                            });
-                        });
-                        document.querySelectorAll('.delete-user-button').forEach(button => {
-                            button.addEventListener('click', async (e) => {
-                                const userId = e.target.dataset.userId;
-                                const username = e.target.dataset.username;
-                                await deleteUserAdmin(userId, username);
                             });
                         });
                     } else {

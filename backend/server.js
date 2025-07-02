@@ -5,14 +5,14 @@ const cors = require('cors'); // Middleware untuk Cross-Origin Resource Sharing
 const jwt = require('jsonwebtoken'); // Library untuk JSON Web Tokens
 const bcrypt = require('bcryptjs'); // Library untuk hashing password
 const { v4: uuidv4 } = require('uuid'); // Library untuk menghasilkan UUID
-const fetch = require('node-fetch'); // Untuk melakukan HTTP requests (tetap ada meskipun Discord bot dihapus, untuk potensi penggunaan lain)
-const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi (HMAC SHA256) (tetap ada untuk potensi penggunaan lain)
+const fetch = require('node-fetch'); // Untuk melakukan HTTP requests
+const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi
 const nodemailer = require('nodemailer'); // Library untuk mengirim email
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Port server dari variabel lingkungan atau default 3000
 const JWT_SECRET = process.env.JWT_SECRET; // Secret key untuk JWT dari variabel lingkungan
-const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin (digunakan di frontend untuk admin_create_user.html)
+const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin
 
 // --- Discord Configurations (Konstanta tetap ada, tapi tidak digunakan dalam logika saat ini) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
@@ -155,84 +155,87 @@ const authenticateAdmin = (req, res, next) => {
 
 // --- API Endpoints ---
 
-// POST /api/admin/users/update-role
-// Mengubah peran user (Admin/User), dilindungi token
-app.post('/api/admin/users/update-role', authenticateToken, async (req, res) => {
-    const { userId, isAdmin } = req.body;
+// POST /api/admin/create-user - Endpoint Admin untuk Membuat Akun User
+app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
+    console.log('DEBUG: POST /api/admin/create-user received by ADMIN.');
+    console.log('DEBUG: Request body:', req.body);
 
-    if (!userId || typeof isAdmin === 'undefined') {
-        return res.status(400).json({ success: false, message: 'User ID dan status isAdmin dibutuhkan.' });
+    const { username, fullname, email, phone, password } = req.body; // Tambah phone dari request body
+
+    if (!username || !password) { // Hanya username dan password yang wajib
+        console.warn('DEBUG: Missing required fields (username, password) for admin user creation.');
+        return res.status(400).json({ message: 'Username and password are required.' });
     }
 
     try {
+        // Cek apakah username sudah ada di database
+        const [existingUsers] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
+        if (existingUsers.length > 0) {
+            return res.status(409).json({ message: 'Username already taken.' }); // Pesan diubah
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUserId = uuidv4(); // Menghasilkan UUID baru
+        
+        // Masukkan user baru ke database, dengan username, fullname, email, phone dan is_admin
         const [result] = await pool.query(
-            'UPDATE users SET is_admin = ? WHERE id = ?',
-            [isAdmin ? 1 : 0, userId]
+            'INSERT INTO users(id, username, name, email, phone, password, is_admin) VALUES(?, ?, ?, ?, ?, ?, ?)', // Tambah phone ke INSERT
+            [newUserId, username, fullname || null, email || null, phone || null, hashedPassword, false] // Tambah phone ke values
         );
 
-        if (result.affectedRows > 0) {
-            console.log(`User ${userId} updated role to ${isAdmin ? 'Admin' : 'User'}.`);
-            res.json({ success: true, message: `Role user berhasil diubah ke ${isAdmin ? 'Admin' : 'User'}.` });
-        } else {
-            res.status(404).json({ success: false, message: 'User tidak ditemukan.' });
-        }
+        console.log('New user created by admin:', username);
+        // Kirim email notifikasi ke admin tentang user baru
+        const adminMailSubject = `New User Account Created: ${username}`;
+        const adminMailHtml = `
+            <p>A new user account has been created via the admin panel:</p>
+            <ul>
+                <li>Username: <b>${username}</b></li>
+                <li>Full Name: ${fullname || 'N/A'}</li>
+                <li>Email: ${email || 'N/A'}</li>
+                <li>Phone: ${phone || 'N/A'}</li> <!-- Tambah phone ke email notifikasi -->
+            </ul>
+            <p>Please note: This user is not an admin by default.</p>
+        `;
+        console.log('DEBUG: Attempting to send email for new admin user notification.');
+        await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
+        console.log('DEBUG: Email sent for new admin user notification.');
+
+        res.status(200).json({ message: `User "${username}" created successfully!`, userId: newUserId, userName: username }); // Status 200 OK
     } catch (error) {
-        console.error('Error updating user role:', error);
-        res.status(500).json({ success: false, message: 'Gagal mengubah role user.', error: error.message });
+        console.error('ERROR: Admin user creation error:', error);
+        res.status(500).json({ message: 'Error creating user.', error: error.message });
+        console.log('DEBUG: Admin user creation failed in catch block.');
     }
 });
 
 
+// POST /api/login - Login User (Publik)
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
 
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required.' });
+    }
+
     try {
-        const [rows] = await pool.query(
-            'SELECT id, username, password, is_admin FROM users WHERE LOWER(username) = LOWER(?)',
-            [username]
-        );
+        const [users] = await pool.query('SELECT id, username, name, email, password, is_admin FROM users WHERE username = ?', [username]);
+        const user = users[0];
 
-        if (rows.length === 0) {
-            return res.status(401).json({ message: 'Username tidak ditemukan.' });
+        if (!user) { // Jika user tidak ditemukan
+            return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
-        const user = rows[0];
-        const storedPassword = user.password;
-
-        let passwordMatch = false;
-
-        if (storedPassword.startsWith('$2a$') || storedPassword.startsWith('$2b$')) {
-            // Password dienkripsi (bcrypt)
-            passwordMatch = await bcrypt.compare(password, storedPassword);
-        } else {
-            // Password disimpan sebagai plaintext
-            passwordMatch = storedPassword === password;
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) { // Jika password tidak cocok
+            return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
-        if (!passwordMatch) {
-            return res.status(401).json({ message: 'Password salah.' });
-        }
-
-        const token = jwt.sign(
-            {
-                userId: user.id,
-                isAdmin: user.is_admin
-            },
-            JWT_SECRET,
-            { expiresIn: '7d' }
-        );
-
-        console.log("✅ Login berhasil:", user.username);
-        res.json({
-            message: 'Login berhasil.',
-            token,
-            isAdmin: user.is_admin,
-            userId: user.id
-        });
-
+        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET); // Hapus expiresIn
+        console.log('User logged in:', user.username);
+        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
     } catch (error) {
-        console.error('❌ Login error:', error);
-        res.status(500).json({ message: 'Gagal login.', error: error.message });
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Error logging in.', error: error.message });
     }
 });
 
@@ -625,74 +628,6 @@ app.post('/api/discord-webhook-commands', async (req, res) => {
     } else {
         console.warn(`Unknown command type or invalid payload from Discord Bot.`);
         res.status(400).json({ success: false, message: 'Invalid command type or payload.' });
-    }
-});
-
-//delete users on manage user in dashboard page
-app.delete('/api/admin/users/:userId', authenticateToken, async (req, res) => {
-    const { userId } = req.params;
-
-    if (!userId) {
-        return res.status(400).json({ success: false, message: 'User ID tidak disediakan.' });
-    }
-
-    try {
-        const [result] = await pool.query('DELETE FROM users WHERE id = ?', [userId]);
-
-        if (result.affectedRows > 0) {
-            console.log(`User ${userId} berhasil dihapus.`);
-            res.json({ success: true, message: 'User berhasil dihapus.' });
-        } else {
-            res.status(404).json({ success: false, message: 'User tidak ditemukan.' });
-        }
-    } catch (error) {
-        console.error('Gagal menghapus user:', error);
-        res.status(500).json({ success: false, message: 'Gagal menghapus user.', error: error.message });
-    }
-});
-
-// POST /api/admin/create-user - Endpoint untuk Admin membuat user baru
-app.post('/api/admin/create-user', authenticateToken, async (req, res) => {
-    const { username, fullname, email, phone, password } = req.body;
-
-    if (!username || !password) {
-        return res.status(400).json({ message: 'Username dan password wajib diisi.' });
-    }
-
-    try {
-        const [existingUsers] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
-        if (existingUsers.length > 0) {
-            return res.status(409).json({ message: 'Username sudah digunakan.' });
-        }
-
-        const [emailUsed] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
-        if (emailUsed.length > 0) {
-            return res.status(409).json({ message: 'Email sudah digunakan.' });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const userId = uuidv4();
-
-        await pool.query(
-            'INSERT INTO users (id, username, name, email, password, is_admin, phone) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [userId, username, fullname, email, hashedPassword, 0, phone || null]
-        );
-
-        console.log(`✅ Admin created user "${username}"`);
-        res.status(201).json({ message: 'User berhasil dibuat.' });
-
-    } catch (err) {
-        if (err.code === 'ER_DUP_ENTRY') {
-            if (err.message.includes('users.username')) {
-                return res.status(409).json({ message: 'Username sudah digunakan.' });
-            }
-            if (err.message.includes('users.email')) {
-                return res.status(409).json({ message: 'Email sudah digunakan.' });
-            }
-        }
-
-        console.error('❌ Gagal membuat user:', err);
-        res.status(500).json({ message: 'Terjadi kesalahan server.', error: err.message });
     }
 });
 
