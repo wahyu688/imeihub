@@ -405,7 +405,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'x-admin-api-key': ADMIN_API_KEY
             };
 
             adminCreateUserStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Creating user account...</p>`;

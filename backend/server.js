@@ -551,6 +551,7 @@ app.post('/api/orders/cancel', authenticateToken, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Forbidden: You can only cancel your own orders.' });
         }
 
+        // Cek status order: tidak bisa dibatalkan jika sudah 'Diproses' atau 'Selesai' atau 'Dibatalkan'
         if (order.status === 'Diproses' || order.status === 'Selesai' || order.status === 'Dibatalkan') {
             console.warn(`DEBUG_BACKEND: Order ${orderId} cannot be cancelled due to current status: ${order.status}.`);
             return res.status(400).json({ success: false, message: `Order cannot be cancelled. Current status: ${order.status}.` });
