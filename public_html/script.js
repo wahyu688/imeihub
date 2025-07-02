@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const userName = localStorage.getItem('userName');
         const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
-        console.log(`DEBUG_FRONTEND: checkAuthAndAdminStatus - AuthToken: ${!!authToken}, UserId: ${userId}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         return { authToken, userId, userName, isAdmin };
     };
 
@@ -174,7 +173,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Panggil sekali saat halaman dimuat untuk menampilkan 1 input IMEI default
     if (imeiCountInput) {
+        createImeiInputs(parseInt(imeiCountInput.value, 10));
         imeiCountInput.addEventListener('input', (e) => {
             const count = parseInt(e.target.value, 10);
             if (count >= 1 && count <= 10) { // Batasi antara 1 dan 10
@@ -188,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
 
     console.log('DEBUG: orderForm element found:', orderForm);
     
@@ -230,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const orderData = {
                 serviceType: formData.get('serviceType'),
                 imeis: [], // Ini akan menjadi array IMEI
-                customerPhone: '' // Akan diambil dari user yang login
+                // customerPhone akan diambil dari backend
             };
 
             // Kumpulkan semua IMEI dari input dinamis
@@ -254,12 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             orderData.userId = userId; // Tambahkan userId ke orderData
-
-            // Ambil phone number dari user yang login (jika ada di DB user)
-            // Untuk skenario ini, kita akan asumsikan phone number dikirim dari form atau diambil dari DB user
-            // Jika phone number tidak ada di DB user, Anda mungkin perlu menambahkan input di form order
-            // Untuk saat ini, kita akan ambil dari formData yang ada (jika ada input phone) atau default
-            orderData.customerPhone = formData.get('phone') || ''; // Jika ada input phone di form, gunakan itu
 
             try {
                 const targetApiUrl = `${API_BASE_URL}/api/order/submit`;
@@ -464,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const manageUsersLink = document.getElementById('manage-users-link');
     const createUserLink = document.getElementById('create-user-link');
 
-    if (currentPage === 'admin_dashboard.html') {
+    if (currentPage === 'admin_dashboard') {
         const isAdminCheck = localStorage.getItem('isAdmin') === 'true'; 
         console.log(`DEBUG_FRONTEND: Admin Dashboard access check. IsAdmin: ${isAdminCheck}`);
         if (!isAdminCheck) { 
@@ -814,9 +810,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // My Orders Page (Actual Data Fetching after successful authentication check)
-    if (currentPage === 'my-orders') { // Diubah dari 'my-orders.html'
+    if (currentPage === 'my-orders') {
         const orderListDiv = document.getElementById('order-list');
-        const { authToken, userId } = checkAuthAndAdminStatus(); // Ambil dari checkAuthAndAdminStatus
+        const { authToken, userId } = checkAuthAndAdminStatus();
 
         const fetchOrders = async () => {
             orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Memuat pesanan Anda...</p>';
