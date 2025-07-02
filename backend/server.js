@@ -160,7 +160,7 @@ app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
     console.log('DEBUG: POST /api/admin/create-user received by ADMIN.');
     console.log('DEBUG: Request body:', req.body);
 
-    const { username, fullname, email, password } = req.body;
+    const { username, fullname, email, phone, password } = req.body; // Tambah phone dari request body
 
     if (!username || !password) { // Hanya username dan password yang wajib
         console.warn('DEBUG: Missing required fields (username, password) for admin user creation.');
@@ -177,10 +177,10 @@ app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUserId = uuidv4(); // Menghasilkan UUID baru
         
-        // Masukkan user baru ke database, dengan username, fullname, dan email opsional
+        // Masukkan user baru ke database, dengan username, fullname, email, phone dan is_admin
         const [result] = await pool.query(
-            'INSERT INTO users(id, username, name, email, password, is_admin) VALUES(?, ?, ?, ?, ?, ?)',
-            [newUserId, username, fullname || null, email || null, hashedPassword, false] // is_admin default FALSE
+            'INSERT INTO users(id, username, name, email, phone, password, is_admin) VALUES(?, ?, ?, ?, ?, ?, ?)', // Tambah phone ke INSERT
+            [newUserId, username, fullname || null, email || null, phone || null, hashedPassword, false] // Tambah phone ke values
         );
 
         console.log('New user created by admin:', username);
@@ -192,7 +192,7 @@ app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
                 <li>Username: <b>${username}</b></li>
                 <li>Full Name: ${fullname || 'N/A'}</li>
                 <li>Email: ${email || 'N/A'}</li>
-            </ul>
+                <li>Phone: ${phone || 'N/A'}</li> </ul>
             <p>Please note: This user is not an admin by default.</p>
         `;
         console.log('DEBUG: Attempting to send email for new admin user notification.');
@@ -229,7 +229,7 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
-        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET);
+        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET); // Hapus expiresIn
         console.log('User logged in:', user.username);
         res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
     } catch (error) {
@@ -261,7 +261,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
-        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok' OR status = 'Proses Aktif'");
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok' OR status = 'Proses Aktif'"); // Hitung status baru
         const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
 
         res.json({
@@ -343,7 +343,7 @@ app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
 
 app.get('/api/admin/users', authenticateAdmin, async (req, res) => {
     try {
-        const [users] = await pool.query("SELECT id, username, name, email, is_admin FROM users ORDER BY created_at DESC");
+        const [users] = await pool.query("SELECT id, username, name, email, phone, is_admin FROM users ORDER BY created_at DESC"); // Tambah phone ke SELECT
         res.json({ success: true, users: users });
     } catch (error) {
         console.error('ERROR: Failed to fetch all users for admin:', error);
@@ -407,22 +407,29 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
 app.post('/api/order/submit', authenticateToken, async (req, res) => {
     console.log('DEBUG: Order submission request received.');
     const userId = req.user.userId;
-    const { imeis, serviceType, customerPhone } = req.body; // Menerima array IMEIs dan customerPhone
+    const { imeis, serviceType } = req.body; // customerPhone DIHAPUS dari req.body, akan diambil dari DB
 
-    // Ambil detail user yang login dari database
-    const [userRows] = await pool.query('SELECT username, name, email FROM users WHERE id = ?', [userId]);
+    // Ambil detail user yang login dari database, termasuk phone
+    const [userRows] = await pool.query('SELECT username, name, email, phone FROM users WHERE id = ?', [userId]); // Tambah phone ke SELECT
     const loggedInUser = userRows[0];
     if (!loggedInUser) {
         console.error('ERROR: Logged in user not found in DB for order submission:', userId);
         return res.status(400).json({ success: false, message: 'Logged in user data not found.' });
     }
 
-    // Gunakan nama dan email dari user yang login
+    // Gunakan nama, email, dan phone dari user yang login
     const customerName = loggedInUser.name || loggedInUser.username;
-    const customerEmail = loggedInUser.email; // Email user yang login
+    const customerEmail = loggedInUser.email;
+    const customerPhone = loggedInUser.phone; // <<-- Ambil phone dari DB user
 
-    if (!Array.isArray(imeis) || imeis.length === 0 || !serviceType || !customerPhone) {
-        return res.status(400).json({ success: false, message: 'IMEI(s), service type, and phone number are required.' });
+    // Validasi utama: pastikan semua field esensial ada, termasuk phone dari DB
+    if (!Array.isArray(imeis) || imeis.length === 0 || !serviceType || !customerPhone) { // customerPhone sekarang divalidasi dari DB
+        console.warn('DEBUG: Order submission validation failed. IMEIs, service type, or phone number from DB are missing.');
+        let message = '';
+        if (!Array.isArray(imeis) || imeis.length === 0) message += 'IMEI(s) are required. ';
+        if (!serviceType) message += 'Service type is required. ';
+        if (!customerPhone) message += 'Phone number not found in your user profile. Please update your profile.'; // Pesan spesifik
+        return res.status(400).json({ success: false, message: message });
     }
 
     const amountPerImei = SERVICE_PRICES[serviceType];
@@ -440,13 +447,14 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
     const businessStartHour = 7; // 7 AM
     const businessEndHour = 17; // 5 PM (17:00)
 
-    let initialStatus = '';
+    let initialStatus = 'Menunggu Pembayaran'; // Default status
     if (currentHour >= businessStartHour && currentHour < businessEndHour) { // Dalam jam kerja
-        initialStatus = 'Proses Aktif';
+        initialStatus = 'Proses Aktif'; // Status baru
     } else {
-        initialStatus = 'Menunggu Proses Besok';
+        initialStatus = 'Menunggu Proses Besok'; // Di luar jam kerja
     }
     console.log(`DEBUG: Order placed at hour ${currentHour}. Initial status set to: ${initialStatus}`);
+
 
     try {
         for (const imei of imeis) {
@@ -476,7 +484,7 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
             <p>Check admin dashboard for more details: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
         `;
         console.log('DEBUG: Attempting to send email for new order notification to primary admin.');
-        await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
+        await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml); // Kirim ke admin utama
         console.log('DEBUG: Email sent for new order notification to primary admin.');
 
         // --- Kirim Notifikasi Order Baru ke SEMUA Admin Lainnya (dari database) ---
