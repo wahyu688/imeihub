@@ -183,33 +183,56 @@ app.post('/api/admin/users/update-role', authenticateToken, async (req, res) => 
 });
 
 
-// POST /api/login - Login User (Publik)
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({ message: 'Username and password are required.' });
-    }
-
     try {
-        const [users] = await pool.query('SELECT id, username, name, email, password, is_admin FROM users WHERE username = ?', [username]);
-        const user = users[0];
+        const [rows] = await pool.query(
+            'SELECT id, username, password, is_admin FROM users WHERE LOWER(username) = LOWER(?)',
+            [username]
+        );
 
-        if (!user) { // Jika user tidak ditemukan
-            return res.status(400).json({ message: 'Invalid username or password.' });
+        if (rows.length === 0) {
+            return res.status(401).json({ message: 'Username tidak ditemukan.' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) { // Jika password tidak cocok
-            return res.status(400).json({ message: 'Invalid username or password.' });
+        const user = rows[0];
+        const storedPassword = user.password;
+
+        let passwordMatch = false;
+
+        if (storedPassword.startsWith('$2a$') || storedPassword.startsWith('$2b$')) {
+            // Password dienkripsi (bcrypt)
+            passwordMatch = await bcrypt.compare(password, storedPassword);
+        } else {
+            // Password disimpan sebagai plaintext
+            passwordMatch = storedPassword === password;
         }
 
-        const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET); // Hapus expiresIn
-        console.log('User logged in:', user.username);
-        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
+        if (!passwordMatch) {
+            return res.status(401).json({ message: 'Password salah.' });
+        }
+
+        const token = jwt.sign(
+            {
+                userId: user.id,
+                isAdmin: user.is_admin
+            },
+            JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        console.log("✅ Login berhasil:", user.username);
+        res.json({
+            message: 'Login berhasil.',
+            token,
+            isAdmin: user.is_admin,
+            userId: user.id
+        });
+
     } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ message: 'Error logging in.', error: error.message });
+        console.error('❌ Login error:', error);
+        res.status(500).json({ message: 'Gagal login.', error: error.message });
     }
 });
 
