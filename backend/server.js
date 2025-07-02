@@ -628,6 +628,34 @@ app.delete('/api/admin/users/:userId', authenticateToken, async (req, res) => {
     }
 });
 
+//create user by admin
+app.post('/api/admin/create-user', authenticateToken, async (req, res) => {
+    const { username, fullname, email, phone, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username dan password wajib diisi.' });
+    }
+
+    try {
+        const [existingUsers] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
+        if (existingUsers.length > 0) {
+            return res.status(409).json({ message: 'Username sudah digunakan.' });
+        }
+
+        const userId = uuidv4(); // Import dari uuid
+        await pool.query(
+            'INSERT INTO users (id, username, name, email, password, is_admin, phone) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [userId, username, fullname, email, password, 0, phone || null]
+        );
+
+        console.log(`✅ Admin created user "${username}"`);
+        res.status(201).json({ message: 'User berhasil dibuat.' });
+    } catch (err) {
+        console.error('❌ Gagal membuat user:', err);
+        res.status(500).json({ message: 'Terjadi kesalahan server.', error: err.message });
+    }
+});
+
 
 // --- Start Server ---
 app.listen(PORT, '0.0.0.0', () => {
