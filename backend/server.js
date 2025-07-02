@@ -192,7 +192,8 @@ app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
                 <li>Username: <b>${username}</b></li>
                 <li>Full Name: ${fullname || 'N/A'}</li>
                 <li>Email: ${email || 'N/A'}</li>
-                <li>Phone: ${phone || 'N/A'}</li> </ul>
+                <li>Phone: ${phone || 'N/A'}</li> <!-- Tambah phone ke email notifikasi -->
+            </ul>
             <p>Please note: This user is not an admin by default.</p>
         `;
         console.log('DEBUG: Attempting to send email for new admin user notification.');
@@ -417,7 +418,6 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
         return res.status(400).json({ success: false, message: 'Logged in user data not found.' });
     }
 
-    // Gunakan nama, email, dan phone dari user yang login
     const customerName = loggedInUser.name || loggedInUser.username;
     const customerEmail = loggedInUser.email;
     const customerPhone = loggedInUser.phone; // <<-- Ambil phone dari DB user
