@@ -155,55 +155,30 @@ const authenticateAdmin = (req, res, next) => {
 
 // --- API Endpoints ---
 
-// POST /api/admin/create-user - Endpoint Admin untuk Membuat Akun User
-app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
-    console.log('DEBUG: POST /api/admin/create-user received by ADMIN.');
-    console.log('DEBUG: Request body:', req.body);
+// POST /api/admin/users/update-role
+// Mengubah peran user (Admin/User), dilindungi token
+app.post('/api/admin/users/update-role', authenticateToken, async (req, res) => {
+    const { userId, isAdmin } = req.body;
 
-    const { username, fullname, email, phone, password } = req.body; // Tambah phone dari request body
-
-    if (!username || !password) { // Hanya username dan password yang wajib
-        console.warn('DEBUG: Missing required fields (username, password) for admin user creation.');
-        return res.status(400).json({ message: 'Username and password are required.' });
+    if (!userId || typeof isAdmin === 'undefined') {
+        return res.status(400).json({ success: false, message: 'User ID dan status isAdmin dibutuhkan.' });
     }
 
     try {
-        // Cek apakah username sudah ada di database
-        const [existingUsers] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
-        if (existingUsers.length > 0) {
-            return res.status(409).json({ message: 'Username already taken.' }); // Pesan diubah
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUserId = uuidv4(); // Menghasilkan UUID baru
-        
-        // Masukkan user baru ke database, dengan username, fullname, email, phone dan is_admin
         const [result] = await pool.query(
-            'INSERT INTO users(id, username, name, email, phone, password, is_admin) VALUES(?, ?, ?, ?, ?, ?, ?)', // Tambah phone ke INSERT
-            [newUserId, username, fullname || null, email || null, phone || null, hashedPassword, false] // Tambah phone ke values
+            'UPDATE users SET is_admin = ? WHERE id = ?',
+            [isAdmin ? 1 : 0, userId]
         );
 
-        console.log('New user created by admin:', username);
-        // Kirim email notifikasi ke admin tentang user baru
-        const adminMailSubject = `New User Account Created: ${username}`;
-        const adminMailHtml = `
-            <p>A new user account has been created via the admin panel:</p>
-            <ul>
-                <li>Username: <b>${username}</b></li>
-                <li>Full Name: ${fullname || 'N/A'}</li>
-                <li>Email: ${email || 'N/A'}</li>
-                <li>Phone: ${phone || 'N/A'}</li> </ul>
-            <p>Please note: This user is not an admin by default.</p>
-        `;
-        console.log('DEBUG: Attempting to send email for new admin user notification.');
-        await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
-        console.log('DEBUG: Email sent for new admin user notification.');
-
-        res.status(200).json({ message: `User "${username}" created successfully!`, userId: newUserId, userName: username }); // Status 200 OK
+        if (result.affectedRows > 0) {
+            console.log(`User ${userId} updated role to ${isAdmin ? 'Admin' : 'User'}.`);
+            res.json({ success: true, message: `Role user berhasil diubah ke ${isAdmin ? 'Admin' : 'User'}.` });
+        } else {
+            res.status(404).json({ success: false, message: 'User tidak ditemukan.' });
+        }
     } catch (error) {
-        console.error('ERROR: Admin user creation error:', error);
-        res.status(500).json({ message: 'Error creating user.', error: error.message });
-        console.log('DEBUG: Admin user creation failed in catch block.');
+        console.error('Error updating user role:', error);
+        res.status(500).json({ success: false, message: 'Gagal mengubah role user.', error: error.message });
     }
 });
 
