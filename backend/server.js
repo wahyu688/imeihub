@@ -651,7 +651,7 @@ app.delete('/api/admin/users/:userId', authenticateToken, async (req, res) => {
     }
 });
 
-//create user by admin
+// POST /api/admin/create-user - Endpoint untuk Admin membuat user baru
 app.post('/api/admin/create-user', authenticateToken, async (req, res) => {
     const { username, fullname, email, phone, password } = req.body;
 
@@ -665,27 +665,35 @@ app.post('/api/admin/create-user', authenticateToken, async (req, res) => {
             return res.status(409).json({ message: 'Username sudah digunakan.' });
         }
 
-        const userId = uuidv4(); // Import dari uuid
+        const [emailUsed] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+        if (emailUsed.length > 0) {
+            return res.status(409).json({ message: 'Email sudah digunakan.' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const userId = uuidv4();
+
         await pool.query(
             'INSERT INTO users (id, username, name, email, password, is_admin, phone) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [userId, username, fullname, email, password, 0, phone || null]
+            [userId, username, fullname, email, hashedPassword, 0, phone || null]
         );
 
         console.log(`✅ Admin created user "${username}"`);
         res.status(201).json({ message: 'User berhasil dibuat.' });
-    } catch (err) {
-    if (err.code === 'ER_DUP_ENTRY') {
-        if (err.message.includes('users.username')) {
-            return res.status(409).json({ message: 'Username sudah digunakan.' });
-        }
-        if (err.message.includes('users.email')) {
-            return res.status(409).json({ message: 'Email sudah digunakan.' });
-        }
-    }
 
-    console.error('❌ Gagal membuat user:', err);
-    res.status(500).json({ message: 'Terjadi kesalahan server.', error: err.message });
-}
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            if (err.message.includes('users.username')) {
+                return res.status(409).json({ message: 'Username sudah digunakan.' });
+            }
+            if (err.message.includes('users.email')) {
+                return res.status(409).json({ message: 'Email sudah digunakan.' });
+            }
+        }
+
+        console.error('❌ Gagal membuat user:', err);
+        res.status(500).json({ message: 'Terjadi kesalahan server.', error: err.message });
+    }
 });
 
 
