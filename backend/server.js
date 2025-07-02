@@ -24,9 +24,9 @@ const EMAIL_SERVICE = process.env.EMAIL_SERVICE;
 const EMAIL_HOST = process.env.EMAIL_HOST;
 const EMAIL_PORT_SMTP = process.env.EMAIL_PORT_SMTP;
 const EMAIL_SECURE = process.env.EMAIL_SECURE === 'true'; // Pastikan ini string 'true' atau 'false'
-const EMAIL_USER = process.env.EMAIL_USER; // Email pengirim (email bisnis Anda)
+const EMAIL_USER = process.env.EMAIL_USER; // Email pengirim
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD; // Password email pengirim
-const ADMIN_EMAIL_RECEIVER = process.env.ADMIN_EMAIL_RECEIVER; // Email admin utama (bisa juga diambil dari DB)
+const ADMIN_EMAIL_RECEIVER = process.env.ADMIN_EMAIL_RECEIVER; // Email admin untuk notifikasi order baru
 
 // Konfigurasi transporter email
 const transporter = nodemailer.createTransport({
@@ -103,7 +103,7 @@ app.use(bodyParser.json()); // Middleware untuk mem-parse JSON body request
 // --- Fungsi Helper untuk Mengirim Email ---
 async function sendEmail(to, subject, htmlContent) {
     const mailOptions = {
-        from: EMAIL_USER, // Alamat pengirim email (email bisnis Anda)
+        from: EMAIL_USER, // Alamat pengirim email
         to: to, // Alamat penerima email
         subject: subject, // Subjek email
         html: htmlContent, // Konten email dalam format HTML
@@ -156,7 +156,6 @@ const authenticateAdmin = (req, res, next) => {
 // --- API Endpoints ---
 
 // POST /api/admin/create-user - Endpoint Admin untuk Membuat Akun User
-// Endpoint ini dilindungi oleh authenticateAdmin
 app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
     console.log('DEBUG: POST /api/admin/create-user received by ADMIN.');
     console.log('DEBUG: Request body:', req.body);
@@ -262,7 +261,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
-        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok' OR status = 'Proses Aktif'"); // Hitung status baru
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok' OR status = 'Proses Aktif'");
         const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
 
         res.json({
@@ -408,20 +407,32 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
 app.post('/api/order/submit', authenticateToken, async (req, res) => {
     console.log('DEBUG: Order submission request received.');
     const userId = req.user.userId;
-    const { name, email, phone, imei, serviceType } = req.body;
+    const { imeis, serviceType, customerPhone } = req.body; // Menerima array IMEIs dan customerPhone
 
-    const amount = SERVICE_PRICES[serviceType];
-    if (!amount) {
+    // Ambil detail user yang login dari database
+    const [userRows] = await pool.query('SELECT username, name, email FROM users WHERE id = ?', [userId]);
+    const loggedInUser = userRows[0];
+    if (!loggedInUser) {
+        console.error('ERROR: Logged in user not found in DB for order submission:', userId);
+        return res.status(400).json({ success: false, message: 'Logged in user data not found.' });
+    }
+
+    // Gunakan nama dan email dari user yang login
+    const customerName = loggedInUser.name || loggedInUser.username;
+    const customerEmail = loggedInUser.email; // Email user yang login
+
+    if (!Array.isArray(imeis) || imeis.length === 0 || !serviceType || !customerPhone) {
+        return res.status(400).json({ success: false, message: 'IMEI(s), service type, and phone number are required.' });
+    }
+
+    const amountPerImei = SERVICE_PRICES[serviceType];
+    if (!amountPerImei) {
         console.warn(`DEBUG: Invalid or undefined amount for service type: ${serviceType}`);
         return res.status(400).json({ success: false, message: `Price not defined for service: ${serviceType}` });
     }
 
-    if (!name || !email || !phone || !imei || !serviceType) {
-        return res.status(400).json({ message: 'All order fields are required.' });
-    }
-
-    const orderId = `ORD-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 100)}`;
-    const newOrderId = uuidv4();
+    const ordersCreated = [];
+    const adminNotificationImeis = []; // Untuk ringkasan IMEI di email admin
 
     // --- LOGIKA JAM BISNIS UNTUK STATUS AWAL ORDER ---
     const now = new Date();
@@ -429,38 +440,43 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
     const businessStartHour = 7; // 7 AM
     const businessEndHour = 17; // 5 PM (17:00)
 
-    let initialStatus = 'Menunggu Pembayaran'; // Default status
+    let initialStatus = '';
     if (currentHour >= businessStartHour && currentHour < businessEndHour) { // Dalam jam kerja
-        initialStatus = 'Proses Aktif'; // Status baru
+        initialStatus = 'Proses Aktif';
     } else {
-        initialStatus = 'Menunggu Proses Besok'; // Di luar jam kerja
+        initialStatus = 'Menunggu Proses Besok';
     }
     console.log(`DEBUG: Order placed at hour ${currentHour}. Initial status set to: ${initialStatus}`);
 
-
     try {
-        await pool.query(
-            'INSERT INTO orders(id, order_id, user_id, customer_name, customer_email, customer_phone, imei, service_type, status, order_date, amount) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
-            [newOrderId, orderId, userId, name, email, phone, imei, serviceType, initialStatus, amount] // Gunakan initialStatus
-        );
-        console.log(`Order ${orderId} saved to database.`);
+        for (const imei of imeis) {
+            const orderId = `ORD-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 1000)}`; // Order ID unik per IMEI
+            const newOrderId = uuidv4(); // UUID untuk ID primer tabel orders
 
-        // --- Kirim Notifikasi Order Baru ke Email Admin ---
-        const adminMailSubject = `New Order Received: ${orderId} (${serviceType})`;
+            await pool.query(
+                'INSERT INTO orders(id, order_id, user_id, customer_name, customer_email, customer_phone, imei, service_type, status, order_date, amount) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)',
+                [newOrderId, orderId, userId, customerName, customerEmail, customerPhone, imei, serviceType, initialStatus, amountPerImei]
+            );
+            console.log(`Order ${orderId} for IMEI ${imei} saved to database.`);
+            ordersCreated.push({ orderId, imei, amount: amountPerImei, initialStatus });
+            adminNotificationImeis.push(imei);
+        }
+
+        // --- Kirim Notifikasi Order Baru ke Email Admin (Ringkasan) ---
+        const adminMailSubject = `New Order(s) Received from ${customerName}`;
         const adminMailHtml = `
-            <p>New order received from ${name} (${email}):</p>
+            <p>New order(s) received from <b>${customerName}</b> (${customerEmail}):</p>
             <ul>
-                <li>Order ID: <b>${orderId}</b></li>
-                <li>Service: ${serviceType}</li>
-                <li>IMEI: ${imei}</li>
-                <li>Amount: Rp ${amount.toLocaleString('id-ID')}</li>
-                <li>Status: ${initialStatus}</li> <!-- Status di email admin -->
-                <li>Customer Phone: ${phone}</li>
+                <li>Total IMEIs: <b>${imeis.length}</b></li>
+                <li>Service Type: <b>${serviceType}</b></li>
+                <li>Customer Phone: <b>${customerPhone}</b></li>
+                <li>Initial Status: <b>${initialStatus}</b></li>
+                <li>IMEIs: ${adminNotificationImeis.join(', ')}</li>
             </ul>
             <p>Check admin dashboard for more details: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
         `;
-        console.log('DEBUG: Attempting to send email for new order notification.');
-        await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml); // Kirim ke admin utama
+        console.log('DEBUG: Attempting to send email for new order notification to primary admin.');
+        await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
         console.log('DEBUG: Email sent for new order notification to primary admin.');
 
         // --- Kirim Notifikasi Order Baru ke SEMUA Admin Lainnya (dari database) ---
@@ -473,33 +489,30 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
         }
         console.log('DEBUG: Email sent for new order notification to all additional admins.');
 
-        // --- Kirim Notifikasi Order Baru ke Email User ---
-        if (email) { // Pastikan email user ada
-            const userMailSubject = `Order Confirmation: ${orderId}`;
+        // --- Kirim Notifikasi Konfirmasi Order ke Email User (Ringkasan) ---
+        if (customerEmail) {
+            const userMailSubject = `Order Confirmation: ${ordersCreated.map(o => o.orderId).join(', ')}`;
             const userMailHtml = `
-                <p>Dear ${name},</p>
-                <p>Thank you for your order! Your order ID is <b>${orderId}</b>.</p>
-                <p>Service: ${serviceType}</p>
-                <p>IMEI: ${imei}</p>
-                <p>Amount: Rp ${amount.toLocaleString('id-ID')}</p>
-                <p>Initial Status: ${initialStatus}</p>
+                <p>Dear ${customerName},</p>
+                <p>Thank you for your order(s)!</p>
+                <p>You have submitted <b>${imeis.length}</b> IMEI(s) for <b>${serviceType}</b> service.</p>
+                <ul>
+                    ${ordersCreated.map(order => `<li>Order ID: <b>${order.orderId}</b>, IMEI: <b>${order.imei}</b>, Amount: Rp ${order.amount.toLocaleString('id-ID')}, Status: ${order.initialStatus}</li>`).join('')}
+                </ul>
                 <p>You can track your order status here: <a href="https://imeihub.id/my-orders.html">My Orders</a></p>
-                <p>We will process your order soon.</p>
+                <p>We will process your order(s) soon.</p>
             `;
             console.log('DEBUG: Attempting to send email order confirmation to user.');
-            await sendEmail(email, userMailSubject, userMailHtml);
+            await sendEmail(customerEmail, userMailSubject, userMailHtml);
             console.log('DEBUG: Email sent for new order confirmation to user.');
         } else {
-            console.warn(`DEBUG: User email not available for order ${orderId}, skipping user email confirmation.`);
+            console.warn(`DEBUG: User email not available for order submission, skipping user email confirmation.`);
         }
-
 
         res.status(200).json({
             success: true,
-            message: 'Order submitted successfully.',
-            orderId: orderId,
-            amount: amount,
-            initialStatus: initialStatus // Kirim status awal ke frontend
+            message: `${imeis.length} order(s) submitted successfully.`,
+            orders: ordersCreated // Mengembalikan array order yang dibuat
         });
 
     } catch (error) {
