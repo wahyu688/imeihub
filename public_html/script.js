@@ -61,19 +61,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Manajemen Status Login di Navbar (Top & Mobile Overlay) ---
     const navLoginRegister = document.getElementById('nav-login-register');
+    console.log('DEBUG_FRONTEND: navLoginRegister element:', navLoginRegister); // DEBUG LOG
     const navUserGreeting = document.getElementById('nav-user-greeting');
+    console.log('DEBUG_FRONTEND: navUserGreeting element:', navUserGreeting); // DEBUG LOG
     const usernameDisplay = document.getElementById('username-display');
+    console.log('DEBUG_FRONTEND: usernameDisplay element:', usernameDisplay); // DEBUG LOG
     const logoutBtnNavbar = document.getElementById('logout-btn-navbar');
+    console.log('DEBUG_FRONTEND: logoutBtnNavbar element:', logoutBtnNavbar); // DEBUG LOG
     const navAdminDashboard = document.getElementById('nav-admin-dashboard');
+    console.log('DEBUG_FRONTEND: navAdminDashboard element:', navAdminDashboard); // DEBUG LOG
     
     const hamburgerMenu = document.querySelector('.hamburger-menu');
+    console.log('DEBUG_FRONTEND: hamburgerMenu element:', hamburgerMenu); // DEBUG LOG
     const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+    console.log('DEBUG_FRONTEND: mobileNavOverlay element:', mobileNavOverlay); // DEBUG LOG
     const closeMobileNav = document.querySelector('.close-mobile-nav');
+    console.log('DEBUG_FRONTEND: closeMobileNav element:', closeMobileNav); // DEBUG LOG
     const mobileNavLoginRegister = document.getElementById('mobile-nav-login-register');
+    console.log('DEBUG_FRONTEND: mobileNavLoginRegister element:', mobileNavLoginRegister); // DEBUG LOG
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
+    console.log('DEBUG_FRONTEND: mobileNavUserGreeting element:', mobileNavUserGreeting); // DEBUG LOG
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
+    console.log('DEBUG_FRONTEND: mobileUsernameDisplay element:', mobileUsernameDisplay); // DEBUG LOG
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+    console.log('DEBUG_FRONTEND: mobileLogoutBtn element:', mobileLogoutBtn); // DEBUG LOG
     const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); 
+    console.log('DEBUG_FRONTEND: mobileNavAdminDashboard element:', mobileNavAdminDashboard); // DEBUG LOG
 
 
     function updateNavbarLoginStatus() {
@@ -328,9 +341,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('DEBUG: Login error (fetch failed/network issue):', error);
                 loginStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
                 loginStatusDiv.classList.add('error');
-                loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                loginStatusDiv.style.borderColor = 'red';
-                loginStatusDiv.style.color = 'red';
+                orderStatusDiv.style.backgroundColor = 'var(--card-bg)'; // Ini harusnya loginStatusDiv
+                orderStatusDiv.style.borderColor = 'red'; // Ini harusnya loginStatusDiv
+                orderStatusDiv.style.color = 'red'; // Ini harusnya loginStatusDiv
                 return;
             }
         });
