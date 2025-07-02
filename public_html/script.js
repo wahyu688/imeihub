@@ -376,7 +376,8 @@
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify({ username, fullname, email, password }),
-                    mode: 'cors'  // ✅ tambahkan ini!
+                    mode: 'cors',  // ✅ tambahkan ini!
+                    credentials: 'omit' // ✅ tambahkan ini!
                     });
 
                     const data = await response.json();
