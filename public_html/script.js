@@ -233,7 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const orderData = {
                 serviceType: formData.get('serviceType'),
                 imeis: [], // Ini akan menjadi array IMEI
-                // customerPhone akan diambil dari backend
             };
 
             // Kumpulkan semua IMEI dari input dinamis
@@ -246,8 +245,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log('DEBUG: Order data collected for submission:', orderData);
             
-            const { authToken, userId } = checkAuthAndAdminStatus(); // Ambil dari checkAuthAndAdminStatus
-            if (!authToken || !userId) { // userName tidak perlu lagi di validasi di sini karena hanya untuk tampilan
+            const { authToken, userId } = checkAuthAndAdminStatus();
+            if (!authToken || !userId) {
                 console.error('DEBUG: User not logged in or data missing during order submission.');
                 orderStatusDiv.innerHTML = '<p style="color: red;">Error: Anda harus login untuk membuat pesanan.</p>';
                 orderStatusDiv.classList.add('error');
@@ -256,12 +255,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 orderStatusDiv.style.color = 'red';
                 return;
             }
-            orderData.userId = userId; // Tambahkan userId ke orderData
+            orderData.userId = userId;
 
             try {
                 const targetApiUrl = `${API_BASE_URL}/api/order/submit`;
                 console.log('DEBUG: Attempting to fetch order submission API from:', targetApiUrl);
-                console.log('DEBUG: Sending order payload:', orderData); // DEBUG LOG Payload
+                console.log('DEBUG: Sending order payload:', orderData);
 
                 const response = await fetch(targetApiUrl, {
                     method: 'POST',
@@ -280,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     const errorText = await response.text();
                     console.warn('DEBUG: Order submission API did not return JSON. Status:', response.status, 'Content-Type:', contentType, 'Response Text:', errorText);
-                    result.success = false; // Set success to false for non-JSON errors
+                    result.success = false;
                     result.message = errorText || `Response status: ${response.status}`;
                 }
                 console.log('DEBUG: API response parsed (or text):', result);
@@ -394,6 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const username = document.getElementById('admin-username').value;
             const fullname = document.getElementById('admin-fullname').value;
             const email = document.getElementById('admin-email').value;
+            const phone = document.getElementById('admin-phone').value; // Ambil phone
             const password = document.getElementById('admin-password').value;
             const token = localStorage.getItem('authToken');
 
@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`${API_BASE_URL}/api/admin/create-user`, {
                     method: 'POST',
                     headers: headers,
-                    body: JSON.stringify({ username, fullname, email, password }),
+                    body: JSON.stringify({ username, fullname, email, phone, password }), // Kirim phone
                     mode: 'cors',
                     credentials: 'omit'
                 });
@@ -694,16 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </td>
                                 </tr>
                             `;
-                            document.querySelectorAll('.admin-role-select').forEach(select => {
-                                select.addEventListener('change', async (e) => {
-                                    const userId = e.target.dataset.userId;
-                                    const newRole = e.target.value;
-                                    if (newRole && userId) {
-                                        await updateUserRoleAdmin(userId, newRole === 'admin');
-                                        e.target.value = '';
-                                    }
-                                });
-                            });
+                            adminUsersTableBody.innerHTML += row;
                         });
                         document.querySelectorAll('.admin-role-select').forEach(select => {
                             select.addEventListener('change', async (e) => {

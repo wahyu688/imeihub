@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImeiHub - Admin: Create User</title>
+    <title>ImeiHub - Create New User</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="imeihub_logo.png" type="image/png"> 
+    <link rel="icon" href="imeihub_logo.png" type="image/png">
     <style>
+        /* Gaya khusus untuk admin_create_user.html jika diperlukan */
         .admin-form-container {
             max-width: 600px;
             margin: 60px auto;
@@ -53,36 +54,159 @@
         .status-message {
             margin-top: 30px;
         }
+        /* Gaya untuk sorting dan search controls (jika ada di halaman ini juga) */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap; /* Izinkan wrap di mobile */
+            gap: 15px; /* Jarak antar elemen kontrol */
+        }
+        .sort-controls, .search-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sort-controls label, .search-controls label {
+            color: var(--secondary-text-color);
+            margin-right: 0;
+        }
+        .sort-controls select, .search-controls input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.95em;
+        }
+        .sort-controls select:focus, .search-controls input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(255,165,0,0.3);
+        }
+        .total-amount-display {
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding-right: 20px;
+        }
+        /* Gaya untuk grouping header */
+        .order-group-header {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: var(--accent-color);
+            font-weight: bold;
+            padding: 10px;
+            text-align: center;
+            grid-column: 1 / -1;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        /* Responsive untuk sorting dan search */
+        @media (max-width: 768px) {
+            .table-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            .sort-controls, .search-controls {
+                width: 100%;
+                justify-content: center;
+            }
+            .total-amount-display {
+                text-align: center;
+                padding-right: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <main>
-        <section class="admin-form-container">
+    <!-- TOP NAVBAR -->
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <div class="brand-logo">
+                <img src="imeihub_logo.png" alt="ImeiHub Logo"> 
+            </div>
+            <ul class="nav-links-desktop">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="my-orders.html">My Orders</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-right">
+            <div id="nav-login-register" style="display: none;"><a href="login.html" class="nav-link-button">Login/Register</a></div>
+            <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
+                <span>Hi, <strong id="username-display"></strong>!</span>
+                <img src="avatar_placeholder.jpg" alt="User Avatar" class="user-avatar">
+            </div>
+            <button id="logout-btn-navbar" class="nav-link-button" style="display: none;">Logout</button>
+        </div>
+
+        <!-- Mobile Hamburger Menu (hidden on desktop) -->
+        <button class="hamburger-menu" aria-label="Toggle navigation">
+            ☰
+        </button>
+    </nav>
+
+    <!-- Mobile Navigation Overlay (hidden on desktop) -->
+    <div class="mobile-nav-overlay">
+        <button class="close-mobile-nav">✖</button>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="order.html">Order</a></li>
+            <li><a href="my-orders.html">My Orders</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+            <li id="mobile-nav-login-register" style="display: none;"><a href="login.html">Login/Register</a></li>
+            <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
+            <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
+        </ul>
+    </div>
+
+    <main class="main-content-area">
+        <section class="admin-form-container content-container-card">
             <h1>Admin: Create New User Account</h1>
-            <p>Enter the details for the new user account.</p>
+            <p style="color: var(--secondary-text-color);">Use this form to create new user accounts, including admin accounts.</p>
             <form id="create-user-form">
                 <label for="admin-username">Username (for Login):</label>
-                <input type="text" id="admin-username" required> <!-- Ganti dari admin-name -->
+                <input type="text" id="admin-username" required>
 
                 <label for="admin-fullname">Full Name (Optional):</label>
-                <input type="text" id="admin-fullname"> <!-- Tambah kolom Full Name opsional -->
+                <input type="text" id="admin-fullname">
 
                 <label for="admin-email">Email (Optional, for notifications):</label>
-                <input type="email" id="admin-email"> <!-- Email opsional -->
+                <input type="email" id="admin-email">
+
+                <label for="admin-phone">Phone Number (Optional):</label> <!-- BARU: Input Nomor Telepon -->
+                <input type="tel" id="admin-phone" placeholder="e.g. 6281234567890"> <!-- BARU -->
 
                 <label for="admin-password">Password:</label>
                 <input type="password" id="admin-password" required>
-                
+
                 <button type="submit" class="btn">Create User</button>
             </form>
-            <div id="admin-create-user-status" class="status-message"></div>
+            <div id="admin-create-user-status" class="status-message" style="margin-top: 20px;"></div>
         </section>
     </main>
 
     <!-- FOOTER -->
-    <footer class="main-container-card" style="margin-top: 60px;">
+    <footer class="main-container-card">
         <div class="footer-content">
-            <p>&copy; 2025 ImeiHub. Admin Panel.</p>
+            <p>&copy; 2025 ImeiHub. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://instagram.com/yourimeihub" target="_blank">Instagram</a>
+                <a href="https://facebook.com/yourimeihub" target="_blank">Facebook</a>
+                <a href="https://twitter.com/yourimeihub" target="_blank">Twitter</a>
+                <a href="https://t.me/yourimeihub" target="_blank">Telegram</a>
+            </div>
         </div>
     </footer>
 
