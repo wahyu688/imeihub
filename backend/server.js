@@ -5,14 +5,14 @@ const cors = require('cors'); // Middleware untuk Cross-Origin Resource Sharing
 const jwt = require('jsonwebtoken'); // Library untuk JSON Web Tokens
 const bcrypt = require('bcryptjs'); // Library untuk hashing password
 const { v4: uuidv4 } = require('uuid'); // Library untuk menghasilkan UUID
-const fetch = require('node-fetch'); // Untuk melakukan HTTP requests
-const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi
+const fetch = require('node-fetch'); // Untuk melakukan HTTP requests (tetap ada meskipun Discord bot dihapus, untuk potensi penggunaan lain)
+const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi (HMAC SHA256) (tetap ada untuk potensi penggunaan lain)
 const nodemailer = require('nodemailer'); // Library untuk mengirim email
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Port server dari variabel lingkungan atau default 3000
 const JWT_SECRET = process.env.JWT_SECRET; // Secret key untuk JWT dari variabel lingkungan
-const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin
+const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin (digunakan di frontend untuk admin_create_user.html)
 
 // --- Discord Configurations (Konstanta tetap ada, tapi tidak digunakan dalam logika saat ini) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
@@ -192,8 +192,7 @@ app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
                 <li>Username: <b>${username}</b></li>
                 <li>Full Name: ${fullname || 'N/A'}</li>
                 <li>Email: ${email || 'N/A'}</li>
-                <li>Phone: ${phone || 'N/A'}</li> <!-- Tambah phone ke email notifikasi -->
-            </ul>
+                <li>Phone: ${phone || 'N/A'}</li> </ul>
             <p>Please note: This user is not an admin by default.</p>
         `;
         console.log('DEBUG: Attempting to send email for new admin user notification.');
