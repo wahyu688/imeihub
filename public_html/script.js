@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Manajemen Status Login di Navbar (Top & Mobile Overlay) ---
-    // Deklarasikan semua elemen navbar di scope DOMContentLoaded agar selalu tersedia
     const navLoginRegister = document.getElementById('nav-login-register');
     const navUserGreeting = document.getElementById('nav-user-greeting');
     const usernameDisplay = document.getElementById('username-display');
@@ -71,16 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); 
+    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard');
 
 
-    // Fungsi untuk memperbarui tampilan navbar berdasarkan status login
     function updateNavbarLoginStatus() {
-        const { authToken, userName, isAdmin } = checkAuthAndAdminStatus(); // Panggil lagi untuk mendapatkan nilai terbaru
+        const { authToken, userName, isAdmin } = checkAuthAndAdminStatus();
 
         console.log(`DEBUG_FRONTEND: Inside updateNavbarLoginStatus. AuthToken: ${!!authToken}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         
-        // Desktop Navbar
         if (navLoginRegister) navLoginRegister.style.display = (authToken && userName) ? 'none' : 'block';
         if (navUserGreeting) {
             navUserGreeting.style.display = (authToken && userName) ? 'flex' : 'none';
@@ -102,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = (authToken && userName && isAdmin) ? 'list-item' : 'none';
         console.log(`DEBUG_FRONTEND: Mobile Admin Dashboard Display Set: ${mobileNavAdminDashboard ? mobileNavAdminDashboard.style.display : 'N/A'}`);
 
-        // Pindahkan event listener hamburger menu dan close ke sini
         if (hamburgerMenu) {
             hamburgerMenu.addEventListener('click', () => {
                 if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
@@ -121,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    updateNavbarLoginStatus(); // Panggil saat DOM dimuat (untuk inisialisasi tampilan awal)
+    updateNavbarLoginStatus();
 
     // Event Listener untuk Logout Button (Global)
     if (logoutBtnNavbar) {
@@ -146,10 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Akhir Manajemen Status Login ---
 
     // --- Hamburger Menu Logic ---
-    // Logika ini dipindahkan ke dalam updateNavbarLoginStatus() untuk memastikan elemen ada
-    // if (hamburgerMenu) { ... }
-    // if (closeMobileNav) { ... }
-    // document.querySelectorAll('.mobile-nav-links a').forEach(link => { ... });
     // --- End Hamburger Menu Logic ---
 
 
@@ -171,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let serviceToSelect = '';
                 switch(serviceParam) {
                     case 'Temporary IMEI Activation (90 Days)': serviceToSelect = 'Temporary IMEI Activation (90 Days)'; break;
-                    case 'Permanent Unlock iPhone': serviceToSelect = 'Permanent Unlock iPhone'; break; // Perbaikan typo
+                    case 'Permanent Unlock iPhone': serviceToSelect = 'Permanent Unlock iPhone'; break; 
                     case 'Permanent Unlock Android': serviceToSelect = 'Permanent Unlock IMEI Android'; break; 
                     case 'IMEI History Check': serviceToSelect = 'IMEI History Check'; break;
                     case 'Other Service': serviceToSelect = 'Other Service'; break;
@@ -264,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     orderForm.reset();
                 } else {
-                    const errorMessage = data.message || `Gagal membuat pesanan. Status: ${response.status}.`;
+                    const errorMessage = result.message || `Gagal membuat pesanan. Status: ${response.status}.`;
                     console.error('DEBUG: Order submission API responded with error:', errorMessage);
                     orderStatusDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${errorMessage}</p>`;
                     orderStatusDiv.classList.add('error');
@@ -381,8 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify({ username, fullname, email, password }),
-                    mode: 'cors',  // ✅ tambahkan ini!
-                    credentials: 'omit' // ✅ tambahkan ini!
+                    mode: 'cors',
+                    credentials: 'omit'
                 });
 
                 const data = await response.json();
@@ -451,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 manageOrdersContent.style.display = 'block';
                 adminContentTitle.textContent = 'Manage Orders';
                 manageOrdersLink.classList.add('active');
-                fetchAdminOrders(); // Panggil fetchAdminOrders saat section ditampilkan
+                fetchAdminOrders();
             } else if (sectionId === 'manage-users') {
                 manageUsersContent.style.display = 'block';
                 adminContentTitle.textContent = 'Manage Users';
@@ -530,6 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     let totalAmountForDisplay = 0;
 
                     if (data.orders && data.orders.length > 0) {
+                        // Group orders by date (Today vs. Tomorrow)
                         const now = new Date();
                         const todayCutoffHour = 17; // 5 PM in 24-hour format
                         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -657,6 +650,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             adminUsersTableBody.innerHTML += row;
                         });
+                        // Add event listener for delete buttons
+                        document.querySelectorAll('.delete-user-button').forEach(button => {
+                            button.addEventListener('click', async (e) => {
+                                const userId = e.target.dataset.userId;
+                                const username = e.target.dataset.username;
+                                await deleteUserAdmin(userId, username);
+                            });
+                        });
                         document.querySelectorAll('.admin-role-select').forEach(select => {
                             select.addEventListener('change', async (e) => {
                                 const userId = e.target.dataset.userId;
@@ -696,8 +697,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok && data.success) {
                     alert(`Order ${orderId} updated to ${newStatus} successfully!`);
+                    const currentSortBy = document.getElementById('sort-orders-by') ? document.getElementById('sort-orders-by').value : 'order_date DESC';
                     const currentSearchName = document.getElementById('search-orders-by') ? document.getElementById('search-orders-by').value : '';
-                    fetchAdminOrders(sortOrdersBySelect.value, currentSearchName);
+                    fetchAdminOrders(currentSortBy, currentSearchName);
                 } else {
                     alert(`Failed to update order ${orderId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update order status:', data.message || 'Error');
