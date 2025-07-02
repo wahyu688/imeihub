@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
             return;
+            // Pastikan tidak ada kode yang mencoba mengakses elemen orderListDiv di sini jika belum login
         }
     }
 
@@ -81,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log(`DEBUG_FRONTEND: Inside updateNavbarLoginStatus. AuthToken: ${!!authToken}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         
-        // Desktop Navbar
         if (navLoginRegister) navLoginRegister.style.display = (authToken && userName) ? 'none' : 'block';
         if (navUserGreeting) {
             navUserGreeting.style.display = (authToken && userName) ? 'flex' : 'none';
@@ -127,19 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutBtnNavbar) {
         logoutBtnNavbar.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Logout button clicked.');
-            localStorage.clear();
+            localStorage.clear(); // Hapus semua item terkait sesi
             console.log('DEBUG_FRONTEND: LocalStorage cleared. AuthToken:', localStorage.getItem('authToken'));
-            updateNavbarLoginStatus();
-            window.location.href = 'login.html';
+            updateNavbarLoginStatus(); // Panggil lagi untuk segera update UI
+            window.location.href = 'login.html'; // Redirect
         });
     }
     // Event Listener untuk Logout Button Mobile
     if (mobileLogoutBtn) {
         mobileLogoutBtn.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Mobile Logout button clicked.');
-            localStorage.clear();
+            localStorage.clear(); // Hapus semua item terkait sesi
             updateNavbarLoginStatus();
-            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open'); // Tutup overlay
             window.location.href = 'login.html';
         });
     }
@@ -769,17 +769,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // My Orders Page (Actual Data Fetching after successful authentication check)
-    if (currentPage === 'my-orders.html' && localStorage.getItem('authToken') && localStorage.getItem('userId')) {
+    if (currentPage === 'my-orders') { // Diubah dari 'my-orders.html'
         const orderListDiv = document.getElementById('order-list');
-        const token = localStorage.getItem('authToken');
-        const userId = localStorage.getItem('userId');
+        const { authToken, userId } = checkAuthAndAdminStatus(); // Ambil dari checkAuthAndAdminStatus
 
         const fetchOrders = async () => {
             orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Memuat pesanan Anda...</p>';
             try {
+                console.log(`DEBUG_FRONTEND: Fetching user orders for userId: ${userId}`); // DEBUG LOG
                 const response = await fetch(`${API_BASE_URL}/api/orders/${userId}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${authToken}` // Gunakan authToken dari checkAuthAndAdminStatus
                     }
                 });
                 const data = await response.json();
@@ -793,11 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <h3>Order ID: ${order.orderId}</h3>
                                     <p style="color: var(--secondary-text-color);"><strong>Layanan:</strong> ${order.serviceType}</p>
                                     <p style="color: var(--secondary-text-color);"><strong>IMEI:</strong> ${order.imei}</p>
-                                    <td>
-                                        <button class="status-button status-${order.status.toLowerCase().replace(/\s/g, '-')}" data-order-id="${order.orderId}" data-current-status="${order.status}">
-                                            ${order.status}
-                                        </button>
-                                    </td>
+                                    <p style="color: var(--secondary-text-color);"><strong>Status:</strong> <span style="font-weight: bold; color: ${order.status === 'Selesai' ? 'green' : order.status === 'Diproses' ? 'orange' : order.status === 'Menunggu Proses Besok' ? 'purple' : 'grey'};">${order.status}</span></p>
                                     <p style="font-size: 0.8em; color: var(--secondary-text-color);">Tanggal Pesan: ${new Date(order.orderDate).toLocaleDateString()} ${new Date(order.orderDate).toLocaleTimeString()}</p>
                                     <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p>
                                     ${order.status !== 'Diproses' && order.status !== 'Selesai' && order.status !== 'Dibatalkan' ? 
@@ -806,7 +802,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             orderListDiv.innerHTML += row;
                         });
-                        // Add event listeners for cancel buttons
                         document.querySelectorAll('.cancel-order-button').forEach(button => {
                             button.addEventListener('click', async (e) => {
                                 const orderId = e.target.dataset.orderId;
@@ -835,12 +830,12 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 console.log(`DEBUG_FRONTEND: Sending cancel order request for orderId: ${orderId}`);
                 const response = await fetch(`${API_BASE_URL}/api/orders/cancel`, {
-                    method: 'POST', // Menggunakan POST untuk update status
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                     },
-                    body: JSON.stringify({ orderId: orderId, newStatus: 'Dibatalkan' }) // Kirim status baru
+                    body: JSON.stringify({ orderId: orderId, newStatus: 'Dibatalkan' })
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
