@@ -6,21 +6,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI DENGAN KUNCI RAHASIA ANDA
 
     // --- LOGIKA PROTEKSI HALAMAN ---
-    // Fungsi untuk mendapatkan nama file HTML saat ini dari URL
     const getCurrentPageName = () => {
         const path = window.location.pathname;
-        // Mengambil nama file dari path, menghapus query string, dan menghapus ekstensi .html jika ada
         let fileName = path.substring(path.lastIndexOf('/') + 1).split('?')[0];
         if (fileName.endsWith('.html')) {
-            fileName = fileName.slice(0, -5); // Hapus ".html"
+            fileName = fileName.slice(0, -5);
         }
         return fileName;
     };
-    const currentPage = getCurrentPageName(); // Sekarang akan mengembalikan "index", "my-orders", "admin_dashboard", dll.
-    console.log(`DEBUG_FRONTEND: Current Page Name: "${currentPage}"`); // DEBUG LOG
+    const currentPage = getCurrentPageName();
+    console.log(`DEBUG_FRONTEND: Current Page Name: "${currentPage}"`);
 
 
-    // Fungsi untuk memeriksa status login dan admin dari localStorage
     const checkAuthAndAdminStatus = () => {
         const authToken = localStorage.getItem('authToken');
         const userId = localStorage.getItem('userId');
@@ -31,8 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return { authToken, userId, userName, isAdmin };
     };
 
-    // Proteksi halaman Order
-    // Perbandingan sekarang menggunakan nama halaman tanpa .html
     if (currentPage === 'order') { 
         const { authToken } = checkAuthAndAdminStatus();
         if (!authToken) {
@@ -42,8 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Proteksi halaman My Orders
-    // Perbandingan sekarang menggunakan nama halaman tanpa .html
     if (currentPage === 'my-orders') { 
         const { authToken, userId } = checkAuthAndAdminStatus();
         if (!authToken || !userId) {
@@ -53,8 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Proteksi halaman Admin Dashboard dan Admin Create User
-    // currentPage.startsWith('admin_') sudah benar karena getCurrentPageName akan mengembalikan "admin_dashboard"
     if (currentPage.startsWith('admin_')) {
         const { authToken, isAdmin } = checkAuthAndAdminStatus();
         console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
