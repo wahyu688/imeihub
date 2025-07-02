@@ -177,14 +177,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (imeiCountInput) {
         imeiCountInput.addEventListener('input', (e) => {
             const count = parseInt(e.target.value, 10);
-            if (count >= 1 && count <= 5) { // Batasi antara 1 dan 5
+            if (count >= 1 && count <= 10) { // Batasi antara 1 dan 10
                 createImeiInputs(count);
             } else if (count < 1) {
                 e.target.value = 1;
                 createImeiInputs(1);
-            } else if (count > 5) {
-                e.target.value = 5;
-                createImeiInputs(5);
+            } else if (count > 10) {
+                e.target.value = 10;
+                createImeiInputs(10);
             }
         });
     }
