@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const userName = localStorage.getItem('userName');
         const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
+        console.log(`DEBUG_FRONTEND: checkAuthAndAdminStatus - AuthToken: ${!!authToken}, UserId: ${userId}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         return { authToken, userId, userName, isAdmin };
     };
 
@@ -245,8 +246,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log('DEBUG: Order data collected for submission:', orderData);
             
-            const { authToken, userId, userName } = checkAuthAndAdminStatus(); // Ambil dari checkAuthAndAdminStatus
-            if (!authToken || !userId || !userName) { // Pastikan user login
+            const { authToken, userId } = checkAuthAndAdminStatus(); // Ambil dari checkAuthAndAdminStatus
+            if (!authToken || !userId) { // userName tidak perlu lagi di validasi di sini karena hanya untuk tampilan
                 console.error('DEBUG: User not logged in or data missing during order submission.');
                 orderStatusDiv.innerHTML = '<p style="color: red;">Error: Anda harus login untuk membuat pesanan.</p>';
                 orderStatusDiv.classList.add('error');
@@ -266,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}` // Gunakan authToken dari checkAuthAndAdminStatus
+                        'Authorization': `Bearer ${authToken}`
                     },
                     body: JSON.stringify(orderData)
                 });
@@ -693,7 +694,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </td>
                                 </tr>
                             `;
-                            adminUsersTableBody.innerHTML += row;
+                            document.querySelectorAll('.admin-role-select').forEach(select => {
+                                select.addEventListener('change', async (e) => {
+                                    const userId = e.target.dataset.userId;
+                                    const newRole = e.target.value;
+                                    if (newRole && userId) {
+                                        await updateUserRoleAdmin(userId, newRole === 'admin');
+                                        e.target.value = '';
+                                    }
+                                });
+                            });
                         });
                         document.querySelectorAll('.admin-role-select').forEach(select => {
                             select.addEventListener('change', async (e) => {
