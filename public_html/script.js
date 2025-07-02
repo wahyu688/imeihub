@@ -707,6 +707,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             });
                         });
+                        document.querySelectorAll('.delete-user-button').forEach(button => {
+                            button.addEventListener('click', async (e) => {
+                                const userId = e.target.dataset.userId;
+                                const username = e.target.dataset.username;
+                                await deleteUserAdmin(userId, username);
+                            });
+                        });
                     } else {
                         adminUsersTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--secondary-text-color);">No users found.</td></tr>';
                     }
