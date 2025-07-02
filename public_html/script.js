@@ -373,9 +373,10 @@
 
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/admin/create-user`, {
-                        method: 'POST',
-                        headers: headers,
-                        body: JSON.stringify({ username, fullname, email, password })
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ username, fullname, email, password }),
+                    mode: 'cors'  // ✅ tambahkan ini!
                     });
 
                     const data = await response.json();
