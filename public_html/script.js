@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return fileName;
     };
     const currentPage = getCurrentPageName(); // Sekarang akan mengembalikan "index", "my-orders", "admin_dashboard", dll.
+    console.log(`DEBUG_FRONTEND: Current Page Name: "${currentPage}"`); // DEBUG LOG
+
 
     // Fungsi untuk memeriksa status login dan admin dari localStorage
     const checkAuthAndAdminStatus = () => {
@@ -267,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     orderForm.reset();
                 } else {
-                    const errorMessage = result.message || `Gagal membuat pesanan. Status: ${response.status}.`;
+                    const errorMessage = data.message || `Gagal membuat pesanan. Status: ${response.status}.`;
                     console.error('DEBUG: Order submission API responded with error:', errorMessage);
                     orderStatusDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${errorMessage}</p>`;
                     orderStatusDiv.classList.add('error');
@@ -533,7 +535,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     let totalAmountForDisplay = 0;
 
                     if (data.orders && data.orders.length > 0) {
-                        // Group orders by date (Today vs. Tomorrow)
                         const now = new Date();
                         const todayCutoffHour = 17; // 5 PM in 24-hour format
                         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -595,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                             <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
                                             <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
                                             <option value="Dibatalkan" ${order.status === 'Dibatalkan' ? 'selected' : ''}>Dibatalkan</option>
-                                            <option value="Proses Aktif" ${order.status === 'Proses Aktif' ? 'selected' : ''}>Proses Aktif</option> <!-- Tambah status baru -->
+                                            <option value="Proses Aktif" ${order.status === 'Proses Aktif' ? 'selected' : ''}>Proses Aktif</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -733,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok && data.success) {
                     alert(`User ${userId} role updated to ${roleText} successfully!`);
-                    fetchAdminUsers();
+                    fetchAdminUsers(); // Reload users table
                 } else {
                     alert(`Failed to update user role for ${userId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update user role:', data.message || 'Error');
