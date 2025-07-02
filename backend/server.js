@@ -605,6 +605,29 @@ app.post('/api/discord-webhook-commands', async (req, res) => {
     }
 });
 
+//delete users on manage user in dashboard page
+app.delete('/api/admin/users/:userId', authenticateToken, async (req, res) => {
+    const { userId } = req.params;
+
+    if (!userId) {
+        return res.status(400).json({ success: false, message: 'User ID tidak disediakan.' });
+    }
+
+    try {
+        const [result] = await pool.query('DELETE FROM users WHERE id = ?', [userId]);
+
+        if (result.affectedRows > 0) {
+            console.log(`User ${userId} berhasil dihapus.`);
+            res.json({ success: true, message: 'User berhasil dihapus.' });
+        } else {
+            res.status(404).json({ success: false, message: 'User tidak ditemukan.' });
+        }
+    } catch (error) {
+        console.error('Gagal menghapus user:', error);
+        res.status(500).json({ success: false, message: 'Gagal menghapus user.', error: error.message });
+    }
+});
+
 
 // --- Start Server ---
 app.listen(PORT, '0.0.0.0', () => {
