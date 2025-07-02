@@ -61,32 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Manajemen Status Login di Navbar (Top & Mobile Overlay) ---
     const navLoginRegister = document.getElementById('nav-login-register');
-    console.log('DEBUG_FRONTEND: navLoginRegister element:', navLoginRegister); // DEBUG LOG
     const navUserGreeting = document.getElementById('nav-user-greeting');
-    console.log('DEBUG_FRONTEND: navUserGreeting element:', navUserGreeting); // DEBUG LOG
     const usernameDisplay = document.getElementById('username-display');
-    console.log('DEBUG_FRONTEND: usernameDisplay element:', usernameDisplay); // DEBUG LOG
     const logoutBtnNavbar = document.getElementById('logout-btn-navbar');
-    console.log('DEBUG_FRONTEND: logoutBtnNavbar element:', logoutBtnNavbar); // DEBUG LOG
     const navAdminDashboard = document.getElementById('nav-admin-dashboard');
-    console.log('DEBUG_FRONTEND: navAdminDashboard element:', navAdminDashboard); // DEBUG LOG
     
     const hamburgerMenu = document.querySelector('.hamburger-menu');
-    console.log('DEBUG_FRONTEND: hamburgerMenu element:', hamburgerMenu); // DEBUG LOG
     const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-    console.log('DEBUG_FRONTEND: mobileNavOverlay element:', mobileNavOverlay); // DEBUG LOG
     const closeMobileNav = document.querySelector('.close-mobile-nav');
-    console.log('DEBUG_FRONTEND: closeMobileNav element:', closeMobileNav); // DEBUG LOG
     const mobileNavLoginRegister = document.getElementById('mobile-nav-login-register');
-    console.log('DEBUG_FRONTEND: mobileNavLoginRegister element:', mobileNavLoginRegister); // DEBUG LOG
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
-    console.log('DEBUG_FRONTEND: mobileNavUserGreeting element:', mobileNavUserGreeting); // DEBUG LOG
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
-    console.log('DEBUG_FRONTEND: mobileUsernameDisplay element:', mobileUsernameDisplay); // DEBUG LOG
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    console.log('DEBUG_FRONTEND: mobileLogoutBtn element:', mobileLogoutBtn); // DEBUG LOG
     const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); 
-    console.log('DEBUG_FRONTEND: mobileNavAdminDashboard element:', mobileNavAdminDashboard); // DEBUG LOG
 
 
     function updateNavbarLoginStatus() {
@@ -115,21 +102,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = (authToken && userName && isAdmin) ? 'list-item' : 'none';
         console.log(`DEBUG_FRONTEND: Mobile Admin Dashboard Display Set: ${mobileNavAdminDashboard ? mobileNavAdminDashboard.style.display : 'N/A'}`);
 
-        // Pastikan elemen hamburgerMenu, mobileNavOverlay, closeMobileNav ada sebelum menambahkan event listener
-        if (hamburgerMenu && mobileNavOverlay && closeMobileNav) {
+        if (hamburgerMenu) {
             hamburgerMenu.addEventListener('click', () => {
-                mobileNavOverlay.classList.toggle('open');
+                if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
             });
+        }
+        if (closeMobileNav) {
             closeMobileNav.addEventListener('click', () => {
-                mobileNavOverlay.classList.remove('open');
+                if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
             });
-            mobileNavOverlay.querySelectorAll('.mobile-nav-links a').forEach(link => {
+        }
+        if (mobileNavOverlay) { 
+            document.querySelectorAll('.mobile-nav-links a').forEach(link => {
                 link.addEventListener('click', () => {
-                    mobileNavOverlay.classList.remove('open');
+                    if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
                 });
             });
-        } else {
-            console.warn('DEBUG_FRONTEND: Mobile navigation elements not found. Hamburger menu functionality may be limited.');
         }
     }
     updateNavbarLoginStatus();
@@ -156,10 +144,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- Akhir Manajemen Status Login ---
 
+    // --- Hamburger Menu Logic ---
+    // --- End Hamburger Menu Logic ---
+
+
     // --- Page-specific JavaScript Logic ---
 
     // Order Submission (Only on order.html)
     const orderForm = document.getElementById('order-submission-form');
+    const imeiCountInput = document.getElementById('imei-count');
+    const imeiInputsContainer = document.getElementById('imei-inputs-container');
+
+    // Fungsi untuk membuat input IMEI dinamis
+    const createImeiInputs = (count) => {
+        imeiInputsContainer.innerHTML = ''; // Clear existing inputs
+        for (let i = 1; i <= count; i++) {
+            const label = document.createElement('label');
+            label.htmlFor = `imei-${i}`;
+            label.textContent = `Device IMEI ${i}:`;
+            imeiInputsContainer.appendChild(label);
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.id = `imei-${i}`;
+            input.name = `imei_${i}`; // Name format: imei_1, imei_2
+            input.maxLength = 15;
+            input.required = true;
+            imeiInputsContainer.appendChild(input);
+        }
+    };
+
+    if (imeiCountInput) {
+        imeiCountInput.addEventListener('input', (e) => {
+            const count = parseInt(e.target.value, 10);
+            if (count >= 1 && count <= 5) { // Batasi antara 1 dan 5
+                createImeiInputs(count);
+            } else if (count < 1) {
+                e.target.value = 1;
+                createImeiInputs(1);
+            } else if (count > 5) {
+                e.target.value = 5;
+                createImeiInputs(5);
+            }
+        });
+    }
+
     console.log('DEBUG: orderForm element found:', orderForm);
     
     if (orderForm) {
@@ -198,45 +227,50 @@ document.addEventListener('DOMContentLoaded', () => {
             orderStatusDiv.style.color = 'var(--text-color)';
             
             const formData = new FormData(orderForm);
-            const orderData = {};
-            for (let [key, value] of formData.entries()) {
-                orderData[key] = value;
-            }
-            let amount = 0;
-            switch(orderData.serviceType) {
-                case 'Temporary IMEI Activation (90 Days)': amount = 100000; break;
-                case 'Permanent Unlock iPhone': amount = 500000; break;
-                case 'Permanent Unlock Android': amount = 300000; break;
-                case 'IMEI History Check': amount = 50000; break;
-                case 'Other Service': amount = 75000; break;
-                default: amount = 10000;
-            }
-            orderData.amount = amount;
+            const orderData = {
+                serviceType: formData.get('serviceType'),
+                imeis: [], // Ini akan menjadi array IMEI
+                customerPhone: '' // Akan diambil dari user yang login
+            };
+
+            // Kumpulkan semua IMEI dari input dinamis
+            const imeiInputs = imeiInputsContainer.querySelectorAll('input[type="text"]');
+            imeiInputs.forEach(input => {
+                if (input.value) {
+                    orderData.imeis.push(input.value);
+                }
+            });
 
             console.log('DEBUG: Order data collected for submission:', orderData);
-
-            const userId = localStorage.getItem('userId');
-            if (userId) {
-                orderData.userId = userId;
-            } else {
-                console.error('DEBUG: User ID not found in localStorage during order submission. Redirection expected if not logged in.');
-                orderStatusDiv.innerHTML = '<p style="color: red;">Error: Anda harus login untuk membuat pesanan. Silakan coba refresh halaman.</p>';
+            
+            const { authToken, userId, userName } = checkAuthAndAdminStatus(); // Ambil dari checkAuthAndAdminStatus
+            if (!authToken || !userId || !userName) { // Pastikan user login
+                console.error('DEBUG: User not logged in or data missing during order submission.');
+                orderStatusDiv.innerHTML = '<p style="color: red;">Error: Anda harus login untuk membuat pesanan.</p>';
                 orderStatusDiv.classList.add('error');
                 orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
                 orderStatusDiv.style.borderColor = 'red';
                 orderStatusDiv.style.color = 'red';
                 return;
             }
+            orderData.userId = userId; // Tambahkan userId ke orderData
+
+            // Ambil phone number dari user yang login (jika ada di DB user)
+            // Untuk skenario ini, kita akan asumsikan phone number dikirim dari form atau diambil dari DB user
+            // Jika phone number tidak ada di DB user, Anda mungkin perlu menambahkan input di form order
+            // Untuk saat ini, kita akan ambil dari formData yang ada (jika ada input phone) atau default
+            orderData.customerPhone = formData.get('phone') || ''; // Jika ada input phone di form, gunakan itu
 
             try {
                 const targetApiUrl = `${API_BASE_URL}/api/order/submit`;
                 console.log('DEBUG: Attempting to fetch order submission API from:', targetApiUrl);
-                
+                console.log('DEBUG: Sending order payload:', orderData); // DEBUG LOG Payload
+
                 const response = await fetch(targetApiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                        'Authorization': `Bearer ${authToken}` // Gunakan authToken dari checkAuthAndAdminStatus
                     },
                     body: JSON.stringify(orderData)
                 });
@@ -247,15 +281,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (contentType && contentType.includes('application/json')) {
                     result = await response.json();
                 } else {
-                    console.warn('DEBUG: Order submission API did not return JSON. Status:', response.status, 'Content-Type:', contentType);
-                    result.message = await response.text() || `Response status: ${response.status}`;
+                    const errorText = await response.text();
+                    console.warn('DEBUG: Order submission API did not return JSON. Status:', response.status, 'Content-Type:', contentType, 'Response Text:', errorText);
+                    result.success = false; // Set success to false for non-JSON errors
+                    result.message = errorText || `Response status: ${response.status}`;
                 }
                 console.log('DEBUG: API response parsed (or text):', result);
 
                 if (response.ok && result.success) {
+                    const totalAmount = result.orders.reduce((sum, order) => sum + (order.amount || 0), 0);
                     orderStatusDiv.innerHTML = `
-                        <p style="color: green;">Pesanan Anda berhasil dibuat! Nomor Pesanan: <strong>${result.orderId}</strong></p>
-                        <p style="color: var(--secondary-text-color);">Total Harga: <strong>Rp ${result.amount.toLocaleString('id-ID')}</strong> (per IMEI)</p>
+                        <p style="color: green;">Pesanan Anda berhasil dibuat! Total ${result.orders.length} IMEI.</p>
+                        <p style="color: var(--secondary-text-color);">Total Harga: <strong>Rp ${totalAmount.toLocaleString('id-ID')}</strong></p>
                         <p style="color: var(--secondary-text-color);">Detail pesanan telah kami terima.</p>
                         <p style="font-size: 0.9em; margin-top: 15px; color: var(--secondary-text-color);">Kami akan segera memproses pesanan Anda.</p>
                         <p><a href="my-orders.html" class="cta-button" style="margin-top: 15px;">Lihat Status Pesanan Saya</a></p>
@@ -266,8 +303,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     orderStatusDiv.classList.remove('error');
                     
                     orderForm.reset();
+                    createImeiInputs(1); // Reset to 1 IMEI input
                 } else {
-                    const errorMessage = data.message || `Gagal membuat pesanan. Status: ${response.status}.`;
+                    const errorMessage = result.message || `Gagal membuat pesanan. Status: ${response.status}.`;
                     console.error('DEBUG: Order submission API responded with error:', errorMessage);
                     orderStatusDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${errorMessage}</p>`;
                     orderStatusDiv.classList.add('error');
@@ -341,9 +379,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('DEBUG: Login error (fetch failed/network issue):', error);
                 loginStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
                 loginStatusDiv.classList.add('error');
-                orderStatusDiv.style.backgroundColor = 'var(--card-bg)'; // Ini harusnya loginStatusDiv
-                orderStatusDiv.style.borderColor = 'red'; // Ini harusnya loginStatusDiv
-                orderStatusDiv.style.color = 'red'; // Ini harusnya loginStatusDiv
+                loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
+                loginStatusDiv.style.borderColor = 'red';
+                loginStatusDiv.style.color = 'red';
                 return;
             }
         });
@@ -426,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const manageUsersLink = document.getElementById('manage-users-link');
     const createUserLink = document.getElementById('create-user-link');
 
-    if (currentPage === 'admin_dashboard') {
+    if (currentPage === 'admin_dashboard.html') {
         const isAdminCheck = localStorage.getItem('isAdmin') === 'true'; 
         console.log(`DEBUG_FRONTEND: Admin Dashboard access check. IsAdmin: ${isAdminCheck}`);
         if (!isAdminCheck) { 
@@ -435,7 +473,6 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'login.html';
             return;
         }
-        showSection('dashboard-overview');
 
         function showSection(sectionId) {
             dashboardOverviewContent.style.display = 'none';
