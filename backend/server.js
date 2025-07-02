@@ -87,9 +87,9 @@ pool.getConnection()
 
 // --- Middleware ---
 const corsOptions = {
-    origin: 'https://imeihub.id', // domain frontend kamu
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'], // ✅ wajib agar header Authorization diterima
+    origin: 'https://imeihub.id', // Pastikan ini sama persis dengan URL frontend Anda
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
     optionsSuccessStatus: 204
 };
 app.use(cors(corsOptions)); // Menerapkan middleware CORS
@@ -116,6 +116,9 @@ async function sendEmail(to, subject, htmlContent) {
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization']; // Mengambil header Authorization
     const token = authHeader && authHeader.split(' ')[1]; // Mengambil token (Bearer <token>)
+
+    console.log('DEBUG_BACKEND: authenticateToken - Auth Header:', authHeader); // <<-- TAMBAH LOG INI
+    console.log('DEBUG_BACKEND: authenticateToken - Extracted Token:', token); // <<-- TAMBAH LOG INI
 
     if (token == null) { // Jika token tidak ada
         return res.status(401).json({ message: 'Unauthorized: No token provided.' });
@@ -213,28 +216,25 @@ app.post('/api/login', async (req, res) => {
         const [users] = await pool.query('SELECT id, username, name, email, password, is_admin FROM users WHERE username = ?', [username]);
         const user = users[0];
 
-        if (!user) {
+        if (!user) { // Jika user tidak ditemukan
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
+        if (!isPasswordValid) { // Jika password tidak cocok
             return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
         const token = jwt.sign({ userId: user.id, isAdmin: user.is_admin }, JWT_SECRET);
         console.log('User logged in:', user.username);
-        // Pastikan userName dikembalikan dengan benar.
-        // user.name adalah nama lengkap (opsional), user.username adalah username login.
-        // Gunakan user.username jika user.name kosong.
-        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin }); 
+        res.json({ message: 'Login successful', token, userId: user.id, userName: user.name || user.username, isAdmin: user.is_admin });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Error logging in.', error: error.message });
     }
 });
 
-// Middleware to ensure user is logged in for /order access and /orders/:userId
+// Middleware untuk memastikan user login untuk akses /order dan /orders/:userId
 app.use('/api/order', authenticateToken); 
 app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
     if (req.user.userId !== req.params.userId) {
@@ -376,6 +376,38 @@ app.post('/api/admin/users/update-role', authenticateAdmin, async (req, res) => 
     } catch (error) {
         console.error('ERROR: Error updating user role:', error);
         res.status(500).json({ success: false, message: 'Error updating user role.', error: error.message });
+    }
+});
+
+// DELETE /api/admin/users/:userId - Endpoint Admin untuk Menghapus User
+app.delete('/api/admin/users/:userId', authenticateAdmin, async (req, res) => {
+    const { userId } = req.params; // Ambil userId dari URL parameter
+
+    console.log(`DEBUG_BACKEND: Delete user request received for userId: ${userId}`);
+
+    try {
+        // Pastikan admin tidak bisa menghapus dirinya sendiri
+        if (req.user.userId === userId) {
+            console.warn(`DEBUG_BACKEND: Admin ${req.user.username} tried to delete self.`);
+            return res.status(403).json({ success: false, message: 'Cannot delete your own account.' });
+        }
+
+        // Opsional: Hapus order terkait user ini terlebih dahulu jika ada foreign key constraint
+        // await pool.query('DELETE FROM orders WHERE user_id = ?', [userId]);
+        // console.log(`DEBUG_BACKEND: Deleted orders for user ${userId}.`);
+
+        const [result] = await pool.query('DELETE FROM users WHERE id = ?', [userId]);
+
+        if (result.affectedRows > 0) {
+            console.log(`DEBUG_BACKEND: User ${userId} deleted successfully.`);
+            res.json({ success: true, message: `User ${userId} deleted successfully.` });
+        } else {
+            console.warn(`DEBUG_BACKEND: User ${userId} not found for deletion.`);
+            res.status(404).json({ success: false, message: `User ${userId} not found.` });
+        }
+    } catch (error) {
+        console.error('ERROR: Error deleting user:', error);
+        res.status(500).json({ success: false, message: 'Error deleting user.', error: error.message });
     }
 });
 
@@ -538,4 +570,7 @@ app.post('/api/discord-webhook-commands', async (req, res) => {
 // --- Start Server ---
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Backend server running on http://0.0.0.0:${PORT}`);
+    if (JWT_SECRET === 'your_super_secret_jwt_key_please_change_this_to_a_random_string_in_production') {
+        console.warn('WARNING: JWT_SECRET is not changed. Please update it in your .env file for production!');
+    }
 });

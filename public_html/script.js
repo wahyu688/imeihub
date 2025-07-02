@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <td>
                                         <select class="admin-status-select" data-order-id="${order.orderId}">
                                             <option value="">Update Status</option>
-                                            <option value="Menunggu Pembayaran" ${order.status === 'Menunggu Pembayaran' ? 'selected' : ''}>Menunggu Pembayaran</option>
+                                            <option value="WAITING-PROCESS-ACTIVE" ${order.status === 'WAITING-PROCESS-ACTIVE' ? 'selected' : ''}>WAITING-PROCESS-ACTIVE</option>
                                             <option value="Menunggu Proses Besok" ${order.status === 'Menunggu Proses Besok' ? 'selected' : ''}>Menunggu Proses Besok</option>
                                             <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
                                             <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
