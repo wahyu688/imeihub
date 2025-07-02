@@ -102,22 +102,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mobileNavAdminDashboard) mobileNavAdminDashboard.style.display = (authToken && userName && isAdmin) ? 'list-item' : 'none';
         console.log(`DEBUG_FRONTEND: Mobile Admin Dashboard Display Set: ${mobileNavAdminDashboard ? mobileNavAdminDashboard.style.display : 'N/A'}`);
 
-        if (hamburgerMenu) {
+        // Pastikan elemen hamburgerMenu, mobileNavOverlay, closeMobileNav ada sebelum menambahkan event listener
+        if (hamburgerMenu && mobileNavOverlay && closeMobileNav) {
             hamburgerMenu.addEventListener('click', () => {
-                if (mobileNavOverlay) mobileNavOverlay.classList.toggle('open');
+                mobileNavOverlay.classList.toggle('open');
             });
-        }
-        if (closeMobileNav) {
             closeMobileNav.addEventListener('click', () => {
-                if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+                mobileNavOverlay.classList.remove('open');
             });
-        }
-        if (mobileNavOverlay) { 
-            document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+            mobileNavOverlay.querySelectorAll('.mobile-nav-links a').forEach(link => {
                 link.addEventListener('click', () => {
-                    if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+                    mobileNavOverlay.classList.remove('open');
                 });
             });
+        } else {
+            console.warn('DEBUG_FRONTEND: Mobile navigation elements not found. Hamburger menu functionality may be limited.');
         }
     }
     updateNavbarLoginStatus();
@@ -143,10 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     // --- Akhir Manajemen Status Login ---
-
-    // --- Hamburger Menu Logic ---
-    // --- End Hamburger Menu Logic ---
-
 
     // --- Page-specific JavaScript Logic ---
 
