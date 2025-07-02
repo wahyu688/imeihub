@@ -435,6 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'login.html';
             return;
         }
+        showSection('dashboard-overview');
 
         function showSection(sectionId) {
             dashboardOverviewContent.style.display = 'none';
