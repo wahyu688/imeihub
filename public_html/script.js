@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log(`DEBUG_FRONTEND: Inside updateNavbarLoginStatus. AuthToken: ${!!authToken}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         
+        // Desktop Navbar
         if (navLoginRegister) navLoginRegister.style.display = (authToken && userName) ? 'none' : 'block';
         if (navUserGreeting) {
             navUserGreeting.style.display = (authToken && userName) ? 'flex' : 'none';
@@ -127,19 +128,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutBtnNavbar) {
         logoutBtnNavbar.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Logout button clicked.');
-            localStorage.clear(); // Hapus semua item terkait sesi
+            localStorage.clear();
             console.log('DEBUG_FRONTEND: LocalStorage cleared. AuthToken:', localStorage.getItem('authToken'));
-            updateNavbarLoginStatus(); // Panggil lagi untuk segera update UI
-            window.location.href = 'login.html'; // Redirect
+            updateNavbarLoginStatus();
+            window.location.href = 'login.html';
         });
     }
     // Event Listener untuk Logout Button Mobile
     if (mobileLogoutBtn) {
         mobileLogoutBtn.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Mobile Logout button clicked.');
-            localStorage.clear(); // Hapus semua item terkait sesi
+            localStorage.clear();
             updateNavbarLoginStatus();
-            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open'); // Tutup overlay
+            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
             window.location.href = 'login.html';
         });
     }
@@ -260,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     orderForm.reset();
                 } else {
-                    const errorMessage = data.message || `Gagal membuat pesanan. Status: ${response.status}.`;
+                    const errorMessage = result.message || `Gagal membuat pesanan. Status: ${response.status}.`;
                     console.error('DEBUG: Order submission API responded with error:', errorMessage);
                     orderStatusDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${errorMessage}</p>`;
                     orderStatusDiv.classList.add('error');
@@ -776,10 +777,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const fetchOrders = async () => {
             orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Memuat pesanan Anda...</p>';
             try {
-                console.log(`DEBUG_FRONTEND: Fetching user orders for userId: ${userId}`); // DEBUG LOG
+                console.log(`DEBUG_FRONTEND: Fetching user orders for userId: ${userId}`);
                 const response = await fetch(`${API_BASE_URL}/api/orders/${userId}`, {
                     headers: {
-                        'Authorization': `Bearer ${authToken}` // Gunakan authToken dari checkAuthAndAdminStatus
+                        'Authorization': `Bearer ${authToken}`
                     }
                 });
                 const data = await response.json();
