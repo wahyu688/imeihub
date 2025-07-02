@@ -5,14 +5,14 @@ const cors = require('cors'); // Middleware untuk Cross-Origin Resource Sharing
 const jwt = require('jsonwebtoken'); // Library untuk JSON Web Tokens
 const bcrypt = require('bcryptjs'); // Library untuk hashing password
 const { v4: uuidv4 } = require('uuid'); // Library untuk menghasilkan UUID
-const fetch = require('node-fetch'); // Untuk melakukan HTTP requests (tetap ada meskipun Discord bot dihapus, untuk potensi penggunaan lain)
-const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi (HMAC SHA256) (tetap ada untuk potensi penggunaan lain)
+const fetch = require('node-fetch'); // Untuk melakukan HTTP requests
+const crypto = require('crypto'); // Modul bawaan Node.js untuk kriptografi
 const nodemailer = require('nodemailer'); // Library untuk mengirim email
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Port server dari variabel lingkungan atau default 3000
 const JWT_SECRET = process.env.JWT_SECRET; // Secret key untuk JWT dari variabel lingkungan
-const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin (digunakan di frontend untuk admin_create_user.html)
+const ADMIN_API_KEY_BACKEND = process.env.ADMIN_API_KEY_BACKEND; // API Key untuk endpoint admin
 
 // --- Discord Configurations (Konstanta tetap ada, tapi tidak digunakan dalam logika saat ini) ---
 const DISCORD_BOT_UPDATE_API_URL = process.env.DISCORD_BOT_UPDATE_API_URL;
@@ -30,14 +30,13 @@ const ADMIN_EMAIL_RECEIVER = process.env.ADMIN_EMAIL_RECEIVER; // Email admin un
 
 // Konfigurasi transporter email
 const transporter = nodemailer.createTransport({
-    host: EMAIL_HOST || null, // Gunakan host eksplisit jika disediakan
-    port: EMAIL_PORT_SMTP ? parseInt(EMAIL_PORT_SMTP, 10) : null, // Parse port sebagai integer
-    secure: EMAIL_SECURE, // true untuk SSL (port 465), false untuk TLS (port 587)
+    host: EMAIL_HOST || null,
+    port: EMAIL_PORT_SMTP ? parseInt(EMAIL_PORT_SMTP, 10) : null,
+    secure: EMAIL_SECURE,
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASSWORD,
     },
-    // Opsi timeout untuk koneksi SMTP, membantu mendiagnosis masalah koneksi
     connectionTimeout: 10 * 1000, // 10 detik
     socketTimeout: 30 * 1000 // 30 detik
 });
@@ -64,16 +63,16 @@ const SERVICE_PRICES = {
 };
 
 // --- Database Configuration (MySQL) ---
-const mysql = require('mysql2/promise'); // Import driver mysql2/promise
+const mysql = require('mysql2/promise');
 
-const pool = mysql.createPool({ // Membuat koneksi pool MySQL
-    host: process.env.DB_HOST, // Host database dari variabel lingkungan
-    user: process.env.DB_USER, // User database dari variabel lingkungan
-    database: process.env.DB_NAME, // Nama database dari variabel lingkungan
-    password: process.env.DB_PASSWORD, // Password database dari variabel lingkungan
-    port: process.env.DB_PORT, // Port database dari variabel lingkungan
-    waitForConnections: true, // Menunggu koneksi jika pool habis
-    connectionLimit: 10, // Batas koneksi di pool
+const pool = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+    waitForConnections: true,
+    connectionLimit: 10,
     queueLimit: 0
 });
 
@@ -551,7 +550,6 @@ app.post('/api/orders/cancel', authenticateToken, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Forbidden: You can only cancel your own orders.' });
         }
 
-        // Cek status order: tidak bisa dibatalkan jika sudah 'Diproses' atau 'Selesai' atau 'Dibatalkan'
         if (order.status === 'Diproses' || order.status === 'Selesai' || order.status === 'Dibatalkan') {
             console.warn(`DEBUG_BACKEND: Order ${orderId} cannot be cancelled due to current status: ${order.status}.`);
             return res.status(400).json({ success: false, message: `Order cannot be cancelled. Current status: ${order.status}.` });
