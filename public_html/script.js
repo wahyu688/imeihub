@@ -342,18 +342,23 @@
         }
 
         // Admin Create User functionality (Only on admin_create_user.html)
-                const createUserForm = document.getElementById('create-user-form');
+        const createUserForm = document.getElementById('create-user-form');
         if (createUserForm) {
             const adminCreateUserStatusDiv = document.getElementById('admin-create-user-status');
 
             createUserForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-
                 const username = document.getElementById('admin-username').value;
                 const fullname = document.getElementById('admin-fullname').value;
                 const email = document.getElementById('admin-email').value;
                 const password = document.getElementById('admin-password').value;
                 const token = localStorage.getItem('authToken');
+
+                console.log("DEBUG: Retrieved token:", token);
+                if (!token) {
+                    alert('Gagal: Anda belum login atau token tidak tersedia.');
+                    return;
+                }
 
                 const headers = {
                     'Content-Type': 'application/json',
@@ -379,14 +384,21 @@
                         adminCreateUserStatusDiv.innerHTML = `<p style="color: green;">User "${username}" created successfully!</p>`;
                         createUserForm.reset();
                     } else {
-                        const errorMessage = data.message || 'Failed to create user.';
+                        const errorMessage = data.message || 'Failed to create user. Please try again.';
+                        console.error('DEBUG: Admin Create User API responded with error:', errorMessage);
                         adminCreateUserStatusDiv.innerHTML = `<p style="color: red;">Error: ${errorMessage}</p>`;
                         adminCreateUserStatusDiv.classList.add('error');
+                        adminCreateUserStatusDiv.style.backgroundColor = 'var(--card-bg)';
+                        adminCreateUserStatusDiv.style.borderColor = 'red';
+                        adminCreateUserStatusDiv.style.color = 'red';
                     }
                 } catch (error) {
-                    console.error('DEBUG: Admin Create User error:', error);
-                    adminCreateUserStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server.</p>`;
+                    console.error('DEBUG: Admin Create User error (fetch failed/network issue):', error);
+                    adminCreateUserStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
                     adminCreateUserStatusDiv.classList.add('error');
+                    adminCreateUserStatusDiv.style.backgroundColor = 'var(--card-bg)';
+                    adminCreateUserStatusDiv.style.borderColor = 'red';
+                    adminCreateUserStatusDiv.style.color = 'red';
                 }
             });
         }
