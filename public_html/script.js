@@ -123,19 +123,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoutBtnNavbar) {
         logoutBtnNavbar.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Logout button clicked.');
-            localStorage.clear(); // Hapus semua item terkait sesi
+            localStorage.clear();
             console.log('DEBUG_FRONTEND: LocalStorage cleared. AuthToken:', localStorage.getItem('authToken'));
-            updateNavbarLoginStatus(); // Panggil lagi untuk segera update UI
-            window.location.href = 'login.html'; // Redirect
+            updateNavbarLoginStatus();
+            window.location.href = 'login.html';
         });
     }
     // Event Listener untuk Logout Button Mobile
     if (mobileLogoutBtn) {
         mobileLogoutBtn.addEventListener('click', () => {
             console.log('DEBUG_FRONTEND: Mobile Logout button clicked.');
-            localStorage.clear(); // Hapus semua item terkait sesi
+            localStorage.clear();
             updateNavbarLoginStatus();
-            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open'); // Tutup overlay
+            if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
             window.location.href = 'login.html';
         });
     }
@@ -522,7 +522,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     let totalAmountForDisplay = 0;
 
                     if (data.orders && data.orders.length > 0) {
-                        // Group orders by date (Today vs. Tomorrow)
                         const now = new Date();
                         const todayCutoffHour = 17; // 5 PM in 24-hour format
                         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -579,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <td>
                                         <select class="admin-status-select" data-order-id="${order.orderId}">
                                             <option value="">Update Status</option>
-                                            <option value="WAITING-PROCESS-ACTIVE" ${order.status === 'WAITING-PROCESS-ACTIVE' ? 'selected' : ''}>WAITING-PROCESS-ACTIVE</option>
+                                            <option value="Menunggu Pembayaran" ${order.status === 'Menunggu Pembayaran' ? 'selected' : ''}>Menunggu Pembayaran</option>
                                             <option value="Menunggu Proses Besok" ${order.status === 'Menunggu Proses Besok' ? 'selected' : ''}>Menunggu Proses Besok</option>
                                             <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
                                             <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
@@ -649,14 +648,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </tr>
                             `;
                             adminUsersTableBody.innerHTML += row;
-                        });
-                        // Add event listener for delete buttons
-                        document.querySelectorAll('.delete-user-button').forEach(button => {
-                            button.addEventListener('click', async (e) => {
-                                const userId = e.target.dataset.userId;
-                                const username = e.target.dataset.username;
-                                await deleteUserAdmin(userId, username);
-                            });
                         });
                         document.querySelectorAll('.admin-role-select').forEach(select => {
                             select.addEventListener('change', async (e) => {
@@ -767,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        showSection('dashboard-overview');
+        showSection('dashboard-overview'); // Tampilkan dashboard overview saat halaman dimuat
     }
     // --- End Admin Dashboard Logic ---
 
@@ -804,9 +795,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </td>
                                     <p style="font-size: 0.8em; color: var(--secondary-text-color);">Tanggal Pesan: ${new Date(order.orderDate).toLocaleDateString()} ${new Date(order.orderDate).toLocaleTimeString()}</p>
                                     <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p>
+                                    ${order.status !== 'Diproses' && order.status !== 'Selesai' && order.status !== 'Dibatalkan' ? 
+                                        `<button class="cancel-order-button" data-order-id="${order.orderId}" style="background-color: var(--status-cancelled-bg); color: var(--status-cancelled-text); margin-top: 10px; padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer;">Cancel Order</button>` : ''}
                                 </div>
                             `;
                             orderListDiv.innerHTML += row;
+                        });
+                        // Add event listeners for cancel buttons
+                        document.querySelectorAll('.cancel-order-button').forEach(button => {
+                            button.addEventListener('click', async (e) => {
+                                const orderId = e.target.dataset.orderId;
+                                await cancelOrderUser(orderId);
+                            });
                         });
                     } else {
                         orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Anda belum memiliki pesanan.</p>';

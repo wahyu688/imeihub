@@ -117,8 +117,8 @@ const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization']; // Mengambil header Authorization
     const token = authHeader && authHeader.split(' ')[1]; // Mengambil token (Bearer <token>)
 
-    console.log('DEBUG_BACKEND: authenticateToken - Auth Header:', authHeader); // <<-- TAMBAH LOG INI
-    console.log('DEBUG_BACKEND: authenticateToken - Extracted Token:', token); // <<-- TAMBAH LOG INI
+    console.log('DEBUG_BACKEND: authenticateToken - Auth Header:', authHeader);
+    console.log('DEBUG_BACKEND: authenticateToken - Extracted Token:', token);
 
     if (token == null) { // Jika token tidak ada
         return res.status(401).json({ message: 'Unauthorized: No token provided.' });
@@ -257,7 +257,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
-        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'WAITING-PROCESS-ACTIVE' OR status = 'Menunggu Proses Besok'");
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok'");
         const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
 
         res.json({
@@ -347,71 +347,6 @@ app.get('/api/admin/users', authenticateAdmin, async (req, res) => {
     }
 });
 
-// POST /api/admin/users/update-role - Endpoint Admin untuk Mengupdate Role User
-app.post('/api/admin/users/update-role', authenticateAdmin, async (req, res) => {
-    console.log('DEBUG_BACKEND: Update user role request received.');
-    const { userId, isAdmin } = req.body; // isAdmin akan berupa boolean true/false
-
-    if (!userId || typeof isAdmin !== 'boolean') {
-        console.warn('DEBUG_BACKEND: Invalid payload for update user role.');
-        return res.status(400).json({ success: false, message: 'User ID and isAdmin (boolean) are required.' });
-    }
-
-    try {
-        // Pastikan user yang diupdate bukan admin yang sedang login
-        if (req.user.userId === userId && !isAdmin) {
-            console.warn(`DEBUG_BACKEND: Admin ${req.user.username} tried to demote self.`);
-            return res.status(403).json({ success: false, message: 'Cannot demote your own admin role.' });
-        }
-
-        const [result] = await pool.query('UPDATE users SET is_admin = ? WHERE id = ?', [isAdmin, userId]);
-
-        if (result.affectedRows > 0) {
-            console.log(`DEBUG_BACKEND: User ${userId} role updated to isAdmin: ${isAdmin}.`);
-            res.json({ success: true, message: `User role updated to ${isAdmin ? 'Admin' : 'User'} successfully!` });
-        } else {
-            console.warn(`DEBUG_BACKEND: User ${userId} not found for role update.`);
-            res.status(404).json({ success: false, message: `User ${userId} not found.` });
-        }
-    } catch (error) {
-        console.error('ERROR: Error updating user role:', error);
-        res.status(500).json({ success: false, message: 'Error updating user role.', error: error.message });
-    }
-});
-
-// DELETE /api/admin/users/:userId - Endpoint Admin untuk Menghapus User
-app.delete('/api/admin/users/:userId', authenticateAdmin, async (req, res) => {
-    const { userId } = req.params; // Ambil userId dari URL parameter
-
-    console.log(`DEBUG_BACKEND: Delete user request received for userId: ${userId}`);
-
-    try {
-        // Pastikan admin tidak bisa menghapus dirinya sendiri
-        if (req.user.userId === userId) {
-            console.warn(`DEBUG_BACKEND: Admin ${req.user.username} tried to delete self.`);
-            return res.status(403).json({ success: false, message: 'Cannot delete your own account.' });
-        }
-
-        // Opsional: Hapus order terkait user ini terlebih dahulu jika ada foreign key constraint
-        // await pool.query('DELETE FROM orders WHERE user_id = ?', [userId]);
-        // console.log(`DEBUG_BACKEND: Deleted orders for user ${userId}.`);
-
-        const [result] = await pool.query('DELETE FROM users WHERE id = ?', [userId]);
-
-        if (result.affectedRows > 0) {
-            console.log(`DEBUG_BACKEND: User ${userId} deleted successfully.`);
-            res.json({ success: true, message: `User ${userId} deleted successfully.` });
-        } else {
-            console.warn(`DEBUG_BACKEND: User ${userId} not found for deletion.`);
-            res.status(404).json({ success: false, message: `User ${userId} not found.` });
-        }
-    } catch (error) {
-        console.error('ERROR: Error deleting user:', error);
-        res.status(500).json({ success: false, message: 'Error deleting user.', error: error.message });
-    }
-});
-
-
 app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) => {
     const { orderId, newStatus, initiator } = req.body;
 
@@ -419,7 +354,7 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
         return res.status(400).json({ message: 'Order ID and new status are required.' });
     }
 
-    const validStatuses = ['WAITING-PROCESS-ACTIVE', 'Diproses', 'Selesai', 'Dibatalkan', 'WAITING-PROCESS-TOMORROW'];
+    const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan', 'Menunggu Proses Besok', 'Proses Aktif']; // Tambah status baru
     if (!validStatuses.includes(newStatus)) {
         return res.status(400).json({ message: 'Invalid status provided.' });
     }
@@ -489,9 +424,11 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
     const businessStartHour = 7; // 7 AM
     const businessEndHour = 17; // 5 PM (17:00)
 
-    let initialStatus = 'WAITING-PROCESS-ACTIVE'; // Default status
-    if (currentHour < businessStartHour || currentHour >= businessEndHour) {
-        initialStatus = 'WAITING-PROCESS-TOMORROW'; // Di luar jam kerja
+    let initialStatus = 'Menunggu Pembayaran'; // Default status
+    if (currentHour >= businessStartHour && currentHour < businessEndHour) { // Dalam jam kerja
+        initialStatus = 'Proses Aktif'; // Status baru
+    } else {
+        initialStatus = 'Menunggu Proses Besok'; // Di luar jam kerja
     }
     console.log(`DEBUG: Order placed at hour ${currentHour}. Initial status set to: ${initialStatus}`);
 
@@ -534,6 +471,79 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error during order submission.', error: error.message });
     }
 });
+
+// POST /api/orders/cancel - Endpoint untuk Membatalkan Order oleh User
+app.post('/api/orders/cancel', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    const { orderId } = req.body;
+
+    if (!orderId) {
+        return res.status(400).json({ message: 'Order ID is required.' });
+    }
+
+    try {
+        // Ambil order untuk memverifikasi kepemilikan dan status
+        const [orderRows] = await pool.query('SELECT status, user_id FROM orders WHERE order_id = ?', [orderId]);
+        const order = orderRows[0];
+
+        if (!order) {
+            console.warn(`DEBUG_BACKEND: Order ${orderId} not found for cancellation.`);
+            return res.status(404).json({ success: false, message: `Order ${orderId} not found.` });
+        }
+
+        // Verifikasi bahwa user yang mencoba membatalkan adalah pemilik order
+        if (order.user_id !== userId) {
+            console.warn(`DEBUG_BACKEND: User ${userId} tried to cancel order ${orderId} which belongs to ${order.user_id}.`);
+            return res.status(403).json({ success: false, message: 'Forbidden: You can only cancel your own orders.' });
+        }
+
+        // Cek status order: tidak bisa dibatalkan jika sudah 'Diproses' atau 'Selesai' atau 'Dibatalkan'
+        if (order.status === 'Diproses' || order.status === 'Selesai' || order.status === 'Dibatalkan') {
+            console.warn(`DEBUG_BACKEND: Order ${orderId} cannot be cancelled due to current status: ${order.status}.`);
+            return res.status(400).json({ success: false, message: `Order cannot be cancelled. Current status: ${order.status}.` });
+        }
+
+        // Update status order menjadi Dibatalkan
+        const newStatus = 'Dibatalkan';
+        const [result] = await pool.query('UPDATE orders SET status = ? WHERE order_id = ?', [newStatus, orderId]);
+
+        if (result.affectedRows > 0) {
+            console.log(`DEBUG_BACKEND: Order ${orderId} cancelled by user ${userId}.`);
+            // Opsional: Kirim email notifikasi ke user atau admin tentang pembatalan
+            // Untuk user:
+            const userMailSubject = `Order Cancellation Confirmation: ${orderId}`;
+            const userMailHtml = `
+                <p>Dear user,</p>
+                <p>Your order <b>${orderId}</b> has been successfully cancelled.</p>
+                <p>You can view your orders here: <a href="https://imeihub.id/my-orders.html">My Orders</a></p>
+            `;
+            // Ambil email user dari database jika perlu
+            const [userEmailRow] = await pool.query('SELECT email FROM users WHERE id = ?', [userId]);
+            if (userEmailRow[0] && userEmailRow[0].email) {
+                await sendEmail(userEmailRow[0].email, userMailSubject, userMailHtml);
+            }
+
+            // Untuk admin:
+            const adminMailSubject = `Order Cancelled by User: ${orderId}`;
+            const adminMailHtml = `
+                <p>Order <b>${orderId}</b> has been cancelled by user ${userId}.</p>
+                <p>Current status: Dibatalkan.</p>
+                <p>Check admin dashboard: <a href="https://imeihub.id/admin_dashboard.html">Admin Dashboard</a></p>
+            `;
+            await sendEmail(ADMIN_EMAIL_RECEIVER, adminMailSubject, adminMailHtml);
+
+
+            res.json({ success: true, message: `Order ${orderId} cancelled successfully.` });
+        } else {
+            console.warn(`DEBUG_BACKEND: Order ${orderId} not found for cancellation (no rows affected).`);
+            res.status(404).json({ success: false, message: `Order ${orderId} not found.` });
+        }
+    } catch (error) {
+        console.error('ERROR: Error cancelling order:', error);
+        res.status(500).json({ success: false, message: 'Internal server error during order cancellation.', error: error.message });
+    }
+});
+
 
 // --- Endpoint untuk Discord Bot memanggil backend untuk update status (tidak digunakan) ---
 app.post('/api/discord-webhook-commands', async (req, res) => {

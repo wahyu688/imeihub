@@ -25,6 +25,8 @@
     --status-unknown-text: #FFFFFF;
     --status-menunggu-proses-besok-bg: #800080; /* Ungu untuk Menunggu Proses Besok */
     --status-menunggu-proses-besok-text: #FFFFFF;
+    --status-proses-aktif-bg: #00bcd4; /* Cyan/Biru Muda untuk Proses Aktif */
+    --status-proses-aktif-text: #FFFFFF;
 }
 
 body {
@@ -492,7 +494,7 @@ a:hover {
     padding: 30px;
     box-shadow: 0 4px 15px var(--shadow-color);
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -867,6 +869,10 @@ footer {
 .status-menunggu-proses-besok { /* Menunggu Proses Besok */
     background-color: var(--status-menunggu-proses-besok-bg);
     color: var(--status-menunggu-proses-besok-text);
+}
+.status-proses-aktif { /* Proses Aktif */
+    background-color: var(--status-proses-aktif-bg);
+    color: var(--status-proses-aktif-text);
 }
 
 
