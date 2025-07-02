@@ -426,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const manageUsersLink = document.getElementById('manage-users-link');
     const createUserLink = document.getElementById('create-user-link');
 
-    if (currentPage === 'admin_dashboard.html') {
+    if (currentPage === 'admin_dashboard') {
         const isAdminCheck = localStorage.getItem('isAdmin') === 'true'; 
         console.log(`DEBUG_FRONTEND: Admin Dashboard access check. IsAdmin: ${isAdminCheck}`);
         if (!isAdminCheck) { 
