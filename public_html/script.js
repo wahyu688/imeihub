@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
             return;
-            // Pastikan tidak ada kode yang mencoba mengakses elemen orderListDiv di sini jika belum login
         }
     }
 
@@ -82,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log(`DEBUG_FRONTEND: Inside updateNavbarLoginStatus. AuthToken: ${!!authToken}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         
-        // Desktop Navbar
         if (navLoginRegister) navLoginRegister.style.display = (authToken && userName) ? 'none' : 'block';
         if (navUserGreeting) {
             navUserGreeting.style.display = (authToken && userName) ? 'flex' : 'none';
@@ -261,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     orderForm.reset();
                 } else {
-                    const errorMessage = result.message || `Gagal membuat pesanan. Status: ${response.status}.`;
+                    const errorMessage = data.message || `Gagal membuat pesanan. Status: ${response.status}.`;
                     console.error('DEBUG: Order submission API responded with error:', errorMessage);
                     orderStatusDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${errorMessage}</p>`;
                     orderStatusDiv.classList.add('error');
@@ -448,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 manageOrdersContent.style.display = 'block';
                 adminContentTitle.textContent = 'Manage Orders';
                 manageOrdersLink.classList.add('active');
-                fetchAdminOrders(); // Panggil fetchAdminOrders saat section ditampilkan
+                fetchAdminOrders();
             } else if (sectionId === 'manage-users') {
                 manageUsersContent.style.display = 'block';
                 adminContentTitle.textContent = 'Manage Users';
