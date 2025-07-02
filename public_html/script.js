@@ -6,25 +6,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI DENGAN KUNCI RAHASIA ANDA
 
     // --- LOGIKA PROTEKSI HALAMAN ---
+    // Fungsi untuk mendapatkan nama file HTML saat ini dari URL
     const getCurrentPageName = () => {
         const path = window.location.pathname;
-        return path.substring(path.lastIndexOf('/') + 1).split('?')[0];
+        // Mengambil nama file dari path, menghapus query string, dan menghapus ekstensi .html jika ada
+        let fileName = path.substring(path.lastIndexOf('/') + 1).split('?')[0];
+        if (fileName.endsWith('.html')) {
+            fileName = fileName.slice(0, -5); // Hapus ".html"
+        }
+        return fileName;
     };
-    const currentPage = getCurrentPageName();
+    const currentPage = getCurrentPageName(); // Sekarang akan mengembalikan "index", "my-orders", "admin_dashboard", dll.
 
     // Fungsi untuk memeriksa status login dan admin dari localStorage
     const checkAuthAndAdminStatus = () => {
         const authToken = localStorage.getItem('authToken');
         const userId = localStorage.getItem('userId');
-        const userName = localStorage.getItem('userName'); // Ambil userName juga
-        const isAdmin = localStorage.getItem('isAdmin') === 'true'; // Pastikan membaca string 'true'
+        const userName = localStorage.getItem('userName');
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
-        console.log(`DEBUG_FRONTEND: checkAuthAndAdminStatus - AuthToken: ${!!authToken}, UserId: ${userId}, UserName: ${userName}, IsAdmin: ${isAdmin}`); // DEBUG LOG
+        console.log(`DEBUG_FRONTEND: checkAuthAndAdminStatus - AuthToken: ${!!authToken}, UserId: ${userId}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         return { authToken, userId, userName, isAdmin };
     };
 
     // Proteksi halaman Order
-    if (currentPage === 'order.html') {
+    // Perbandingan sekarang menggunakan nama halaman tanpa .html
+    if (currentPage === 'order') { 
         const { authToken } = checkAuthAndAdminStatus();
         if (!authToken) {
             localStorage.setItem('redirectAfterLogin', window.location.href);
@@ -34,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Proteksi halaman My Orders
-    if (currentPage === 'my-orders.html') {
+    // Perbandingan sekarang menggunakan nama halaman tanpa .html
+    if (currentPage === 'my-orders') { 
         const { authToken, userId } = checkAuthAndAdminStatus();
         if (!authToken || !userId) {
             localStorage.setItem('redirectAfterLogin', window.location.href);
@@ -43,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Proteksi halaman Admin Dashboard dan Admin Create User
+    // currentPage.startsWith('admin_') sudah benar karena getCurrentPageName akan mengembalikan "admin_dashboard"
     if (currentPage.startsWith('admin_')) {
         const { authToken, isAdmin } = checkAuthAndAdminStatus();
         console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
@@ -70,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
     const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
-    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard');
+    const mobileNavAdminDashboard = document.getElementById('mobile-nav-admin-dashboard'); 
 
 
     function updateNavbarLoginStatus() {
@@ -78,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log(`DEBUG_FRONTEND: Inside updateNavbarLoginStatus. AuthToken: ${!!authToken}, UserName: ${userName}, IsAdmin: ${isAdmin}`);
         
+        // Desktop Navbar
         if (navLoginRegister) navLoginRegister.style.display = (authToken && userName) ? 'none' : 'block';
         if (navUserGreeting) {
             navUserGreeting.style.display = (authToken && userName) ? 'flex' : 'none';
@@ -443,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 manageOrdersContent.style.display = 'block';
                 adminContentTitle.textContent = 'Manage Orders';
                 manageOrdersLink.classList.add('active');
-                fetchAdminOrders();
+                fetchAdminOrders(); // Panggil fetchAdminOrders saat section ditampilkan
             } else if (sectionId === 'manage-users') {
                 manageUsersContent.style.display = 'block';
                 adminContentTitle.textContent = 'Manage Users';
@@ -522,6 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     let totalAmountForDisplay = 0;
 
                     if (data.orders && data.orders.length > 0) {
+                        // Group orders by date (Today vs. Tomorrow)
                         const now = new Date();
                         const todayCutoffHour = 17; // 5 PM in 24-hour format
                         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -583,6 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                             <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
                                             <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
                                             <option value="Dibatalkan" ${order.status === 'Dibatalkan' ? 'selected' : ''}>Dibatalkan</option>
+                                            <option value="Proses Aktif" ${order.status === 'Proses Aktif' ? 'selected' : ''}>Proses Aktif</option> <!-- Tambah status baru -->
                                         </select>
                                     </td>
                                 </tr>
@@ -720,7 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (response.ok && data.success) {
                     alert(`User ${userId} role updated to ${roleText} successfully!`);
-                    fetchAdminUsers(); // Reload users table
+                    fetchAdminUsers();
                 } else {
                     alert(`Failed to update user role for ${userId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update user role:', data.message || 'Error');
@@ -758,7 +771,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        showSection('dashboard-overview'); // Tampilkan dashboard overview saat halaman dimuat
+        showSection('dashboard-overview');
     }
     // --- End Admin Dashboard Logic ---
 
@@ -821,6 +834,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 orderListDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server saat memuat pesanan.</p>`;
             }
         };
+
+        // --- Cancel Order by User ---
+        async function cancelOrderUser(orderId) {
+            if (!confirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) {
+                return;
+            }
+            try {
+                console.log(`DEBUG_FRONTEND: Sending cancel order request for orderId: ${orderId}`);
+                const response = await fetch(`${API_BASE_URL}/api/orders/cancel`, {
+                    method: 'POST', // Menggunakan POST untuk update status
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({ orderId: orderId, newStatus: 'Dibatalkan' }) // Kirim status baru
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    alert(`Order ${orderId} cancelled successfully!`);
+                    fetchOrders(); // Reload orders for user
+                } else {
+                    alert(`Failed to cancel order ${orderId}: ${data.message || 'Error'}`);
+                    console.error('DEBUG: Failed to cancel order:', data.message || 'Error');
+                }
+            } catch (error) {
+                alert(`Network error cancelling order ${orderId}.`);
+                console.error('DEBUG: Network error cancelling order:', error);
+            }
+        }
 
         fetchOrders();
     }
