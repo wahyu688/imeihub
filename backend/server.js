@@ -192,8 +192,7 @@ app.post('/api/admin/create-user', authenticateAdmin, async (req, res) => {
                 <li>Username: <b>${username}</b></li>
                 <li>Full Name: ${fullname || 'N/A'}</li>
                 <li>Email: ${email || 'N/A'}</li>
-                <li>Phone: ${phone || 'N/A'}</li> <!-- Tambah phone ke email notifikasi -->
-            </ul>
+                <li>Phone: ${phone || 'N/A'}</li> </ul>
             <p>Please note: This user is not an admin by default.</p>
         `;
         console.log('DEBUG: Attempting to send email for new admin user notification.');
@@ -552,7 +551,6 @@ app.post('/api/orders/cancel', authenticateToken, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Forbidden: You can only cancel your own orders.' });
         }
 
-        // Cek status order: tidak bisa dibatalkan jika sudah 'Diproses' atau 'Selesai' atau 'Dibatalkan'
         if (order.status === 'Diproses' || order.status === 'Selesai' || order.status === 'Dibatalkan') {
             console.warn(`DEBUG_BACKEND: Order ${orderId} cannot be cancelled due to current status: ${order.status}.`);
             return res.status(400).json({ success: false, message: `Order cannot be cancelled. Current status: ${order.status}.` });
