@@ -89,7 +89,7 @@ pool.getConnection()
 const corsOptions = {
     origin: 'https://imeihub.id', // Pastikan ini sama persis dengan URL frontend Anda
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    // credentials: true,
     optionsSuccessStatus: 204
 };
 app.use(cors(corsOptions)); // Menerapkan middleware CORS
