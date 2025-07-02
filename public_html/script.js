@@ -323,65 +323,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Login functionality (Only on login.html)
     const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        const loginStatusDiv = document.getElementById('login-status');
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
 
-            loginStatusDiv.innerHTML = `<p style="color: var(--accent-color);">Logging in...</p>`;
-            loginStatusDiv.classList.remove('error');
-            loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-            loginStatusDiv.style.borderColor = 'var(--accent-color)';
-            loginStatusDiv.style.color = 'var(--text-color)';
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
 
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const data = await response.json();
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
 
-                if (response.ok && data.token && data.userName) {
+                    const data = await response.json();
+                    console.log("DEBUG: Login response data:", data);
+
+                    if (!response.ok) {
+                        alert(data.message || 'Login gagal.');
+                        return;
+                    }
+
+                    // ✅ Login sukses
                     localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('isAdmin', data.isAdmin ? 'true' : 'false');
                     localStorage.setItem('userId', data.userId);
-                    localStorage.setItem('userName', data.userName);
-                    localStorage.setItem('isAdmin', String(data.isAdmin === true || data.isAdmin === 1)); 
-                    console.log(`DEBUG_FRONTEND: Login successful. IsAdmin: ${data.isAdmin} (Stored as: ${localStorage.getItem('isAdmin')})`);
-                    loginStatusDiv.innerHTML = '<p style="color: green;">Login berhasil! Mengarahkan...</p>';
-                    loginStatusDiv.classList.remove('error');
-                    loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                    loginStatusDiv.style.borderColor = 'var(--accent-color)';
-                    loginStatusDiv.style.color = 'var(--text-color)';
-                    
-                    updateNavbarLoginStatus(); // Panggil updateNavbarLoginStatus setelah semua data disimpan
 
-                    const redirectUrl = localStorage.getItem('redirectAfterLogin') || 'my-orders.html';
-                    localStorage.removeItem('redirectAfterLogin');
-                    window.location.href = redirectUrl; 
-                } else {
-                    const errorMessage = data.message || 'Login gagal. Username atau password salah.';
-                    console.error('DEBUG: Login API responded with error:', errorMessage);
-                    loginStatusDiv.innerHTML = `<p style="color: red;">${errorMessage}</p>`;
-                    loginStatusDiv.classList.add('error');
-                    loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                    loginStatusDiv.style.borderColor = 'red';
-                    loginStatusDiv.style.color = 'red';
+                    alert('Login berhasil!');
+
+                    if (data.isAdmin) {
+                        window.location.href = 'admin_dashboard.html';
+                    } else {
+                        window.location.href = 'my-orders.html';
+                    }
+
+                } catch (error) {
+                    console.error('❌ Network/login error:', error);
+                    alert('Terjadi kesalahan saat login.');
                 }
-            } catch (error) {
-                console.error('DEBUG: Login error (fetch failed/network issue):', error);
-                loginStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
-                loginStatusDiv.classList.add('error');
-                loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                loginStatusDiv.style.borderColor = 'red';
-                loginStatusDiv.style.color = 'red';
-                return;
-            }
-        });
-    }
+            });
+        }
 
     // Admin Create User functionality (Only on admin_create_user.html)
     const createUserForm = document.getElementById('create-user-form');
