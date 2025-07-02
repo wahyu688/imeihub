@@ -596,6 +596,35 @@ app.post('/api/orders/cancel', authenticateToken, async (req, res) => {
     }
 });
 
+//update role
+
+app.post('/api/admin/users/update-role', authenticateToken, async (req, res) => {
+    const { userId, isAdmin } = req.body;
+
+    if (!userId || typeof isAdmin === 'undefined') {
+        return res.status(400).json({ success: false, message: 'User ID dan isAdmin wajib disediakan.' });
+    }
+
+    try {
+        const [result] = await pool.query(
+            'UPDATE users SET is_admin = ? WHERE id = ?',
+            [isAdmin ? 1 : 0, userId]
+        );
+
+        if (result.affectedRows > 0) {
+            console.log(`✅ Peran user ${userId} diubah ke ${isAdmin ? 'Admin' : 'User'}`);
+            res.json({ success: true, message: 'Peran user berhasil diupdate.' });
+        } else {
+            res.status(404).json({ success: false, message: 'User tidak ditemukan.' });
+        }
+    } catch (error) {
+        console.error('❌ Gagal update role:', error);
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan saat update role.', error: error.message });
+    }
+});
+
+//
+
 
 // --- Endpoint untuk Discord Bot memanggil backend untuk update status (tidak digunakan) ---
 app.post('/api/discord-webhook-commands', async (req, res) => {
