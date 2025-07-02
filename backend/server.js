@@ -651,9 +651,18 @@ app.post('/api/admin/create-user', authenticateToken, async (req, res) => {
         console.log(`✅ Admin created user "${username}"`);
         res.status(201).json({ message: 'User berhasil dibuat.' });
     } catch (err) {
-        console.error('❌ Gagal membuat user:', err);
-        res.status(500).json({ message: 'Terjadi kesalahan server.', error: err.message });
+    if (err.code === 'ER_DUP_ENTRY') {
+        if (err.message.includes('users.username')) {
+            return res.status(409).json({ message: 'Username sudah digunakan.' });
+        }
+        if (err.message.includes('users.email')) {
+            return res.status(409).json({ message: 'Email sudah digunakan.' });
+        }
     }
+
+    console.error('❌ Gagal membuat user:', err);
+    res.status(500).json({ message: 'Terjadi kesalahan server.', error: err.message });
+}
 });
 
 
