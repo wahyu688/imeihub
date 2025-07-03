@@ -59,10 +59,10 @@
         </nav>
 
         <main class="main-content-area">
-            <section class="order-form">
+            <section class="order-form content-container-card">
                 <h1>Place Your Order</h1>
                 <p style="text-align: center; margin-bottom: 30px; color: var(--secondary-text-color);">Fill in the details below to submit your IMEI unlock request.</p>
-                <form id="order-form">
+                <form id="order-submission-form" method="POST" action="/api/order/submit">
                     <label for="service-type">Service Type:</label>
                     <select id="service-type" name="serviceType" required>
                         <option value="">Select a service</option>

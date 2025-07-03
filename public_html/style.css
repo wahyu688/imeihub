@@ -1052,7 +1052,6 @@ footer .social-links a:hover {
     min-height: calc(100vh - 150px); /* Adjust based on navbar and footer height */
     padding: 20px; /* Add some padding around the login form */
     box-sizing: border-box;
-    margin: 20px;
 }
 
 .login-container {
