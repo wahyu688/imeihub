@@ -17,199 +17,177 @@
 
     /* New variable for grey hover color (remains the same) */
     --hover-grey-bg: #D1D5DB; /* Light grey for hover background */
-    --hover-grey-text: var(--text-color-dark); /* Dark text for grey hover */
+    --hover-grey-text: #1A1A1A; /* Dark text on hover */
 
-    /* Specific colors for dashboard status buttons (adjusted to remain functional) */
-    --status-pending-bg: #FFBF00; /* Amber for pending */
-    --status-pending-text: var(--text-color-dark);
-    --status-diproses-bg: #007BFF; /* Blue for in progress */
-    --status-diproses-text: var(--text-color-light);
-    --status-selesai-bg: #28A745; /* Green for completed */
-    --status-selesai-text: var(--text-color-light);
-    --status-dibatalkan-bg: #DC3545; /* Red for cancelled */
-    --status-dibatalkan-text: var(--text-color-light);
-    --status-unknown-bg: #6C757D; /* Grey for unknown */
-    --status-unknown-text: var(--text-color-light);
-    --status-menunggu-proses-besok-bg: #8A2BE2; /* BlueViolet */
-    --status-menunggu-proses-besok-text: var(--text-color-light);
-    --status-proses-aktif-bg: #00BCD4; /* Cyan */
-    --status-proses-aktif-text: var(--text-color-light);
+    /* Warna spesifik untuk status button di dashboard */
+    --status-pending-bg: #FFA500; /* Oranye untuk Menunggu Pembayaran */
+    --status-pending-text: #000000; /* Teks hitam agar kontras */
+    --status-diproses-bg: #007bff; /* Biru untuk Diproses */
+    --status-diproses-text: #FFFFFF; /* Teks putih */
+    --status-selesai-bg: #28a745; /* Hijau untuk Selesai */
+    --status-selesai-text: #FFFFFF; /* Teks putih */
+    --status-dibatalkan-bg: #dc3545; /* Merah untuk Dibatalkan */
+    --status-dibatalkan-text: #FFFFFF; /* Teks putih */
 }
 
+/* Base Styles */
 body {
     margin: 0;
-    font-family: 'Inter', sans-serif; /* Using Google Font Inter */
-    background-color: var(--bg-content-color); /* Latar belakang body sekarang sama dengan konten */
-    color: var(--text-color-dark); /* Primary text color */
+    font-family: 'Inter', sans-serif;
+    color: var(--text-color-dark);
+    background-color: var(--bg-page-color);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden; /* Prevents unwanted horizontal scrolling */
 }
 
-a {
-    text-decoration: none;
-    color: var(--text-color-dark);
-    transition: color 0.3s ease;
-}
-
-a:hover {
-    color: var(--accent-color);
-}
-
-/* --- General Layout --- */
+/* Main Container - General (for other pages) */
 .main-container {
-    max-width: 100%; /* Full width */
-    margin: 0; /* No margin */
-    padding: 0 30px; /* Tambahan padding horizontal untuk jarak ke tepi layar */
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 30px; /* Spacing between main sections (cards) */
 }
 
-/* --- Header (Navbar) - NOT A CARD --- */
-.header-card {
-    background-color: var(--bg-content-color); /* Header background */
-    border-radius: 0; /* No border radius */
-    box-shadow: 0 5px 15px var(--shadow-color-light); /* Subtle shadow at the bottom */
-    padding: 15px 60px; /* Padding untuk konten di dalam navbar */
+/* Header Card (Navbar) - Changed to top-navbar for consistency with other pages */
+.top-navbar {
+    background-color: var(--bg-content-color);
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 20px var(--shadow-color-light);
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 30px;
     position: sticky;
-    top: 0; /* Stick to the very top */
-    z-index: 1000;
-    /* Negatif margin untuk membentang penuh melewati padding main-container */
-    margin-left: -30px;
-    margin-right: -30px;
-    width: calc(100% + 60px); /* Kompensasi padding main-container */
-    max-width: none; /* No max width */
-    box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
+    top: 20px;
+    z-index: 100;
 }
 
-.header-card .navbar-left,
-.header-card .navbar-right {
+.navbar-left {
     display: flex;
     align-items: center;
-    /* Perubahan: Tambahkan align-items: center untuk menyelaraskan semua item */
 }
 
-.header-card .navbar-left {
-    gap: 40px; /* Spacing between logo and navigation */
-}
-
-.header-card .brand-logo {
+.brand-logo {
     display: flex;
     align-items: center;
     font-weight: 800;
-    font-size: 1.5em;
+    font-size: 1.8em;
     color: var(--text-color-dark);
+    margin-right: 30px;
 }
 
-.header-card .brand-logo img {
-    height: 40px; /* Logo size */
+.brand-logo img { /* Ensure logo image is displayed */
+    height: 40px; /* Adjust size as needed */
     margin-right: 10px;
 }
 
-.header-card .nav-links-desktop {
-    list-style-type: none;
-    display: flex;
+.brand-logo svg {
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
+    color: var(--accent-color);
+    display: none; /* Hide SVG if image is used */
+}
+
+.nav-links-desktop {
+    list-style: none;
     padding: 0;
     margin: 0;
-    gap: 30px; /* Spacing between navigation links */
+    display: flex;
+    gap: 25px;
 }
 
-.header-card .nav-links-desktop a {
-    color: var(--secondary-text-color);
-    font-weight: 600;
-    padding: 8px 15px;
-    border-radius: var(--button-border-radius); /* Rounded corners for hover */
-    transition: background-color 0.2s ease, color 0.2s ease;
+.nav-links-desktop a {
+    text-decoration: none;
+    color: var(--text-color-dark);
+    font-weight: 500;
+    padding: 8px 0;
+    position: relative;
+    transition: color 0.3s ease;
 }
 
-.header-card .nav-links-desktop a:hover {
-    background-color: var(--hover-grey-bg); /* Changed to grey hover background */
-    color: var(--hover-grey-text); /* Changed to dark text for grey hover */
+.nav-links-desktop a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--accent-color);
+    transition: width 0.3s ease;
 }
 
-.header-card .nav-link-button {
+.nav-links-desktop a:hover::after,
+.nav-links-desktop a.active::after {
+    width: 100%;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-link-button {
     background-color: var(--accent-color);
     color: var(--text-color-light);
-    padding: 12px 25px;
-    border: none;
+    padding: 10px 20px;
     border-radius: var(--button-border-radius);
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none; /* Ensure no default button border */
     cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 10px var(--shadow-color-light);
 }
 
-.header-card .nav-link-button:hover {
+.nav-link-button:hover {
     background-color: var(--accent-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px var(--shadow-color-dark);
 }
 
-/* Perubahan: Gaya untuk tampilan username dan logout */
 .user-greeting-container {
     display: flex;
-    align-items: center; /* Menyeleraskan teks dan tombol secara vertikal */
-    gap: 10px; /* Jarak antara teks "Hi, username!" dan tombol Logout */
-    color: var(--text-color-dark); /* Warna teks */
-    font-weight: 600;
-    font-size: 1em; /* Ukuran font agar sesuai dengan nav-links */
+    align-items: center;
+    gap: 10px;
+    color: var(--text-color-dark);
+    font-weight: 500;
 }
 
 .user-greeting-container strong {
-    color: var(--accent-color); /* Warna aksen untuk username */
+    color: var(--accent-color);
 }
 
-#logout-btn-navbar {
-    padding: 8px 15px; /* Sesuaikan padding agar lebih kecil dan sejajar */
-    font-size: 0.9em; /* Sedikit lebih kecil dari tombol utama */
-    border-radius: var(--button-border-radius);
-    background-color: var(--secondary-text-color); /* Warna tombol logout yang lebih netral */
-    color: var(--text-color-light);
-    transition: background-color 0.3s ease;
-}
-
-#logout-btn-navbar:hover {
-    background-color: var(--accent-dark); /* Hover state */
-}
-
-
-/* Hamburger Menu & Mobile Nav (Keep existing functionality, adjust styles) */
+/* Hamburger menu for mobile */
 .hamburger-menu {
-    display: none; /* Hidden by default */
+    display: none; /* Hidden by default on desktop */
     background: none;
     border: none;
     font-size: 2em;
-    color: var(--text-color-dark); /* Using dark text color */
+    color: var(--text-color-dark);
     cursor: pointer;
-    z-index: 1001;
 }
 
+/* Mobile Navigation Overlay */
 .mobile-nav-overlay {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.95);
-    z-index: 999;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    z-index: 1000;
     transform: translateX(100%);
     transition: transform 0.3s ease-in-out;
 }
 
 .mobile-nav-overlay.open {
-    transform: translateX(0%);
-    display: flex;
+    transform: translateX(0);
 }
 
 .close-mobile-nav {
@@ -218,15 +196,14 @@ a:hover {
     right: 20px;
     background: none;
     border: none;
-    font-size: 2.5em;
-    color: var(--text-color-light);
+    color: #FFFFFF;
+    font-size: 3em;
     cursor: pointer;
 }
 
 .mobile-nav-links {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
-    margin: 0;
     text-align: center;
 }
 
@@ -234,482 +211,544 @@ a:hover {
     margin: 20px 0;
 }
 
-.mobile-nav-links a {
-    color: var(--text-color-light);
+.mobile-nav-links a, .mobile-nav-links .nav-link-button {
+    color: #FFFFFF;
+    text-decoration: none;
     font-size: 1.8em;
-    font-weight: bold;
-    padding: 10px 20px;
-    border-radius: 10px;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: 600;
+    transition: color 0.3s ease;
 }
 
-.mobile-nav-links a:hover {
-    background-color: rgba(255, 255, 255, 0.1); /* Kept white for mobile overlay */
+.mobile-nav-links a:hover, .mobile-nav-links .nav-link-button:hover {
     color: var(--accent-color);
 }
 
-.mobile-nav-links .nav-link-button {
-    margin-top: 20px;
-    width: auto;
-    display: inline-block;
-    background-color: var(--accent-color); /* Ensure mobile button uses accent */
-    color: var(--text-color-light);
-}
-
-
-/* --- Hero Section - NOT A CARD --- */
+/* Hero Section */
 .hero-section {
-    position: relative; /* For large text positioning */
+    position: relative;
     background-color: var(--bg-content-color);
-    border-radius: 0; /* No border radius */
-    box-shadow: none; /* No box shadow */
-    padding: 80px 60px; /* Larger padding for content inside */
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 20px var(--shadow-color-light);
+    padding: 60px 40px;
+    text-align: center;
+    overflow: hidden;
+    margin-bottom: 30px;
+    min-height: 400px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 40px;
-    overflow: hidden; /* Important for large background text */
-    min-height: 500px; /* To provide some space */
-    /* Negatif margin untuk membentang penuh melewati padding main-container */
-    margin-left: -30px;
-    margin-right: -30px;
-    width: calc(100% + 60px); /* Kompensasi padding main-container */
-    max-width: none; /* No max width */
-    box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
 }
 
 .hero-large-text-overlay {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Center the text */
-    font-size: 15vw; /* Responsive size */
+    transform: translate(-50%, -50%);
+    font-size: 20vw; /* Responsive font size */
     font-weight: 900;
-    color: rgba(0, 0, 0, 0.04); /* Very transparent */
-    text-transform: uppercase;
-    white-space: nowrap; /* Prevent wrapping */
-    z-index: 1; /* Behind main content */
-    pointer-events: none; /* Not clickable */
-    user-select: none; /* Not selectable */
-    line-height: 0.8; /* Adjust line height */
+    color: rgba(0, 0, 0, 0.05); /* Very light, transparent text */
+    z-index: 1;
+    white-space: nowrap;
+    pointer-events: none; /* Allow clicks to pass through */
 }
 
 .hero-content {
-    flex: 1;
-    z-index: 2; /* Above overlay */
-    max-width: 60%; /* Control text width */
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-.hero-section h1 {
-    font-size: 4.5em; /* Larger */
-    line-height: 1.1;
-    margin-bottom: 25px;
+.hero-content h1 {
+    font-size: 3.5em;
     font-weight: 800;
     color: var(--text-color-dark);
+    margin-bottom: 20px;
+    line-height: 1.2;
 }
 
-.hero-section p {
-    font-size: 1.2em; /* Larger */
+.accent-text {
+    color: var(--accent-color);
+}
+
+.hero-content p {
+    font-size: 1.2em;
     color: var(--secondary-text-color);
     margin-bottom: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.hero-image-container {
-    flex: 0 0 auto; /* Jangan biarkan flex mengambil semua ruang */
-    width: 400px; /* Tetapkan lebar tetap untuk kontainer gambar */
-    height: 400px; /* Tetapkan tinggi tetap untuk kontainer gambar */
-    display: flex; /* Gunakan flexbox untuk memusatkan gambar */
-    justify-content: center; /* Pusatkan gambar secara horizontal */
-    align-items: center; /* Pusatkan gambar secara vertikal */
-    z-index: 2; /* Above overlay */
-    /* Dihapus: background-color, border-radius, box-shadow */
+.cta-button {
+    background-color: var(--accent-color);
+    color: var(--text-color-light);
+    padding: 15px 30px;
+    border-radius: var(--button-border-radius);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block; /* Allows padding and margin */
 }
 
-.hero-image-container img {
-    max-width: 100%; /* Gambar mengisi 100% dari kontainer */
-    max-height: 100%; /* Gambar mengisi 100% dari kontainer */
-    width: auto; /* Biarkan lebar otomatis */
-    height: auto; /* Biarkan tinggi otomatis */
-    object-fit: contain; /* Pastikan gambar pas di dalam kotak tanpa terpotong */
-    border-radius: 0; /* Dihapus: Rounded corners for image inside hero */
-    box-shadow: none; /* Dihapus: Softer shadow for image */
+.cta-button:hover {
+    background-color: var(--accent-dark);
+    transform: translateY(-3px);
 }
 
-/* --- General Section & Card Styles --- */
-.section-container {
-    padding: 0; /* No padding here, content-container-card will handle it */
-    margin-bottom: 0; /* No margin here, gap in main-container handles it */
+.floating-logo {
+    position: absolute;
+    bottom: 20px; /* Adjust as needed */
+    right: 20px; /* Adjust as needed */
+    z-index: 3;
+    animation: float 3s ease-in-out infinite;
+}
+
+.decorative-logo {
+    width: 150px; /* Adjust size */
+    height: auto;
+    opacity: 0.7; /* Slightly transparent */
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+
+/* Content Cards (e.g., "Mengapa Memilih Kami?") */
+.content-container-card {
+    background-color: var(--bg-content-color);
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 20px var(--shadow-color-light);
+    padding: 40px;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .section-title {
-    font-size: 3em; /* Larger */
+    font-size: 2.8em;
+    font-weight: 800;
     color: var(--text-color-dark);
-    text-align: center;
-    margin-bottom: 50px;
-    font-weight: 800; /* Bolder */
+    margin-bottom: 25px;
 }
 
-/* Content cards (e.g., "Mengapa Memilih Kami?", "Layanan Kami", "Catatan Penting") - REMAINS A CARD */
-.content-container-card {
-    background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius); /* Rounded corners for card look */
-    padding: 40px 60px; /* Adjusted padding for content inside the card */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Added box-shadow */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Added transition for hover effect */
-    margin: 0 auto; /* Center the card horizontally */
-    width: 100%; /* Take full available width */
-    max-width: 1340px; /* Max width to prevent it from getting too wide */
-    box-sizing: border-box; /* Include padding in width calculation */
-}
-
-.content-container-card:hover {
-    transform: translateY(-5px); /* Added transform on hover */
-    box-shadow: 0 12px 30px var(--shadow-color-dark); /* Added box-shadow on hover */
-}
-
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    justify-content: center;
-}
-
-/* --- Features Section (What We Offer & Important Notes) - REMAINS A CARD --- */
-.offer-single-grid, .important-notes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    padding: 30px 60px; /* Adjusted padding for content inside the card */
-    background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius); /* Rounded corners for card look */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Added box-shadow */
-    margin: 0 auto; /* Center the card horizontally */
-    width: 100%; /* Take full available width */
-    max-width: 1340px; /* Max width to prevent it from getting too wide */
-    box-sizing: border-box; /* Include padding in width calculation */
-}
-
-.offer-item, .important-note-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-}
-
-.offer-icon, .important-note-icon {
-    font-size: 2.8em; /* Larger icon size */
-    flex-shrink: 0;
-    color: var(--accent-color);
-    line-height: 1;
-}
-
-.offer-details h3 {
-    color: var(--text-color-dark); /* Darker item title */
-    font-size: 1.5em; /* Larger size */
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-weight: 700;
-}
-
-.offer-details p, .important-note-details p,
-.offer-details ul, .important-note-details ul {
+.section-description {
+    font-size: 1.1em;
     color: var(--secondary-text-color);
-    font-size: 1em;
-    margin: 0;
+    margin-bottom: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.offer-details ul, .important-note-details ul {
-    list-style: none;
-    padding-left: 0;
-    margin-top: 5px;
+.grid-3-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
 }
 
-.offer-details ul li::before, .important-note-details ul li::before {
-    content: '•'; /* Using regular bullet */
+.feature-card {
+    background-color: var(--bg-page-color);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 10px var(--shadow-color-light);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px var(--shadow-color-dark);
+}
+
+.card-icon {
+    margin-bottom: 20px;
     color: var(--accent-color);
-    position: absolute;
-    left: 0;
-    font-size: 1.5em; /* Larger bullet */
-    line-height: 1;
-    top: 2px; /* Vertical position adjustment */
 }
 
-/* --- Best For Specifics --- */
-.best-for-item {
+.card-icon svg {
+    width: 48px;
+    height: 48px;
+}
+
+.feature-card h3 {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--text-color-dark);
+    margin-bottom: 15px;
+}
+
+.feature-card p {
+    color: var(--secondary-text-color);
+    font-size: 0.95em;
+}
+
+/* Testimonials/Reviews Section */
+.reviews-section {
+    background-color: var(--bg-content-color);
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 20px var(--shadow-color-light);
+    padding: 40px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.review-card {
+    background-color: var(--bg-page-color);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 10px var(--shadow-color-light);
+    text-align: left;
+    color: var(--text-color-dark);
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.reviewer-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.reviewer-info h4 {
+    margin: 0;
+    font-size: 1.1em;
+    color: var(--text-color-dark);
+}
+
+.reviewer-info .rating {
+    color: #FFD700; /* Gold color for stars */
+    font-size: 1.1em;
+}
+
+.review-card p {
+    font-size: 0.95em;
+    color: var(--secondary-text-color);
+    line-height: 1.8;
+}
+
+/* Call to Action Section */
+.cta-section {
+    background-color: var(--accent-color);
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 20px var(--shadow-color-dark);
+    padding: 50px 40px;
+    text-align: center;
+    color: var(--text-color-light);
+    margin-bottom: 30px;
+}
+
+.cta-section h2 {
+    font-size: 2.5em;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: var(--text-color-light);
+}
+
+.cta-section p {
+    font-size: 1.1em;
+    margin-bottom: 30px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-section .cta-button {
+    background-color: var(--text-color-light); /* White button */
+    color: var(--accent-color); /* Orange text */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cta-section .cta-button:hover {
+    background-color: #E0E0E0; /* Slightly darker white on hover */
+    color: var(--accent-dark);
+}
+
+/* Footer */
+footer.main-container-card {
+    background-color: var(--bg-content-color);
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 20px var(--shadow-color-light);
+    padding: 40px;
+    text-align: center;
+    color: var(--secondary-text-color);
+    margin-top: 30px; /* Space above footer */
+}
+
+.footer-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 15px;
 }
 
-.best-for-icon {
-    font-size: 3em; /* Larger icon */
-    color: var(--accent-color);
-}
-
-.best-for-item p {
+.social-links a {
     color: var(--secondary-text-color);
-    margin: 0;
-    font-size: 1.1em;
-}
-
-/* --- Buttons --- */
-.btn, .cta-button {
-    display: inline-block;
-    padding: 14px 30px; /* Larger padding */
-    background-color: var(--accent-color);
-    color: var(--text-color-light); /* White text on accent button */
-    border: none;
-    border-radius: var(--button-border-radius);
     text-decoration: none;
-    text-align: center;
-    cursor: pointer;
-    font-size: 1.1em; /* Larger font size */
-    font-weight: 700; /* Bolder */
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 5px 15px var(--shadow-color-light);
+    margin: 0 10px;
+    transition: color 0.3s ease;
 }
 
-.btn:hover, .cta-button:hover {
-    background-color: var(--accent-dark);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px var(--shadow-color-dark);
-}
-
-/* --- Forms (Login, Register, Order) --- */
-.order-form, .admin-form-container {
-    max-width: 600px;
-    margin: 60px auto;
-    padding: 50px; /* Larger padding */
-    background-color: var(--bg-content-color);
-    border-radius: 20px; /* Kept radius for forms as they are centered */
-    box-shadow: 0 10px 30px var(--shadow-color-light);
-    color: var(--text-color-dark);
-    text-align: center;
-}
-
-.order-form h1, .admin-form-container h1 {
-    color: var(--text-color-dark);
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 2.8em;
-    font-weight: 800;
-}
-
-.order-form p, .admin-form-container p {
-    color: var(--secondary-text-color);
-    font-size: 1.1em;
-}
-
-.order-form label, .admin-form-container label {
-    display: block;
-    margin-top: 25px; /* Larger margin */
-    margin-bottom: 10px;
-    font-weight: 700;
-    color: var(--text-color-dark);
-    text-align: left; /* Left-aligned labels */
-}
-
-.order-form input, .order-form select,
-.admin-form-container input, .admin-form-container select, .admin-form-container textarea {
-    width: calc(100% - 30px); /* Adjusts for padding */
-    padding: 15px; /* Larger padding */
-    margin-top: 0;
-    margin-bottom: 25px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px; /* Softer corners */
-    font-size: 1.1em;
-    background-color: #FDFDFD; /* Lighter input background */
-    color: var(--text-color-dark);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.order-form input:focus, .order-form select:focus,
-.admin-form-container input:focus, .admin-form-container select:focus, .admin-form-container textarea:focus {
-    border-color: var(--accent-color);
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(74, 74, 74, 0.2); /* Accent focus shadow updated to neutral */
-}
-
-.order-form .btn, .admin-form-container .btn {
-    width: 100%;
-    padding: 18px; /* Larger form button */
-    font-size: 1.3em;
-    border-radius: var(--button-border-radius);
-    margin-top: 20px; /* Space from last input */
-}
-
-/* --- Status Message Styles --- */
-.status-message {
-    margin-top: 30px;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.05em;
-    background-color: rgba(74, 74, 74, 0.1); /* Accent light updated to neutral */
-    border: 1px solid var(--accent-color);
+.social-links a:hover {
     color: var(--accent-color);
 }
 
-.status-message.error {
-    background-color: rgba(220, 53, 69, 0.1); /* Red light */
-    border-color: var(--status-dibatalkan-bg);
-    color: var(--status-dibatalkan-bg);
-}
-
-.status-message.success {
-    background-color: rgba(40, 167, 69, 0.1); /* Green light */
-    border-color: var(--status-selesai-bg);
-    color: var(--status-selesai-bg);
-}
-
-/* --- Service Card (for services.html) --- */
+/* --- Services Page Specific Styles --- */
 .service-card {
-    background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius); /* Rounded corners for card look */
-    padding: 35px; /* Original padding */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Added box-shadow */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px var(--shadow-color-light);
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Added transition */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center; /* To center icons/titles if present */
+    background-color: var(--bg-page-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .service-card:hover {
-    transform: translateY(-5px); /* Added transform on hover */
-    box-shadow: 0 12px 30px var(--shadow-color-dark); /* Added box-shadow on hover */
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px var(--shadow-color-dark);
 }
 
 .service-card h3 {
-    font-size: 1.6em;
-    margin-top: 15px; /* Space from icon if present */
-    margin-bottom: 15px;
+    font-size: 1.8em;
     font-weight: 700;
     color: var(--text-color-dark);
+    margin-bottom: 15px;
 }
 
 .service-card p {
     color: var(--secondary-text-color);
-    flex-grow: 1;
-    font-size: 1.05em;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-size: 0.95em;
+    line-height: 1.7;
 }
 
 .service-card .btn {
-    margin-top: auto; /* Push button to the bottom */
-    padding: 12px 25px; /* Smaller button size than main CTA */
+    background-color: var(--accent-color);
+    color: var(--text-color-light);
+    padding: 12px 25px;
+    border-radius: var(--button-border-radius);
+    text-decoration: none;
+    font-weight: 600;
     font-size: 1em;
+    transition: background-color 0.3s ease;
+    display: inline-block;
 }
 
-/* --- Footer - NOT A CARD --- */
-footer.main-container-card {
-    background-color: var(--text-color-dark); /* Darker footer background */
-    color: var(--secondary-text-color);
-    padding: 30px 60px; /* Adjusted padding for content inside */
-    text-align: center;
-    border-radius: 0; /* No border radius */
-    margin: 0; /* No margin, full width */
-    width: 100%; /* Full width */
-    max-width: none; /* No max width */
-    box-shadow: none; /* No box shadow */
-    box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
+.service-card .btn:hover {
+    background-color: var(--accent-dark);
 }
 
-footer .footer-content p {
-    margin-bottom: 15px;
-    font-size: 0.9em;
-}
-
-footer .social-links a {
-    color: var(--secondary-text-color);
-    margin: 0 10px;
-    font-size: 0.9em;
-    transition: color 0.3s ease;
-}
-
-footer .social-links a:hover {
-    color: var(--accent-color);
-}
-
-/* --- My Orders Page Specifics --- */
-#my-orders-section .card-grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    padding: 20px;
+/* --- Order Page Specific Styles --- */
+.order-form {
+    max-width: 700px;
+    margin: 60px auto;
+    padding: 40px;
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius); /* Rounded corners for card look */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Added box-shadow */
-    margin: 0 auto;
-    max-width: 1000px; /* Max width for this grid */
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 30px var(--shadow-color-light);
+    color: var(--text-color-dark);
+    text-align: center;
+}
+
+.order-form h1 {
+    color: var(--text-color-dark);
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    font-weight: 700;
+}
+
+.order-form p {
+    color: var(--secondary-text-color);
+}
+
+.order-form label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.order-form input[type="text"],
+.order-form input[type="email"],
+.order-form input[type="tel"],
+.order-form input[type="number"],
+.order-form select,
+.order-form textarea {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--bg-page-color);
+    color: var(--text-color-dark);
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.order-form select {
+    appearance: none; /* Remove default select arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%236B7280" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 20px;
+    padding-right: 40px; /* Space for the custom arrow */
+}
+
+.order-form .btn {
+    background-color: var(--accent-color);
+    color: var(--text-color-light);
+    padding: 15px 30px;
+    border-radius: var(--button-border-radius);
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    width: auto; /* Allow button to size based on content */
+    margin-top: 20px;
+}
+
+.order-form .btn:hover {
+    background-color: var(--accent-dark);
+    transform: translateY(-2px);
+}
+
+.status-message {
+    margin-top: 20px;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+/* --- My Orders Page Specific Styles --- */
+#my-orders-section .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding-top: 20px;
 }
 
 .order-card {
-    background-color: var(--bg-page-color); /* Order card lighter than container */
-    border-radius: 15px; /* Kept radius for individual order cards */
-    padding: 25px;
-    box-shadow: 0 4px 10px var(--shadow-color-light);
+    background-color: var(--bg-content-color);
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 20px var(--shadow-color-light);
+    padding: 30px;
+    text-align: left;
+    color: var(--text-color-dark);
     display: flex;
     flex-direction: column;
     gap: 10px;
-    color: var(--text-color-dark);
 }
 
 .order-card h3 {
-    font-size: 1.3em;
-    margin: 0 0 10px 0;
+    font-size: 1.5em;
+    margin-bottom: 10px;
     color: var(--accent-color);
 }
 
 .order-card p {
-    margin: 0;
-    font-size: 0.95em;
+    font-size: 1em;
     color: var(--secondary-text-color);
+    margin: 0;
 }
 
 .order-card .status {
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 10px;
-    align-self: flex-start; /* Stay left-aligned */
+    padding: 5px 15px;
+    border-radius: var(--button-border-radius);
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 0.9em;
 }
 
-/* Status colors (re-using existing variables) */
-.status-pending { background-color: var(--status-pending-bg); color: var(--status-pending-text); }
-.status-diproses { background-color: var(--status-diproses-bg); color: var(--status-diproses-text); }
-.status-selesai { background-color: var(--status-selesai-bg); color: var(--status-selesai-text); }
-.status-dibatalkan { background-color: var(--status-dibatalkan-bg); color: var(--status-dibatalkan-text); }
-.status-menunggu-proses-besok { background-color: #8A2BE2; color: var(--text-color-light); }
-.status-proses-aktif { background-color: #00BCD4; color: var(--text-color-light); }
-.status-unknown { background-color: var(--status-unknown-bg); color: var(--status-unknown-text); }
+/* Status Colors */
+.status-menunggu-pembayaran {
+    background-color: var(--status-pending-bg);
+    color: var(--status-pending-text);
+}
 
-/* Admin Dashboard Specifics */
+.status-diproses {
+    background-color: var(--status-diproses-bg);
+    color: var(--status-diproses-text);
+}
+
+.status-selesai {
+    background-color: var(--status-selesai-bg);
+    color: var(--status-selesai-text);
+}
+
+.status-dibatalkan {
+    background-color: var(--status-dibatalkan-bg);
+    color: var(--status-dibatalkan-text);
+}
+
+/* --- Admin Dashboard Styles --- */
 .admin-dashboard-container {
     display: flex;
-    margin: 0 auto; /* Center the card horizontally */
-    width: 100%; /* Take full available width */
-    max-width: 1340px; /* Max width to prevent it from getting too wide */
-    box-sizing: border-box; /* Include padding in width calculation */
     gap: 30px;
-    align-items: flex-start;
-    padding: 40px 0; /* Vertical padding only, horizontal handled by children */
+    margin: 30px auto; /* Center the entire dashboard content */
+    max-width: 1340px; /* Max width for the dashboard */
+    padding: 0; /* Padding handled by children */
+    box-sizing: border-box;
+    align-items: flex-start; /* Align items to the top */
 }
 
 .left-sidebar {
-    width: 280px; /* Wider sidebar */
-    background: var(--bg-content-color);
-    border-radius: 20px; /* Kept radius for sidebar */
+    flex: 0 0 280px; /* Fixed width sidebar */
+    background-color: var(--bg-content-color);
+    border-radius: var(--card-border-radius);
     box-shadow: 0 8px 20px var(--shadow-color-light);
     padding: 30px;
+    position: sticky;
+    top: 100px; /* Adjust based on navbar height */
+    height: fit-content; /* Fit content height */
     display: flex;
     flex-direction: column;
-    gap: 25px;
-    position: sticky;
-    top: 100px; /* Adjusts to header card */
-    min-height: calc(100vh - 120px); /* Slightly taller */
+    gap: 20px;
+}
+
+/* Gaya khusus untuk logo di sidebar admin */
+.left-sidebar .brand-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Pusatkan logo secara horizontal */
+    font-weight: 800;
+    font-size: 2.5em; /* Ukuran font lebih besar */
+    color: var(--text-color-dark);
+    margin-bottom: 20px; /* Jarak bawah dari menu */
+}
+
+.left-sidebar .brand-logo .imei-text {
+    color: var(--text-color-dark); /* Warna teks "Imei" */
+}
+
+.left-sidebar .brand-logo .hub-text {
+    color: var(--accent-color); /* Warna aksen untuk "hub" */
+}
+
+.left-sidebar .brand-logo img {
+    display: none; /* Sembunyikan gambar logo jika menggunakan teks */
 }
 
 .sidebar-menu ul {
@@ -719,56 +758,66 @@ footer .social-links a:hover {
 }
 
 .sidebar-menu li {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .sidebar-menu a {
     display: flex;
     align-items: center;
-    padding: 12px 20px;
-    border-radius: 15px; /* Softer corners */
+    padding: 12px 15px;
+    border-radius: 10px;
     color: var(--secondary-text-color);
     font-weight: 600;
     transition: background-color 0.2s ease, color 0.2s ease;
-    gap: 15px;
+    gap: 10px;
 }
 
 .sidebar-menu a:hover, .sidebar-menu a.active {
-    background-color: var(--hover-grey-bg); /* Changed to grey hover background */
-    color: var(--hover-grey-text); /* Changed to dark text for grey hover */
+    background-color: var(--hover-grey-bg);
+    color: var(--hover-grey-text);
 }
 
 .sidebar-menu a svg {
-    fill: currentColor; /* So icon changes color with text */
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+/* Gaya untuk ikon plus baru */
+.sidebar-menu a .plus-icon {
+    font-size: 1.5em; /* Ukuran tanda plus */
+    line-height: 1; /* Pastikan vertikal align */
+    display: inline-block; /* Agar bisa diatur gap */
 }
 
 .admin-content {
     flex-grow: 1;
     background-color: var(--bg-content-color);
-    border-radius: 20px; /* Kept radius for admin content */
+    border-radius: var(--card-border-radius);
     box-shadow: 0 8px 20px var(--shadow-color-light);
     padding: 40px;
+    min-height: 500px; /* Ensure content area has some height */
 }
 
-.admin-content h1 {
-    font-size: 2.5em;
-    margin-bottom: 30px;
-    text-align: left; /* Admin title left-aligned */
+.admin-content h2 {
+    font-size: 2em;
+    color: var(--text-color-dark);
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
 }
 
 .stat-cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 25px;
+    gap: 20px;
     margin-bottom: 40px;
 }
 
 .stat-card {
-    background-color: var(--bg-page-color); /* Stat card lighter */
+    background-color: var(--bg-page-color);
     border-radius: 15px;
-    padding: 25px;
+    padding: 20px;
     box-shadow: 0 4px 10px var(--shadow-color-light);
     text-align: center;
 }
@@ -776,12 +825,12 @@ footer .social-links a:hover {
 .stat-card h3 {
     font-size: 1.1em;
     color: var(--secondary-text-color);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .stat-card p {
-    font-size: 2.2em; /* Larger number */
-    font-weight: 800;
+    font-size: 2em;
+    font-weight: 700;
     color: var(--accent-color);
 }
 
@@ -792,50 +841,36 @@ footer .social-links a:hover {
 
 .admin-table {
     width: 100%;
-    border-collapse: separate; /* For border-radius on th */
+    border-collapse: separate;
     border-spacing: 0;
     color: var(--text-color-dark);
-    font-size: 0.95em;
+    font-size: 0.9em;
 }
 
 .admin-table th, .admin-table td {
-    padding: 15px;
+    padding: 12px;
     border-bottom: 1px solid var(--border-color);
     text-align: left;
 }
 
 .admin-table th {
-    background-color: var(--bg-page-color); /* Table header lighter */
+    background-color: var(--bg-page-color);
     font-weight: 700;
     color: var(--secondary-text-color);
     text-transform: uppercase;
-    font-size: 0.85em;
-}
-
-.admin-table thead tr:first-child th:first-child {
-    border-top-left-radius: 15px;
-}
-.admin-table thead tr:first-child th:last-child {
-    border-top-right-radius: 15px;
-}
-
-.admin-table tbody tr:last-child td:first-child {
-    border-bottom-left-radius: 15px;
-}
-.admin-table tbody tr:last-child td:last-child {
-    border-bottom-right-radius: 15px;
+    font-size: 0.8em;
 }
 
 .admin-table tbody tr:hover {
-    background-color: rgba(74, 74, 74, 0.05); /* Accent light hover updated to neutral */
+    background-color: rgba(74, 74, 74, 0.05);
 }
 
 .status-button {
-    padding: 6px 12px;
-    border-radius: 20px;
+    padding: 5px 10px;
+    border-radius: 15px;
     border: none;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 0.85em;
     font-weight: 600;
     transition: opacity 0.3s ease;
 }
@@ -849,8 +884,8 @@ footer .social-links a:hover {
     border: none;
     color: var(--secondary-text-color);
     cursor: pointer;
-    font-size: 1.2em;
-    margin: 0 5px;
+    font-size: 1.1em;
+    margin: 0 3px;
     transition: color 0.3s ease;
 }
 
@@ -858,168 +893,65 @@ footer .social-links a:hover {
     color: var(--accent-color);
 }
 
-/* 🔻 Logo dekoratif kanan bawah */
-.floating-logo {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 50;
-  opacity: 0.75;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  scale: 1.75; /* Default scale */
-}
-
-.floating-logo img {
-  width: 120px;
-  height: auto;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
-  border-radius: 12px;
-}
-
-.floating-logo:hover {
-  opacity: 1;
-  transform: scale(1.05);
-}
-
-
-/* --- Responsiveness --- */
+/* Responsive adjustments for admin dashboard */
 @media (max-width: 1024px) {
-    /* Header/Navbar */
-    .header-card {
-        padding: 15px 40px; /* Adjusted padding for smaller screens */
-    }
-
-    /* Hero Section */
-    .hero-section {
-        padding: 60px 40px; /* Adjusted padding for smaller screens */
+    .admin-dashboard-container {
         flex-direction: column;
-        text-align: center;
-        gap: 30px;
-    }
-
-    .hero-content {
-        max-width: 80%;
-    }
-
-    .hero-section h1 {
-        font-size: 3.5em;
-    }
-
-    .hero-large-text-overlay {
-        font-size: 20vw;
-    }
-
-    .hero-image-container {
-        width: 300px; /* Adjusted width for smaller screens */
-        height: 300px; /* Adjusted height for smaller screens */
-    }
-
-    .main-container {
-        padding: 0 20px; /* Adjusted padding for smaller screens */
-        gap: 20px; /* Adjusted gap */
-    }
-
-    .section-title {
-        font-size: 2.5em;
-        margin-bottom: 40px;
-    }
-
-    /* Content Cards (e.g., "Mengapa Memilih Kami?") */
-    .content-container-card, .offer-single-grid, .important-notes-grid, #my-orders-section .card-grid, .admin-dashboard-container {
-        padding: 30px 40px; /* Adjusted padding for smaller screens */
-        width: 100%; /* Take full width on smaller screens */
-        margin: 15px auto; /* Centered with margin */
-    }
-
-    .order-form, .admin-form-container {
-        padding: 40px;
-        margin: 40px auto;
+        margin: 20px auto;
+        padding: 0 20px; /* Add horizontal padding for the container */
     }
 
     .left-sidebar {
-        width: 100%;
+        width: auto; /* Allow sidebar to take full width */
         position: relative;
         top: 0;
-        min-height: auto;
+        height: auto;
     }
 
     .admin-content {
         padding: 30px;
     }
-
-    .admin-table th, .admin-table td {
-        padding: 12px;
-    }
-
-    /* Footer */
-    footer.main-container-card {
-        padding: 30px 40px; /* Adjusted padding for smaller screens */
-    }
 }
 
 @media (max-width: 768px) {
-    .header-card .nav-links-desktop,
-    .header-card .nav-link-button,
-    .header-card .user-greeting-container {
-        display: none; /* Hide desktop nav elements */
+    .admin-content {
+        padding: 20px;
     }
-
-    .hamburger-menu {
-        display: block; /* Show hamburger on mobile */
+    .admin-content h2 {
+        font-size: 1.8em;
     }
-
-    .header-card {
-        padding: 15px 20px;
+    .stat-card h3 {
+        font-size: 1em;
     }
-
-    .hero-section {
-        padding: 40px 20px;
-        min-height: 400px;
+    .stat-card p {
+        font-size: 1.8em;
     }
-
-    .hero-section h1 {
-        font-size: 2.8em;
-    }
-
-    .hero-large-text-overlay {
-        font-size: 25vw;
-    }
-
-    .hero-image-container {
-        width: 250px; /* Adjusted width for mobile */
-        height: 250px; /* Adjusted height for mobile */
-    }
-
-    .section-title {
-        font-size: 2em;
-        margin-bottom: 30px;
-    }
-
-    /* Content Cards (e.g., "Mengapa Memilih Kami?") */
-    .content-container-card, .offer-single-grid, .important-notes-grid, #my-orders-section .card-grid, .admin-dashboard-container {
-        padding: 25px 20px; /* Adjusted padding for mobile */
-        width: 100%; /* Take full width on mobile */
-        margin: 15px auto; /* Centered with margin */
-    }
-
-    .order-form, .admin-form-container {
-        padding: 30px;
-        margin: 30px auto;
-    }
-
     .admin-table th, .admin-table td {
-        padding: 10px;
-        font-size: 0.85em;
+        padding: 8px;
+        font-size: 0.8em;
     }
-
     .status-button {
-        font-size: 0.75em;
-        padding: 5px 10px;
+        min-width: 70px;
+        font-size: 0.8em;
     }
 
-    /* Footer */
-    footer.main-container-card {
-        padding: 30px 20px;
+    /* Mobile adjustments for login page */
+    .login-container {
+        padding: 30px;
+    }
+    .login-container h1 {
+        font-size: 2.5em;
+    }
+    .login-container .subtitle {
+        font-size: 1em;
+    }
+
+    .top-navbar .nav-links-desktop {
+        display: none; /* Hide desktop nav links on mobile */
+    }
+
+    .top-navbar .hamburger-menu {
+        display: block; /* Show hamburger on mobile */
     }
 }
 
@@ -1034,21 +966,107 @@ footer .social-links a:hover {
 
     .hero-image-container {
         width: 200px; /* Adjusted width for small mobile */
-        height: 200px; /* Adjusted height for small mobile */
+        height: 200px; /* Adjusted height */
     }
 
-    .btn, .cta-button, .order-form .btn, .admin-form-container .btn {
-        padding: 12px 20px;
-        font-size: 1em;
+    .admin-content h2 {
+        font-size: 1.5em;
     }
+    .stat-cards-grid {
+        grid-template-columns: 1fr; /* Stack stats on very small screens */
+    }
+}
 
-    .order-form input, .order-form select,
-    .admin-form-container input, .admin-form-container select, .admin-form-container textarea {
-        padding: 10px;
-        font-size: 1em;
-    }
+/* New styles for login.html to match the example image */
+.main-content-area {
+    /* Remove min-height and centering from previous login-page-body specific styles */
+    /* Instead, add top margin to push content down from the navbar */
+    padding: 20px; /* Add some padding for overall content */
+    box-sizing: border-box;
+    display: flex; /* Use flexbox to center the login container */
+    justify-content: center;
+    align-items: flex-start; /* Align to the top, not center, to allow for scrolling if content is long */
+    min-height: calc(100vh - 200px); /* Adjust based on your navbar/footer height */
+    /* This min-height will ensure content takes up enough space to push footer down */
+}
 
-    .service-card {
-        padding: 25px 20px; /* Adjusted padding for small mobile */
-    }
+.login-container {
+    max-width: 400px; /* Adjust as needed */
+    width: 90%; /* Responsive width */
+    padding: 40px;
+    /* No background or shadow directly on this container to match the flat look */
+    text-align: center;
+    margin-top: 50px; /* Add top margin to push it down from the navbar */
+    margin-bottom: 50px; /* Add bottom margin to separate from footer */
+}
+
+.login-container h1 {
+    font-size: 3em; /* Larger font size for "Login" */
+    font-weight: 800; /* Bolder */
+    color: #1A1A1A;
+    margin-bottom: 10px;
+}
+
+.login-container .subtitle {
+    font-size: 1.1em;
+    color: #6B7280; /* Muted grey */
+    margin-bottom: 40px; /* More space below subtitle */
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between form elements */
+}
+
+.login-container label {
+    text-align: left;
+    font-size: 0.9em;
+    font-weight: 700; /* Bold */
+    color: #1A1A1A;
+    text-transform: uppercase; /* Uppercase */
+    margin-bottom: -10px; /* Pull label closer to input */
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"],
+.login-container input[type="email"] {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #D1D5DB; /* Light border */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #E0E0E0; /* Light grey background */
+    color: #1A1A1A;
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.login-container input::placeholder {
+    color: #9CA3AF; /* Placeholder color */
+}
+
+.login-container .btn.login-btn { /* Specific class for login button */
+    background-color: #1A1A1A; /* Dark button */
+    color: #FFFFFF; /* White text */
+    padding: 15px 30px;
+    border-radius: 10px; /* Rounded corners */
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Full width */
+    margin-top: 20px; /* Space above button */
+    border: none; /* Remove default button border */
+}
+
+.login-container .btn.login-btn:hover {
+    background-color: #333333; /* Slightly lighter dark on hover */
+}
+
+/* Status message styling */
+.status-message {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #EF4444; /* Red for error messages */
+    text-align: center;
 }
