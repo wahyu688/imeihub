@@ -75,6 +75,7 @@ a:hover {
     box-shadow: 0 5px 15px var(--shadow-color-light); /* Subtle shadow at the bottom */
     padding: 15px 60px; /* Padding untuk konten di dalam navbar */
     display: flex;
+    flex-direction: row; /* Explicitly set flex direction to row */
     justify-content: space-between;
     align-items: center;
     position: sticky;
@@ -86,16 +87,19 @@ a:hover {
     width: calc(100% + 60px); /* Kompensasi padding main-container */
     max-width: none; /* No max width */
     box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
+    flex-wrap: nowrap; /* Prevent wrapping of navbar items */
 }
 
 .header-card .navbar-left,
 .header-card .navbar-right {
     display: flex;
     align-items: center;
+    flex-shrink: 0; /* Prevent these items from shrinking */
 }
 
 .header-card .navbar-left {
     gap: 40px; /* Spacing between logo and navigation */
+    flex-grow: 1; /* Allow navbar-left to grow and push navbar-right */
 }
 
 .header-card .brand-logo {
