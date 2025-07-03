@@ -1166,7 +1166,7 @@ footer .social-links a:hover {
 
 .main-content-area .order-form label {
     display: block;
-    margin-top: 20px; /* Adjust spacing */
+    margin-top: 10px; /* Adjust spacing */
     margin-bottom: 8px;
     font-weight: 700; /* Bold */
     color: var(--text-color-dark);
