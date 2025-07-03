@@ -69,7 +69,7 @@ a:hover {
 }
 
 /* --- Header (Navbar) - NOT A CARD --- */
-.top-navbar {
+.header-card { /* Class name as per login.html */
     background-color: var(--bg-content-color); /* Header background */
     border-radius: 0; /* No border radius */
     box-shadow: 0 5px 15px var(--shadow-color-light); /* Subtle shadow at the bottom */
@@ -88,17 +88,17 @@ a:hover {
     box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
 }
 
-.top-navbar .navbar-left,
-.top-navbar .navbar-right {
+.header-card .navbar-left,
+.header-card .navbar-right {
     display: flex;
     align-items: center;
 }
 
-.top-navbar .navbar-left {
+.header-card .navbar-left {
     gap: 40px; /* Spacing between logo and navigation */
 }
 
-.top-navbar .brand-logo {
+.header-card .brand-logo {
     display: flex;
     align-items: center;
     font-weight: 800;
@@ -106,12 +106,12 @@ a:hover {
     color: var(--text-color-dark);
 }
 
-.top-navbar .brand-logo img {
+.header-card .brand-logo img {
     height: 40px; /* Logo size */
     margin-right: 10px;
 }
 
-.top-navbar .nav-links-desktop {
+.header-card .nav-links-desktop {
     list-style-type: none;
     display: flex;
     padding: 0;
@@ -119,7 +119,7 @@ a:hover {
     gap: 30px; /* Spacing between navigation links */
 }
 
-.top-navbar .nav-links-desktop a {
+.header-card .nav-links-desktop a {
     color: var(--secondary-text-color);
     font-weight: 600;
     padding: 8px 15px;
@@ -127,12 +127,12 @@ a:hover {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.top-navbar .nav-links-desktop a:hover {
+.header-card .nav-links-desktop a:hover {
     background-color: var(--hover-grey-bg); /* Changed to grey hover background */
     color: var(--hover-grey-text); /* Changed to dark text for grey hover */
 }
 
-.top-navbar .nav-link-button {
+.header-card .nav-link-button {
     background-color: var(--accent-color);
     color: var(--text-color-light);
     padding: 12px 25px;
@@ -145,7 +145,7 @@ a:hover {
     box-shadow: 0 4px 10px var(--shadow-color-light);
 }
 
-.top-navbar .nav-link-button:hover {
+.header-card .nav-link-button:hover {
     background-color: var(--accent-dark);
     transform: translateY(-2px);
     box-shadow: 0 6px 15px var(--shadow-color-dark);
@@ -297,14 +297,6 @@ a:hover {
     flex: 1;
     z-index: 2; /* Above overlay */
     max-width: 60%; /* Control text width */
-}
-
-.hero-section h1 {
-    font-size: 4.5em; /* Larger */
-    line-height: 1.1;
-    margin-bottom: 25px;
-    font-weight: 800;
-    color: var(--text-color-dark);
 }
 
 .hero-section p {
@@ -476,9 +468,8 @@ a:hover {
 }
 
 /* --- Forms (Login, Register, Order) --- */
-/* The .order-form and .admin-form-container styles are for other forms that use a card design. */
-/* The .login-container below will override/provide specific styles for the login form. */
-.order-form, .admin-form-container {
+/* These styles are for forms that use a card design. We'll override .order-form below */
+.admin-form-container { /* Only admin form uses this default card style now */
     max-width: 600px;
     margin: 60px auto;
     padding: 50px; /* Larger padding */
@@ -489,7 +480,7 @@ a:hover {
     text-align: center;
 }
 
-.order-form h1, .admin-form-container h1 {
+.admin-form-container h1 {
     color: var(--text-color-dark);
     text-align: center;
     margin-bottom: 30px;
@@ -497,12 +488,12 @@ a:hover {
     font-weight: 800;
 }
 
-.order-form p, .admin-form-container p {
+.admin-form-container p {
     color: var(--secondary-text-color);
     font-size: 1.1em;
 }
 
-.order-form label, .admin-form-container label {
+.admin-form-container label {
     display: block;
     margin-top: 25px; /* Larger margin */
     margin-bottom: 10px;
@@ -511,7 +502,6 @@ a:hover {
     text-align: left; /* Left-aligned labels */
 }
 
-.order-form input, .order-form select,
 .admin-form-container input, .admin-form-container select, .admin-form-container textarea {
     width: calc(100% - 30px); /* Adjusts for padding */
     padding: 15px; /* Larger padding */
@@ -525,14 +515,13 @@ a:hover {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.order-form input:focus, .order-form select:focus,
 .admin-form-container input:focus, .admin-form-container select:focus, .admin-form-container textarea:focus {
     border-color: var(--accent-color);
     outline: none;
     box-shadow: 0 0 0 4px rgba(74, 74, 74, 0.2); /* Accent focus shadow updated to neutral */
 }
 
-.order-form .btn, .admin-form-container .btn {
+.admin-form-container .btn {
     width: 100%;
     padding: 18px; /* Larger form button */
     font-size: 1.3em;
@@ -886,7 +875,7 @@ footer .social-links a:hover {
 /* --- Responsiveness --- */
 @media (max-width: 1024px) {
     /* Header/Navbar */
-    .top-navbar {
+    .header-card { /* Class name as per login.html */
         padding: 15px 40px; /* Adjusted padding for smaller screens */
     }
 
@@ -959,9 +948,9 @@ footer .social-links a:hover {
 }
 
 @media (max-width: 768px) {
-    .top-navbar .nav-links-desktop,
-    .top-navbar .nav-link-button,
-    .top-navbar .user-greeting-container {
+    .header-card .nav-links-desktop, /* Class name as per login.html */
+    .header-card .nav-link-button, /* Class name as per login.html */
+    .header-card .user-greeting-container { /* Class name as per login.html */
         display: none; /* Hide desktop nav elements */
     }
 
@@ -969,7 +958,7 @@ footer .social-links a:hover {
         display: block; /* Show hamburger on mobile */
     }
 
-    .top-navbar {
+    .header-card { /* Class name as per login.html */
         padding: 15px 20px;
     }
 
@@ -1054,7 +1043,7 @@ footer .social-links a:hover {
     }
 }
 
-/* New styles for login.html to match the example image (flat design) */
+/* Styles for login.html to match the example image (flat design) */
 .main-content-area {
     /* Ensure main content area is flexible to center the login form */
     display: flex;
