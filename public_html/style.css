@@ -475,7 +475,9 @@ a:hover {
     box-shadow: 0 8px 20px var(--shadow-color-dark);
 }
 
-/* --- Forms (Order, Admin) - These still use card styles by default, but we'll override .order-form below */
+/* --- Forms (Login, Register, Order) --- */
+/* The .order-form and .admin-form-container styles are for other forms that use a card design. */
+/* The .login-container below will override/provide specific styles for the login form. */
 .order-form, .admin-form-container {
     max-width: 600px;
     margin: 60px auto;
@@ -1067,9 +1069,9 @@ footer .social-links a:hover {
     max-width: 400px; /* Max width for the login form */
     width: 90%; /* Responsive width */
     padding: 40px; /* Padding inside the form container */
-    /* background-color: #FFFFFF; White background for the form area */
-    /* border-radius: 15px; Slightly rounded corners for the form area */
-    /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); Subtle shadow for the form area */
+    background-color: #FFFFFF; /* White background for the form area */
+    border-radius: 15px; /* Slightly rounded corners for the form area */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Subtle shadow for the form area */
     text-align: center;
     margin-top: 50px; /* Space from the navbar */
     margin-bottom: 50px; /* Space from the footer */
