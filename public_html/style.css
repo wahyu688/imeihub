@@ -38,7 +38,7 @@
 
 body {
     margin: 0;
-    font-family: 'Inter', sans-serif; /* Using Google Font Inter */
+    font-family: 'space-mono', sans-serif; /* Using Google Font Space Mono */
     background-color: var(--bg-content-color); /* Latar belakang body sekarang sama dengan konten */
     color: var(--text-color-dark); /* Primary text color */
     line-height: 1.6;
