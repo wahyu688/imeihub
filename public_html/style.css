@@ -922,7 +922,7 @@ footer .social-links a:hover {
     }
 
     .order-form, .admin-form-container {
-        padding: 20px;
+        padding: 40px;
         margin: 40px auto;
     }
 
@@ -1140,7 +1140,7 @@ footer .social-links a:hover {
 /* --- New styles for Order Form to be flat --- */
 .main-content-area .order-form { /* Target the order-form specifically within main-content-area */
     max-width: 600px; /* Keep max width for readability */
-    margin: 50px auto; /* Center it, give space from navbar/footer */
+    margin: 20px auto; /* Center it, give space from navbar/footer */
     padding: 40px; /* Consistent padding */
     background-color: #FFFFFF; /* White background for the form area */
     border-radius: 15px; /* Slightly rounded corners */
