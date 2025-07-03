@@ -39,7 +39,7 @@
 body {
     margin: 0;
     font-family: 'Inter', sans-serif; /* Using Google Font Inter */
-    background-color: var(--bg-content-color); /* Latar belakang body sekarang sama dengan konten */
+    background-color: var(--bg-page-color); /* Latar belakang body sekarang sama dengan konten */
     color: var(--text-color-dark); /* Primary text color */
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -69,7 +69,7 @@ a:hover {
 }
 
 /* --- Header (Navbar) - NOT A CARD --- */
-.header-card {
+.top-navbar { /* Changed from .header-card to .top-navbar to match login.html */
     background-color: var(--bg-content-color); /* Header background */
     border-radius: 0; /* No border radius */
     box-shadow: 0 5px 15px var(--shadow-color-light); /* Subtle shadow at the bottom */
@@ -88,18 +88,17 @@ a:hover {
     box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
 }
 
-.header-card .navbar-left,
-.header-card .navbar-right {
+.top-navbar .navbar-left, /* Changed from .header-card to .top-navbar */
+.top-navbar .navbar-right { /* Changed from .header-card to .top-navbar */
     display: flex;
     align-items: center;
-    /* Perubahan: Tambahkan align-items: center untuk menyelaraskan semua item */
 }
 
-.header-card .navbar-left {
+.top-navbar .navbar-left { /* Changed from .header-card to .top-navbar */
     gap: 40px; /* Spacing between logo and navigation */
 }
 
-.header-card .brand-logo {
+.top-navbar .brand-logo { /* Changed from .header-card to .top-navbar */
     display: flex;
     align-items: center;
     font-weight: 800;
@@ -107,12 +106,12 @@ a:hover {
     color: var(--text-color-dark);
 }
 
-.header-card .brand-logo img {
+.top-navbar .brand-logo img { /* Changed from .header-card to .top-navbar */
     height: 40px; /* Logo size */
     margin-right: 10px;
 }
 
-.header-card .nav-links-desktop {
+.top-navbar .nav-links-desktop { /* Changed from .header-card to .top-navbar */
     list-style-type: none;
     display: flex;
     padding: 0;
@@ -120,7 +119,7 @@ a:hover {
     gap: 30px; /* Spacing between navigation links */
 }
 
-.header-card .nav-links-desktop a {
+.top-navbar .nav-links-desktop a { /* Changed from .header-card to .top-navbar */
     color: var(--secondary-text-color);
     font-weight: 600;
     padding: 8px 15px;
@@ -128,12 +127,12 @@ a:hover {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.header-card .nav-links-desktop a:hover {
+.top-navbar .nav-links-desktop a:hover { /* Changed from .header-card to .top-navbar */
     background-color: var(--hover-grey-bg); /* Changed to grey hover background */
     color: var(--hover-grey-text); /* Changed to dark text for grey hover */
 }
 
-.header-card .nav-link-button {
+.top-navbar .nav-link-button { /* Changed from .header-card to .top-navbar */
     background-color: var(--accent-color);
     color: var(--text-color-light);
     padding: 12px 25px;
@@ -146,7 +145,7 @@ a:hover {
     box-shadow: 0 4px 10px var(--shadow-color-light);
 }
 
-.header-card .nav-link-button:hover {
+.top-navbar .nav-link-button:hover { /* Changed from .header-card to .top-navbar */
     background-color: var(--accent-dark);
     transform: translateY(-2px);
     box-shadow: 0 6px 15px var(--shadow-color-dark);
@@ -477,8 +476,10 @@ a:hover {
 }
 
 /* --- Forms (Login, Register, Order) --- */
+/* Removed card styles from .order-form and .admin-form-container */
+/* The login-container will now handle its own styling for flat design */
 .order-form, .admin-form-container {
-    max-width: 600px;
+    max-width: 700px;
     margin: 60px auto;
     padding: 50px; /* Larger padding */
     background-color: var(--bg-content-color);
@@ -885,7 +886,7 @@ footer .social-links a:hover {
 /* --- Responsiveness --- */
 @media (max-width: 1024px) {
     /* Header/Navbar */
-    .header-card {
+    .top-navbar { /* Changed from .header-card to .top-navbar */
         padding: 15px 40px; /* Adjusted padding for smaller screens */
     }
 
@@ -958,9 +959,9 @@ footer .social-links a:hover {
 }
 
 @media (max-width: 768px) {
-    .header-card .nav-links-desktop,
-    .header-card .nav-link-button,
-    .header-card .user-greeting-container {
+    .top-navbar .nav-links-desktop, /* Changed from .header-card to .top-navbar */
+    .top-navbar .nav-link-button, /* Changed from .header-card to .top-navbar */
+    .top-navbar .user-greeting-container { /* Changed from .header-card to .top-navbar */
         display: none; /* Hide desktop nav elements */
     }
 
@@ -968,7 +969,7 @@ footer .social-links a:hover {
         display: block; /* Show hamburger on mobile */
     }
 
-    .header-card {
+    .top-navbar { /* Changed from .header-card to .top-navbar */
         padding: 15px 20px;
     }
 
@@ -1051,4 +1052,98 @@ footer .social-links a:hover {
     .service-card {
         padding: 25px 20px; /* Adjusted padding for small mobile */
     }
+}
+
+/* New styles for login.html to match the example image (flat design) */
+.main-content-area {
+    /* Ensure main content area is flexible to center the login form */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to top to allow space below navbar */
+    min-height: calc(100vh - 150px); /* Adjust based on navbar and footer height */
+    padding: 20px; /* Add some padding around the login form */
+    box-sizing: border-box;
+}
+
+.login-container {
+    max-width: 400px; /* Max width for the login form */
+    width: 90%; /* Responsive width */
+    padding: 40px; /* Padding inside the form container */
+    background-color: #FFFFFF; /* White background for the form area */
+    border-radius: 15px; /* Slightly rounded corners for the form area */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Subtle shadow for the form area */
+    text-align: center;
+    margin-top: 50px; /* Space from the navbar */
+    margin-bottom: 50px; /* Space from the footer */
+}
+
+.login-container h1 {
+    font-size: 3em; /* Larger font size for "Login" */
+    font-weight: 800; /* Bolder */
+    color: #1A1A1A; /* Dark text */
+    margin-bottom: 10px;
+}
+
+.login-container .subtitle {
+    font-size: 1.1em;
+    color: #6B7280; /* Muted grey */
+    margin-bottom: 40px; /* More space below subtitle */
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between form elements */
+}
+
+.login-container label {
+    text-align: left;
+    font-size: 0.9em;
+    font-weight: 700; /* Bold */
+    color: #1A1A1A; /* Dark text */
+    text-transform: uppercase; /* Uppercase */
+    margin-bottom: -10px; /* Pull label closer to input */
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"],
+.login-container input[type="email"] {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #D1D5DB; /* Light border */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #E0E0E0; /* Light grey background */
+    color: #1A1A1A; /* Dark text */
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.login-container input::placeholder {
+    color: #9CA3AF; /* Placeholder color */
+}
+
+.login-container .btn.login-btn { /* Specific class for login button */
+    background-color: #1A1A1A; /* Dark button */
+    color: #FFFFFF; /* White text */
+    padding: 15px 30px;
+    border-radius: 10px; /* Rounded corners */
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Full width */
+    margin-top: 20px; /* Space above button */
+    border: none; /* Remove default button border */
+}
+
+.login-container .btn.login-btn:hover {
+    background-color: #333333; /* Slightly lighter dark on hover */
+}
+
+/* Status message styling */
+.status-message {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #EF4444; /* Red for error messages */
+    text-align: center;
 }
