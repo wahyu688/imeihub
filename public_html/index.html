@@ -1,178 +1,221 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImeiHub - IMEI Unlock for Tourists</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="imeihub_logo.png" type="image/png"> 
+    <title>ImeiHub</title>
+    <!-- Pastikan path ke style.css ini benar. Jika style.css berada di folder yang berbeda, sesuaikan path-nya. -->
+    <link rel="stylesheet" href="style.css"> 
+    <!-- Menggunakan Google Font Inter untuk tipografi yang bersih dan modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome untuk ikon (jika diperlukan, meskipun saya akan mencoba SVG/CSS murni untuk kesederhanaan) -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> -->
 </head>
 <body>
-    <!-- TOP NAVBAR -->
-    <nav class="top-navbar">
-        <div class="navbar-left">
-            <div class="brand-logo">
-                <img src="imeihub_logo.png" alt="ImeiHub Logo"> 
+    <!-- Wrapper utama untuk konten agar sesuai dengan desain kartu yang mengambang -->
+    <div class="main-container">
+        <!-- Bagian Navbar Atas -->
+        <nav class="header-card">
+            <div class="navbar-left">
+                <div class="brand-logo">
+                    <!-- Ikon bintang/matahari seperti di desain -->
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
+                    </svg>
+                    <span>ImeiHub</span>
+                </div>
+                <ul class="nav-links-desktop">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="order.html">Order</a></li>
+                    <li><a href="my-orders.html">My Orders</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+                </ul>
             </div>
-            <ul class="nav-links-desktop">
-                <li><a href="/">Home</a></li>
-                <li><a href="/services">Services</a></li>
-                <li><a href="/order">Order</a></li>
-                <li><a href="/my-orders">My Orders</a></li>
-                <li><a href="/contact">Contact</a></li>
-                <li id="nav-admin-dashboard" style="display: none;"><a href="/admin_dashboard">Admin Dashboard</a></li> <!-- BARU: Link Admin Dashboard -->
+
+            <div class="navbar-right">
+                <div id="nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div>
+                <!-- Elemen untuk tampilan setelah login -->
+                <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
+                    <span>Hi, <strong id="username-display"></strong>!</span>
+                    <button id="logout-btn-navbar" class="nav-link-button">Logout</button>
+                </div>
+                <!-- Hamburger menu for mobile -->
+                <button class="hamburger-menu" id="hamburger-menu">&#9776;</button>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Overlay (moved from body to be next to navbar for semantic grouping) -->
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+            <button class="close-mobile-nav" id="close-mobile-nav">&times;</button>
+            <ul class="mobile-nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="my-orders.html">My Orders</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+                <li><div id="mobile-nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div></li>
+                <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
+                <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
             </ul>
         </div>
 
-        <div class="navbar-right">
-            <div id="nav-login-register"><a href="/login" class="nav-link-button">Login/Register</a></div>
-            <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
-                <span>Hi, <strong id="username-display"></strong>!</span>
-                <img src="avatar_placeholder.jpg" alt="User Avatar" class="user-avatar">
+        <!-- Main Hero Section -->
+        <header class="hero-section">
+            <div class="hero-large-text-overlay">IMEIHUB</div> <!-- Large background text -->
+            <div class="hero-content">
+                <h1>Solusi Terdepan untuk <span class="accent-text">Unlock IMEI</span> Anda</h1>
+                <p>Kami menyediakan layanan unlock IMEI yang cepat, aman, dan terpercaya untuk semua jenis perangkat.</p>
+                <a href="order.html" class="cta-button">Order Sekarang</a>
             </div>
-            <button id="logout-btn-navbar" class="nav-link-button" style="display: none;">Logout</button>
-        </div>
-
-        <!-- Mobile Hamburger Menu (hidden on desktop) -->
-        <button class="hamburger-menu" aria-label="Toggle navigation">
-            ☰
-        </button>
-    </nav>
-
-    <!-- Mobile Navigation Overlay (hidden on desktop) -->
-    <div class="mobile-nav-overlay">
-        <button class="close-mobile-nav">✖</button>
-        <ul class="mobile-nav-links">
-            <li><a href="index">Home</a></li>
-            <li><a href="services">Services</a></li>
-            <li><a href="order">Order</a></li>
-            <li><a href="my-orders.">My Orders</a></li>
-            <li><a href="contact">Contact</a></li>
-            <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard">Admin Dashboard</a></li> BARU: Link Admin Dashboard Mobile
-            <li id="mobile-nav-login-register"><a href="login.html">Login/Register</a></li>
-            <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
-            <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
-        </ul>
-    </div>
-
-
-    <main>
-        <!-- HERO SECTION - IMEI Unlock for Tourists -->
-        <section class="hero-section main-container-card">
-            <div class="hero-text-content">
-                <h1>IMEI Unlock for Tourists – <span class="accent-text">3-Month Network Access</span> in Indonesia</h1>
-                <p>Did you bring a phone from abroad and find that your SIM card doesn’t work in Indonesia? Your device’s IMEI may be blocked from accessing local networks due to government regulations.</p>
-                <p>At ImeiHub, we provide a fast and secure service to temporarily unlock your IMEI for use on Indonesian networks — ideal for foreign tourists or returning Indonesians with overseas devices.</p>
-                <a href="order.html" class="cta-button">Get Started Now</a>
+            <div class="hero-image-container">
+                <!-- Abstract image as in the design, can be replaced with actual image -->
+                <img src="https://placehold.co/600x400/D1D5DB/6B7280?text=ROBOT+ILLUSTRATION" alt="IMEI Unlock Service Robot Illustration">
             </div>
-            <div class="hero-image-content">
-                <img src="graphic_placeholder.png" alt="IMEI Unlock Service"> 
+        </header>
+
+        <!-- Features Section (adapted for ImeiHub) -->
+        <section class="section-container">
+            <h2 class="section-title">Mengapa Memilih Kami?</h2>
+            <div class="card-grid">
+                <div class="feature-card content-container-card">
+                    <div class="card-icon">
+                        <!-- Security/moderation icon -->
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 1L3 5V11C3 16.55 6.84 21.78 12 23C17.16 21.78 21 16.55 21 11V5L12 1ZM12 11.1L17 8.5V5.3L12 2.7L7 5.3V8.5L12 11.1ZM12 13.1C10.5 13.1 9.25 12.5 8 11.5L9.5 10C10.5 10.7 11.25 11.1 12 11.1C13 11.1 14 10.7 15 10L16.5 11.5C15.25 12.5 14 13.1 12 13.1Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Keamanan Terjamin</h3>
+                        <p>Data dan perangkat Anda aman bersama kami. Proses unlock dilakukan dengan standar keamanan tertinggi.</p>
+                    </div>
+                </div>
+                <div class="feature-card content-container-card">
+                    <div class="card-icon">
+                        <!-- Speed/time icon -->
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM12.5 7H11V13L16.25 16.15L17 14.92L12.5 12.25V7Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Proses Cepat</h3>
+                        <p>Layanan unlock IMEI yang efisien, membuat perangkat Anda siap digunakan kembali dalam waktu singkat.</p>
+                    </div>
+                </div>
+                <div class="feature-card content-container-card">
+                    <div class="card-icon">
+                        <!-- Support/help icon -->
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM11 15H9V13H11V15ZM15 15H13V13H15V15ZM15 11H9V9H15V11Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Dukungan Profesional</h3>
+                        <p>Tim dukungan kami siap membantu Anda dengan pertanyaan atau masalah apa pun 24/7.</p>
+                    </div>
+                </div>
+                <div class="feature-card content-container-card">
+                    <div class="card-icon">
+                        <!-- Review/rating icon -->
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Ulasan Pelanggan</h3>
+                        <div class="reviews-rating">
+                            <div class="review-avatars">
+                                <!-- Avatar placeholder -->
+                                <img src="https://placehold.co/40x40/C0C0C0/333333?text=A" alt="Avatar 1">
+                                <img src="https://placehold.co/40x40/B0B0B0/333333?text=B" alt="Avatar 2">
+                                <img src="https://placehold.co/40x40/A0A0A0/333333?text=C" alt="Avatar 3">
+                                <img src="https://placehold.co/40x40/909090/333333?text=D" alt="Avatar 4">
+                            </div>
+                            <p style="margin-top: 10px; font-weight: bold; color: var(--text-color-dark);">4.9/5 Bintang dari 1000+ Ulasan</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- WHAT WE OFFER SECTION -->
+        <!-- "What We Offer" Section - Main services example -->
         <section class="section-container">
-            <h2 class="section-title">What We Offer:</h2>
+            <h2 class="section-title">Layanan Kami</h2>
             <div class="offer-single-grid content-container-card">
                 <div class="offer-item">
-                    <span class="offer-icon">⚡</span>
+                    <div class="offer-icon">🚀</div>
                     <div class="offer-details">
-                        <h3>Temporary IMEI Activation (Up to 90 Days)</h3>
-                        <p>This service allows your device to:</p>
-                        <ul>
-                            <li>Connect to Indonesian mobile networks</li>
-                            <li>Make calls, send texts, and use mobile data</li>
-                            <li>Stay active for a maximum of 3 months</li>
-                        </ul>
+                        <h3>Unlock IMEI Permanen</h3>
+                        <p>Bebaskan perangkat Anda dari batasan jaringan dengan layanan unlock permanen yang mendukung berbagai merek ponsel.</p>
                     </div>
                 </div>
                 <div class="offer-item">
-                    <span class="offer-icon">⏱️</span>
+                    <div class="offer-icon">🛡️</div>
                     <div class="offer-details">
-                        <h3>Fast Processing</h3>
-                        <p>Orders are typically processed within 1x24 hours. Delays may occur during peak queue times.</p>
+                        <h3>IMEI Blacklist Removal</h3>
+                        <p>Hapus perangkat Anda dari daftar hitam IMEI, memungkinkan Anda menggunakannya kembali tanpa masalah.</p>
                     </div>
                 </div>
                 <div class="offer-item">
-                    <span class="offer-icon">🛡️</span>
+                    <div class="offer-icon">🔍</div>
                     <div class="offer-details">
-                        <h3>Secure & Reliable Service</h3>
-                        <p>Your device's IMEI is handled with utmost care and security. We ensure a reliable connection after activation.</p>
+                        <h3>Pengecekan IMEI History</h3>
+                        <p>Dapatkan laporan lengkap mengenai riwayat IMEI perangkat Anda, termasuk status garansi dan informasi kunci lainnya.</p>
                     </div>
                 </div>
                 <div class="offer-item">
-                    <span class="offer-icon">💬</span>
+                    <div class="offer-icon">💡</div>
                     <div class="offer-details">
-                        <h3>Dedicated Support</h3>
-                        <p>Our team is available to assist you throughout the process, from inquiry to activation confirmation.</p>
+                        <h3>Konsultasi Teknis Gratis</h3>
+                        <p>Tim ahli kami siap memberikan konsultasi gratis untuk masalah IMEI yang kompleks atau pertanyaan teknis.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- IMPORTANT NOTES SECTION -->
+        <!-- "Important Notes" / Short FAQ Section -->
         <section class="section-container">
-            <h2 class="section-title">Important Notes:</h2>
+            <h2 class="section-title">Catatan Penting</h2>
             <div class="important-notes-grid content-container-card">
                 <div class="important-note-item">
-                    <span class="important-note-icon">⚠️</span>
+                    <div class="important-note-icon">📝</div>
                     <div class="important-note-details">
-                        <p>This service is only for foreign/imported devices.</p>
+                        <h3>Proses & Waktu</h3>
+                        <p>Waktu proses unlock bervariasi tergantung model dan negara asal perangkat. Informasi detail akan diberikan setelah pengecekan IMEI.</p>
                     </div>
                 </div>
                 <div class="important-note-item">
-                    <span class="important-note-icon">🚫</span>
+                    <div class="important-note-icon">💳</div>
                     <div class="important-note-details">
-                        <p>Your device must not have the following issues:</p>
-                        <ul>
-                            <li>SIM lock</li>
-                            <li>Baseband error</li>
-                            <li>Null or corrupted IMEI</li>
-                        </ul>
+                        <h3>Metode Pembayaran</h3>
+                        <p>Kami menerima berbagai metode pembayaran yang aman dan terpercaya, termasuk transfer bank dan e-wallet.</p>
                     </div>
                 </div>
                 <div class="important-note-item">
-                    <span class="important-note-icon">↩️</span>
+                    <div class="important-note-icon">📞</div>
                     <div class="important-note-details">
-                        <p>We do not provide refunds if your device fails due to hardware/software issues outside our control.</p>
+                        <h3>Dukungan Pelanggan</h3>
+                        <p>Hubungi tim dukungan kami melalui WhatsApp atau email untuk bantuan cepat dan responsif.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- BEST FOR SECTION -->
-        <section class="section-container">
-            <h2 class="section-title">Best For:</h2>
-            <div class="card-grid">
-                <div class="best-for-item content-container-card">
-                    <span class="best-for-icon">✈️</span>
-                    <p>International tourists visiting Indonesia</p>
-                </div>
-                <div class="best-for-item content-container-card">
-                    <span class="best-for-icon">🇮🇩</span>
-                    <p>Indonesian citizens returning from overseas</p>
-                </div>
-                <div class="best-for-item content-container-card">
-                    <span class="best-for-icon">💼</span>
-                    <p>Short-term business travelers</p>
+        <!-- FOOTER -->
+        <footer class="main-container-card">
+            <div class="footer-content">
+                <p>&copy; 2025 ImeiHub. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://instagram.com/yourimeihub" target="_blank">Instagram</a>
+                    <a href="https://facebook.com/yourimeihub" target="_blank">Facebook</a>
+                    <a href="https://twitter.com/yourimeihub" target="_blank">Twitter</a>
+                    <a href="https://t.me/yourimeihub" target="_blank">Telegram</a>
                 </div>
             </div>
-        </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="main-container-card">
-        <div class="footer-content">
-            <p>&copy; 2025 ImeiHub. All rights reserved.</p>
-            <div class="social-links">
-                <a href="https://instagram.com/yourimeihub" target="_blank">Instagram</a>
-                <a href="https://facebook.com/yourimeihub" target="_blank">Facebook</a>
-                <a href="https://twitter.com/yourimeihub" target="_blank">Twitter</a>
-                <a href="https://t.me/yourimeihub" target="_blank">Telegram</a>
-            </div>
-        </div>
-    </footer>
-
+        </footer>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
