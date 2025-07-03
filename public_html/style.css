@@ -688,17 +688,17 @@ footer .social-links a:hover {
     box-sizing: border-box;
 }
 
-.login-container {
-    max-width: 400px; /* Max width for the login form */
-    width: 90%; /* Responsive width */
-    padding: 40px; /* Padding inside the form container */
-    background-color: #FFFFFF; /* White background for the form area */
-    border-radius: 15px; /* Slightly rounded corners for the form area */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Subtle shadow for the form area */
-    text-align: center;
-    margin-top: 50px; /* Space from the navbar */
-    margin-bottom: 50px; /* Space from the footer */
-}
+/* .login-container { */
+    /* max-width: 400px; Max width for the login form */
+    /* width: 90%; Responsive width */
+    /* padding: 40px; Padding inside the form container */
+    /* background-color: #FFFFFF; White background for the form area */
+    /* border-radius: 15px; Slightly rounded corners for the form area */
+    /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); Subtle shadow for the form area */
+    /* text-align: center; */
+    /* margin-top: 50px; Space from the navbar */
+    /* margin-bottom: 50px; Space from the footer */
+/* } */
 
 .login-container h1 {
     font-size: 3em; /* Larger font size for "Login" */
