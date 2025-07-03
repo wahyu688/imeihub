@@ -690,6 +690,7 @@ footer .social-links a:hover {
     gap: 10px;
     align-items: flex-start;
     padding: 40px 0; /* Vertical padding only, horizontal handled by children */
+    margin-top: 10px;
 }
 
 .left-sidebar {
@@ -740,6 +741,7 @@ footer .social-links a:hover {
 
 .admin-content {
     flex-grow: 1;
+    width: 100%; /* Full width for content */
     background-color: var(--bg-content-color);
     border-radius: 20px; /* Kept radius for admin content */
     box-shadow: 0 8px 20px var(--shadow-color-light);
@@ -781,7 +783,8 @@ footer .social-links a:hover {
 
 .admin-table-container {
     overflow-x: auto;
-    margin-top: 30px;
+    margin-top: 10px;
+    width: 100%; /* Full width for table container */
 }
 
 .admin-table {
