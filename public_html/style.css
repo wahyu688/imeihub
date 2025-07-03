@@ -12,7 +12,7 @@
     --border-color: #D1D5DB; /* Light grey for subtle borders */
     --shadow-color-light: rgba(0, 0, 0, 0.1); /* Lighter shadow for elements on light background */
     --shadow-color-dark: rgba(0, 0, 0, 0.3); /* Darker shadow for raised elements */
-    --card-border-radius: 20px; /* Standard border radius for cards */
+    --card-border-radius: 20px; /* Kept 20px for card look */
     --button-border-radius: 30px; /* Pill-shaped for buttons */
 
     /* New variable for grey hover color (remains the same) */
@@ -39,7 +39,7 @@
 body {
     margin: 0;
     font-family: 'Inter', sans-serif; /* Using Google Font Inter */
-    background-color: var(--bg-page-color); /* Main page background */
+    background-color: var(--bg-content-color); /* Latar belakang body sekarang sama dengan konten */
     color: var(--text-color-dark); /* Primary text color */
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -59,30 +59,33 @@ a:hover {
 
 /* --- General Layout --- */
 .main-container {
-    max-width: 1400px; /* Wider to match the design */
-    margin: 20px auto; /* Top/bottom margin, auto left/right for centering */
-    padding: 0 30px; /* Side padding */
+    max-width: 100%; /* Full width */
+    margin: 0; /* No margin */
+    padding: 0 30px; /* Tambahan padding horizontal untuk jarak ke tepi layar */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 30px; /* Spacing between main sections */
+    gap: 30px; /* Spacing between main sections (cards) */
 }
 
-/* --- Header Card --- */
+/* --- Header (Navbar) - NOT A CARD --- */
 .header-card {
-    background-color: var(--bg-content-color); /* Header card background */
-    border-radius: var(--card-border-radius);
-    box-shadow: 0 10px 30px var(--shadow-color-light); /* Softer shadow */
-    padding: 15px 40px;
+    background-color: var(--bg-content-color); /* Header background */
+    border-radius: 0; /* No border radius */
+    box-shadow: 0 5px 15px var(--shadow-color-light); /* Subtle shadow at the bottom */
+    padding: 15px 60px; /* Padding untuk konten di dalam navbar */
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
-    top: 20px; /* Keeps a small distance from the top */
+    top: 0; /* Stick to the very top */
     z-index: 1000;
-    margin: 0 auto; /* Centered within main-container */
-    width: calc(100% - 60px); /* Adjusts to main-container padding */
-    max-width: 1340px; /* Max width to prevent it from getting too wide */
+    /* Negatif margin untuk membentang penuh melewati padding main-container */
+    margin-left: -30px;
+    margin-right: -30px;
+    width: calc(100% + 60px); /* Kompensasi padding main-container */
+    max-width: none; /* No max width */
+    box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
 }
 
 .header-card .navbar-left,
@@ -225,18 +228,25 @@ a:hover {
 }
 
 
-/* --- Hero Section --- */
+/* --- Hero Section - NOT A CARD --- */
 .hero-section {
     position: relative; /* For large text positioning */
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
-    padding: 80px 60px; /* Larger padding */
+    border-radius: 0; /* No border radius */
+    box-shadow: none; /* No box shadow */
+    padding: 80px 60px; /* Larger padding for content inside */
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 40px;
     overflow: hidden; /* Important for large background text */
     min-height: 500px; /* To provide some space */
+    /* Negatif margin untuk membentang penuh melewati padding main-container */
+    margin-left: -30px;
+    margin-right: -30px;
+    width: calc(100% + 60px); /* Kompensasi padding main-container */
+    max-width: none; /* No max width */
+    box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
 }
 
 .hero-large-text-overlay {
@@ -276,22 +286,30 @@ a:hover {
 }
 
 .hero-image-container {
-    flex: 1;
-    text-align: center;
+    flex: 0 0 auto; /* Jangan biarkan flex mengambil semua ruang */
+    width: 400px; /* Tetapkan lebar tetap untuk kontainer gambar */
+    height: 400px; /* Tetapkan tinggi tetap untuk kontainer gambar */
+    display: flex; /* Gunakan flexbox untuk memusatkan gambar */
+    justify-content: center; /* Pusatkan gambar secara horizontal */
+    align-items: center; /* Pusatkan gambar secara vertikal */
     z-index: 2; /* Above overlay */
+    /* Dihapus: background-color, border-radius, box-shadow */
 }
 
 .hero-image-container img {
-    max-width: 100%;
-    height: auto;
-    border-radius: var(--card-border-radius);
-    box-shadow: 0 10px 30px var(--shadow-color-light); /* Softer shadow */
+    max-width: 100%; /* Gambar mengisi 100% dari kontainer */
+    max-height: 100%; /* Gambar mengisi 100% dari kontainer */
+    width: auto; /* Biarkan lebar otomatis */
+    height: auto; /* Biarkan tinggi otomatis */
+    object-fit: contain; /* Pastikan gambar pas di dalam kotak tanpa terpotong */
+    border-radius: 0; /* Dihapus: Rounded corners for image inside hero */
+    box-shadow: none; /* Dihapus: Softer shadow for image */
 }
 
 /* --- General Section & Card Styles --- */
 .section-container {
-    padding: 40px 0; /* Vertical padding within main-container */
-    margin-bottom: 20px; /* Spacing between sections */
+    padding: 0; /* No padding here, content-container-card will handle it */
+    margin-bottom: 0; /* No margin here, gap in main-container handles it */
 }
 
 .section-title {
@@ -302,17 +320,22 @@ a:hover {
     font-weight: 800; /* Bolder */
 }
 
+/* Content cards (e.g., "Mengapa Memilih Kami?", "Layanan Kami", "Catatan Penting") - REMAINS A CARD */
 .content-container-card {
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
-    padding: 40px; /* Larger padding */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Softer shadow */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: var(--card-border-radius); /* Rounded corners for card look */
+    padding: 40px 60px; /* Adjusted padding for content inside the card */
+    box-shadow: 0 8px 20px var(--shadow-color-light); /* Added box-shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Added transition for hover effect */
+    margin: 0 auto; /* Center the card horizontally */
+    width: 100%; /* Take full available width */
+    max-width: 1340px; /* Max width to prevent it from getting too wide */
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .content-container-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px var(--shadow-color-dark); /* More prominent shadow on hover */
+    transform: translateY(-5px); /* Added transform on hover */
+    box-shadow: 0 12px 30px var(--shadow-color-dark); /* Added box-shadow on hover */
 }
 
 .card-grid {
@@ -322,15 +345,19 @@ a:hover {
     justify-content: center;
 }
 
-/* --- Features Section (What We Offer & Important Notes) --- */
+/* --- Features Section (What We Offer & Important Notes) - REMAINS A CARD --- */
 .offer-single-grid, .important-notes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
-    padding: 30px;
+    padding: 30px 60px; /* Adjusted padding for content inside the card */
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
-    box-shadow: 0 8px 20px var(--shadow-color-light);
+    border-radius: var(--card-border-radius); /* Rounded corners for card look */
+    box-shadow: 0 8px 20px var(--shadow-color-light); /* Added box-shadow */
+    margin: 0 auto; /* Center the card horizontally */
+    width: 100%; /* Take full available width */
+    max-width: 1340px; /* Max width to prevent it from getting too wide */
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .offer-item, .important-note-item {
@@ -365,12 +392,6 @@ a:hover {
     list-style: none;
     padding-left: 0;
     margin-top: 5px;
-}
-
-.offer-details ul li, .important-note-details ul li {
-    position: relative;
-    padding-left: 25px; /* More space for bullet */
-    margin-bottom: 8px;
 }
 
 .offer-details ul li::before, .important-note-details ul li::before {
@@ -432,7 +453,7 @@ a:hover {
     margin: 60px auto;
     padding: 50px; /* Larger padding */
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
+    border-radius: 20px; /* Kept radius for forms as they are centered */
     box-shadow: 0 10px 30px var(--shadow-color-light);
     color: var(--text-color-dark);
     text-align: center;
@@ -517,11 +538,11 @@ a:hover {
 /* --- Service Card (for services.html) --- */
 .service-card {
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
-    padding: 35px;
-    box-shadow: 0 8px 20px var(--shadow-color-light);
+    border-radius: var(--card-border-radius); /* Rounded corners for card look */
+    padding: 35px; /* Original padding */
+    box-shadow: 0 8px 20px var(--shadow-color-light); /* Added box-shadow */
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Added transition */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -529,16 +550,16 @@ a:hover {
 }
 
 .service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px var(--shadow-color-dark);
+    transform: translateY(-5px); /* Added transform on hover */
+    box-shadow: 0 12px 30px var(--shadow-color-dark); /* Added box-shadow on hover */
 }
 
 .service-card h3 {
-    color: var(--text-color-dark);
     font-size: 1.6em;
     margin-top: 15px; /* Space from icon if present */
     margin-bottom: 15px;
     font-weight: 700;
+    color: var(--text-color-dark);
 }
 
 .service-card p {
@@ -554,14 +575,18 @@ a:hover {
     font-size: 1em;
 }
 
-/* --- Footer --- */
+/* --- Footer - NOT A CARD --- */
 footer.main-container-card {
     background-color: var(--text-color-dark); /* Darker footer background */
     color: var(--secondary-text-color);
-    padding: 30px;
+    padding: 30px 60px; /* Adjusted padding for content inside */
     text-align: center;
-    border-radius: var(--card-border-radius);
-    margin-top: 30px;
+    border-radius: 0; /* No border radius */
+    margin: 0; /* No margin, full width */
+    width: 100%; /* Full width */
+    max-width: none; /* No max width */
+    box-shadow: none; /* No box shadow */
+    box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
 }
 
 footer .footer-content p {
@@ -585,15 +610,15 @@ footer .social-links a:hover {
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     padding: 20px;
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
-    box-shadow: 0 8px 20px var(--shadow-color-light);
+    border-radius: var(--card-border-radius); /* Rounded corners for card look */
+    box-shadow: 0 8px 20px var(--shadow-color-light); /* Added box-shadow */
     margin: 0 auto;
-    max-width: 1000px;
+    max-width: 1000px; /* Max width for this grid */
 }
 
 .order-card {
     background-color: var(--bg-page-color); /* Order card lighter than container */
-    border-radius: 15px;
+    border-radius: 15px; /* Kept radius for individual order cards */
     padding: 25px;
     box-shadow: 0 4px 10px var(--shadow-color-light);
     display: flex;
@@ -628,22 +653,26 @@ footer .social-links a:hover {
 .status-diproses { background-color: var(--status-diproses-bg); color: var(--status-diproses-text); }
 .status-selesai { background-color: var(--status-selesai-bg); color: var(--status-selesai-text); }
 .status-dibatalkan { background-color: var(--status-dibatalkan-bg); color: var(--status-dibatalkan-text); }
-.status-menunggu-proses-besok { background-color: var(--status-menunggu-proses-besok-bg); color: var(--status-menunggu-proses-besok-text); }
-.status-proses-aktif { background-color: var(--status-proses-aktif-bg); color: var(--status-proses-aktif-text); }
+.status-menunggu-proses-besok { background-color: #8A2BE2; color: var(--text-color-light); }
+.status-proses-aktif { background-color: #00BCD4; color: var(--text-color-light); }
 .status-unknown { background-color: var(--status-unknown-bg); color: var(--status-unknown-text); }
 
 /* Admin Dashboard Specifics */
 .admin-dashboard-container {
     display: flex;
-    margin-top: 40px;
+    margin: 0 auto; /* Center the card horizontally */
+    width: 100%; /* Take full available width */
+    max-width: 1340px; /* Max width to prevent it from getting too wide */
+    box-sizing: border-box; /* Include padding in width calculation */
     gap: 30px;
     align-items: flex-start;
+    padding: 40px 0; /* Vertical padding only, horizontal handled by children */
 }
 
 .left-sidebar {
     width: 280px; /* Wider sidebar */
     background: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
+    border-radius: 20px; /* Kept radius for sidebar */
     box-shadow: 0 8px 20px var(--shadow-color-light);
     padding: 30px;
     display: flex;
@@ -689,7 +718,7 @@ footer .social-links a:hover {
 .admin-content {
     flex-grow: 1;
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
+    border-radius: 20px; /* Kept radius for admin content */
     box-shadow: 0 8px 20px var(--shadow-color-light);
     padding: 40px;
 }
@@ -800,22 +829,42 @@ footer .social-links a:hover {
     color: var(--accent-color);
 }
 
+/* 🔻 Logo dekoratif kanan bawah */
+.floating-logo {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+  opacity: 0.75;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  scale: 1.75; /* Default scale */
+}
+
+.floating-logo img {
+  width: 120px;
+  height: auto;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
+  border-radius: 12px;
+}
+
+.floating-logo:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+
 /* --- Responsiveness --- */
 @media (max-width: 1024px) {
+    /* Header/Navbar */
     .header-card {
-        padding: 15px 25px;
-        width: calc(100% - 50px);
-        margin: 15px auto;
+        padding: 15px 40px; /* Adjusted padding for smaller screens */
     }
 
-    .header-card .nav-links-desktop {
-        gap: 20px;
-    }
-
+    /* Hero Section */
     .hero-section {
+        padding: 60px 40px; /* Adjusted padding for smaller screens */
         flex-direction: column;
         text-align: center;
-        padding: 60px 40px;
         gap: 30px;
     }
 
@@ -831,10 +880,14 @@ footer .social-links a:hover {
         font-size: 20vw;
     }
 
+    .hero-image-container {
+        width: 300px; /* Adjusted width for smaller screens */
+        height: 300px; /* Adjusted height for smaller screens */
+    }
+
     .main-container {
-        padding: 0 20px;
-        margin: 15px auto;
-        gap: 20px;
+        padding: 0 20px; /* Adjusted padding for smaller screens */
+        gap: 20px; /* Adjusted gap */
     }
 
     .section-title {
@@ -842,23 +895,16 @@ footer .social-links a:hover {
         margin-bottom: 40px;
     }
 
-    .content-container-card {
-        padding: 30px;
-    }
-
-    .offer-single-grid, .important-notes-grid {
-        padding: 25px;
-        grid-template-columns: 1fr; /* Stack columns on smaller screens */
+    /* Content Cards (e.g., "Mengapa Memilih Kami?") */
+    .content-container-card, .offer-single-grid, .important-notes-grid, #my-orders-section .card-grid, .admin-dashboard-container {
+        padding: 30px 40px; /* Adjusted padding for smaller screens */
+        width: 100%; /* Take full width on smaller screens */
+        margin: 15px auto; /* Centered with margin */
     }
 
     .order-form, .admin-form-container {
         padding: 40px;
         margin: 40px auto;
-    }
-
-    .admin-dashboard-container {
-        flex-direction: column;
-        gap: 20px;
     }
 
     .left-sidebar {
@@ -875,6 +921,11 @@ footer .social-links a:hover {
     .admin-table th, .admin-table td {
         padding: 12px;
     }
+
+    /* Footer */
+    footer.main-container-card {
+        padding: 30px 40px; /* Adjusted padding for smaller screens */
+    }
 }
 
 @media (max-width: 768px) {
@@ -889,12 +940,7 @@ footer .social-links a:hover {
     }
 
     .header-card {
-        border-radius: 0; /* Full width on mobile */
-        margin: 0;
         padding: 15px 20px;
-        width: 100%;
-        top: 0;
-        box-shadow: 0 5px 15px var(--shadow-color-light); /* Keep subtle shadow */
     }
 
     .hero-section {
@@ -910,13 +956,21 @@ footer .social-links a:hover {
         font-size: 25vw;
     }
 
+    .hero-image-container {
+        width: 250px; /* Adjusted width for mobile */
+        height: 250px; /* Adjusted height for mobile */
+    }
+
     .section-title {
         font-size: 2em;
         margin-bottom: 30px;
     }
 
-    .content-container-card {
-        padding: 25px;
+    /* Content Cards (e.g., "Mengapa Memilih Kami?") */
+    .content-container-card, .offer-single-grid, .important-notes-grid, #my-orders-section .card-grid, .admin-dashboard-container {
+        padding: 25px 20px; /* Adjusted padding for mobile */
+        width: 100%; /* Take full width on mobile */
+        margin: 15px auto; /* Centered with margin */
     }
 
     .order-form, .admin-form-container {
@@ -933,6 +987,11 @@ footer .social-links a:hover {
         font-size: 0.75em;
         padding: 5px 10px;
     }
+
+    /* Footer */
+    footer.main-container-card {
+        padding: 30px 20px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -942,6 +1001,11 @@ footer .social-links a:hover {
 
     .hero-large-text-overlay {
         font-size: 30vw;
+    }
+
+    .hero-image-container {
+        width: 200px; /* Adjusted width for small mobile */
+        height: 200px; /* Adjusted height for small mobile */
     }
 
     .btn, .cta-button, .order-form .btn, .admin-form-container .btn {
@@ -956,6 +1020,7 @@ footer .social-links a:hover {
     }
 
     .service-card {
-        padding: 25px;
+        padding: 25px 20px; /* Adjusted padding for small mobile */
     }
 }
+
