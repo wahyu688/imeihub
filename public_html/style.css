@@ -476,100 +476,68 @@ a:hover {
     box-shadow: 0 8px 20px var(--shadow-color-dark);
 }
 
-/* New styles for login.html to match the example image (flat design) */
-.main-content-area {
-    /* Ensure main content area is flexible to center the login form */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Align to top to allow space below navbar */
-    min-height: calc(100vh - 150px); /* Adjust based on navbar and footer height */
-    padding: 20px; /* Add some padding around the login form */
-    box-sizing: border-box;
-}
-
-.login-container {
-    max-width: 400px; /* Max width for the login form */
-    width: 90%; /* Responsive width */
-    padding: 40px; /* Padding inside the form container */
-    background-color: #FFFFFF; /* White background for the form area */
-    border-radius: 15px; /* Slightly rounded corners for the form area */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Subtle shadow for the form area */
+/* --- Forms (Login, Register, Order) --- */
+.order-form, .admin-form-container {
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 50px; /* Larger padding */
+    background-color: var(--bg-content-color);
+    border-radius: 20px; /* Kept radius for forms as they are centered */
+    box-shadow: 0 10px 30px var(--shadow-color-light);
+    color: var(--text-color-dark);
     text-align: center;
-    margin-top: 50px; /* Space from the navbar */
-    margin-bottom: 50px; /* Space from the footer */
 }
 
-.login-container h1 {
-    font-size: 3em; /* Larger font size for "Login" */
-    font-weight: 800; /* Bolder */
-    color: #1A1A1A; /* Dark text */
+.order-form h1, .admin-form-container h1 {
+    color: var(--text-color-dark);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.8em;
+    font-weight: 800;
+}
+
+.order-form p, .admin-form-container p {
+    color: var(--secondary-text-color);
+    font-size: 1.1em;
+}
+
+.order-form label, .admin-form-container label {
+    display: block;
+    margin-top: 25px; /* Larger margin */
     margin-bottom: 10px;
-}
-
-.login-container .subtitle {
-    font-size: 1.1em;
-    color: #6B7280; /* Muted grey */
-    margin-bottom: 40px; /* More space below subtitle */
-}
-
-.login-container form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Space between form elements */
-}
-
-.login-container label {
-    text-align: left;
-    font-size: 0.9em;
-    font-weight: 700; /* Bold */
-    color: #1A1A1A; /* Dark text */
-    text-transform: uppercase; /* Uppercase */
-    margin-bottom: -10px; /* Pull label closer to input */
-}
-
-.login-container input[type="text"],
-.login-container input[type="password"],
-.login-container input[type="email"] {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #D1D5DB; /* Light border */
-    border-radius: 10px; /* Rounded corners */
-    background-color: #E0E0E0; /* Light grey background */
-    color: #1A1A1A; /* Dark text */
-    font-size: 1em;
-    box-sizing: border-box; /* Include padding in width */
-}
-
-.login-container input::placeholder {
-    color: #9CA3AF; /* Placeholder color */
-}
-
-.login-container .btn.login-btn { /* Specific class for login button */
-    background-color: #1A1A1A; /* Dark button */
-    color: #FFFFFF; /* White text */
-    padding: 15px 30px;
-    border-radius: 10px; /* Rounded corners */
-    font-size: 1.1em;
     font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 100%; /* Full width */
-    margin-top: 20px; /* Space above button */
-    border: none; /* Remove default button border */
+    color: var(--text-color-dark);
+    text-align: left; /* Left-aligned labels */
 }
 
-.login-container .btn.login-btn:hover {
-    background-color: #333333; /* Slightly lighter dark on hover */
+.order-form input, .order-form select,
+.admin-form-container input, .admin-form-container select, .admin-form-container textarea {
+    width: calc(100% - 30px); /* Adjusts for padding */
+    padding: 15px; /* Larger padding */
+    margin-top: 0;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px; /* Softer corners */
+    font-size: 1.1em;
+    background-color: #FDFDFD; /* Lighter input background */
+    color: var(--text-color-dark);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Status message styling */
-.status-message {
-    margin-top: 20px;
-    font-size: 0.9em;
-    color: #EF4444; /* Red for error messages */
-    text-align: center;
+.order-form input:focus, .order-form select:focus,
+.admin-form-container input:focus, .admin-form-container select:focus, .admin-form-container textarea:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(74, 74, 74, 0.2); /* Accent focus shadow updated to neutral */
 }
 
+.order-form .btn, .admin-form-container .btn {
+    width: 100%;
+    padding: 18px; /* Larger form button */
+    font-size: 1.3em;
+    border-radius: var(--button-border-radius);
+    margin-top: 20px; /* Space from last input */
+}
 
 /* --- Status Message Styles --- */
 .status-message {
@@ -708,6 +676,101 @@ footer .social-links a:hover {
     margin-top: 10px;
     align-self: flex-start; /* Stay left-aligned */
 }
+
+/* New styles for login.html to match the example image (flat design) */
+.main-content-area {
+    /* Ensure main content area is flexible to center the login form */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to top to allow space below navbar */
+    min-height: calc(100vh - 150px); /* Adjust based on navbar and footer height */
+    padding: 20px; /* Add some padding around the login form */
+    box-sizing: border-box;
+}
+
+.login-container {
+    max-width: 400px; /* Max width for the login form */
+    width: 90%; /* Responsive width */
+    padding: 40px; /* Padding inside the form container */
+    background-color: #FFFFFF; /* White background for the form area */
+    border-radius: 15px; /* Slightly rounded corners for the form area */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Subtle shadow for the form area */
+    text-align: center;
+    margin-top: 50px; /* Space from the navbar */
+    margin-bottom: 50px; /* Space from the footer */
+}
+
+.login-container h1 {
+    font-size: 3em; /* Larger font size for "Login" */
+    font-weight: 800; /* Bolder */
+    color: #1A1A1A; /* Dark text */
+    margin-bottom: 10px;
+}
+
+.login-container .subtitle {
+    font-size: 1.1em;
+    color: #6B7280; /* Muted grey */
+    margin-bottom: 40px; /* More space below subtitle */
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between form elements */
+}
+
+.login-container label {
+    text-align: left;
+    font-size: 0.9em;
+    font-weight: 700; /* Bold */
+    color: #1A1A1A; /* Dark text */
+    text-transform: uppercase; /* Uppercase */
+    margin-bottom: -10px; /* Pull label closer to input */
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"],
+.login-container input[type="email"] {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #D1D5DB; /* Light border */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #E0E0E0; /* Light grey background */
+    color: #1A1A1A; /* Dark text */
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.login-container input::placeholder {
+    color: #9CA3AF; /* Placeholder color */
+}
+
+.login-container .btn.login-btn { /* Specific class for login button */
+    background-color: #1A1A1A; /* Dark button */
+    color: #FFFFFF; /* White text */
+    padding: 15px 30px;
+    border-radius: 10px; /* Rounded corners */
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Full width */
+    margin-top: 20px; /* Space above button */
+    border: none; /* Remove default button border */
+}
+
+.login-container .btn.login-btn:hover {
+    background-color: #333333; /* Slightly lighter dark on hover */
+}
+
+/* Status message styling */
+.status-message {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #EF4444; /* Red for error messages */
+    text-align: center;
+}
+
 
 /* Status colors (re-using existing variables) */
 .status-pending { background-color: var(--status-pending-bg); color: var(--status-pending-text); }
