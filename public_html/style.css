@@ -683,14 +683,12 @@ footer .social-links a:hover {
 /* Admin Dashboard Specifics */
 .admin-dashboard-container {
     display: flex;
-    margin: 30px 10px; /* Center the card horizontally */
-    width: 100%; /* Take full available width */
-    max-width: 100%; /* Max width to prevent it from getting too wide */
-    box-sizing: border-box; /* Include padding in width calculation */
-    gap: 10px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 20px; /* Lebih longgar sedikit antar sidebar dan konten */
     align-items: flex-start;
-    padding: 40px 0; /* Vertical padding only, horizontal handled by children */
-    margin-top: 10px;
 }
 
 .left-sidebar {
