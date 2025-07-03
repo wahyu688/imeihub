@@ -5,86 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ImeiHub - Login</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="imeihub_logo.png" type="image/png"> 
+    <link rel="icon" href="imeihub_logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- TOP NAVBAR -->
-    <nav class="top-navbar">
-        <div class="navbar-left">
-            <div class="brand-logo">
-                <img src="imeihub_logo.png" alt="ImeiHub Logo"> 
+    <!-- Wrapper utama untuk konten agar sesuai dengan desain kartu yang mengambang -->
+    <div class="main-container">
+        <!-- Bagian Navbar Atas -->
+        <nav class="header-card">
+            <div class="navbar-left">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
+                    </svg>
+                    <span>ImeiHub</span>
+                </div>
+                <ul class="nav-links-desktop">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="order.html">Order</a></li>
+                    <li><a href="my-orders.html">My Orders</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+                </ul>
             </div>
-            <ul class="nav-links-desktop">
-                <li><a href="/">Home</a></li>
-                <li><a href="/services">Services</a></li>
-                <li><a href="/order">Order</a></li>
-                <li><a href="/my-orders">My Orders</a></li>
-                <li><a href="/contact">Contact</a></li>
-                <li id="nav-admin-dashboard" style="display: none;"><a href="/admin_dashboard">Admin Dashboard</a></li> <!-- BARU: Link Admin Dashboard -->
+
+            <div class="navbar-right">
+                <div id="nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div>
+                <!-- Elemen untuk tampilan setelah login -->
+                <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
+                    <span>Hi, <strong id="username-display"></strong>!</span>
+                    <button id="logout-btn-navbar" class="nav-link-button">Logout</button>
+                </div>
+                <!-- Hamburger menu for mobile -->
+                <button class="hamburger-menu" id="hamburger-menu">&#9776;</button>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Overlay -->
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+            <button class="close-mobile-nav" id="close-mobile-nav">&times;</button>
+            <ul class="mobile-nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="my-orders.html">My Orders</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+                <li><div id="mobile-nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div></li>
+                <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
+                <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
             </ul>
         </div>
 
-        <div class="navbar-right">
-            <div id="nav-login-register"><a href="/login" class="nav-link-button">Login/Register</a></div>
-            <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
-                <span>Hi, <strong id="username-display"></strong>!</span>
-                <img src="avatar_placeholder.jpg" alt="User Avatar" class="user-avatar">
+        <main class="main-content-area">
+            <section class="order-form content-container-card">
+                <h1>Login to Your Account</h1>
+                <p style="text-align: center; margin-bottom: 30px; color: var(--secondary-text-color);">Please login to view your order status.</p>
+                <form id="login-form">
+                    <label for="login-username">Username:</label>
+                    <input type="text" id="login-username" required>
+
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" required>
+                    
+                    <button type="submit" class="btn">Login</button>
+                </form>
+                <div id="login-status" class="status-message" style="margin-top: 20px;"></div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="main-container-card">
+            <div class="footer-content">
+                <p>&copy; 2025 ImeiHub. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://instagram.com/yourimeihub" target="_blank">Instagram</a>
+                    <a href="https://facebook.com/yourimeihub" target="_blank">Facebook</a>
+                    <a href="https://twitter.com/yourimeihub" target="_blank">Twitter</a>
+                    <a href="https://t.me/yourimeihub" target="_blank">Telegram</a>
+                </div>
             </div>
-            <button id="logout-btn-navbar" class="nav-link-button" style="display: none;">Logout</button>
-        </div>
-
-        <!-- Mobile Hamburger Menu (hidden on desktop) -->
-        <button class="hamburger-menu" aria-label="Toggle navigation">
-            ☰
-        </button>
-    </nav>
-
-    <!-- Mobile Navigation Overlay (hidden on desktop) -->
-    <div class="mobile-nav-overlay">
-        <button class="close-mobile-nav">✖</button>
-        <ul class="mobile-nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="order.html">Order</a></li>
-            <li><a href="my-orders.html">My Orders</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
-            <li id="mobile-nav-login-register"><a href="login.html">Login/Register</a></li>
-            <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
-            <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
-        </ul>
+        </footer>
     </div>
-
-    <main class="main-content-area">
-        <section class="order-form content-container-card">
-            <h1>Login to Your Account</h1>
-            <p style="text-align: center; margin-bottom: 30px; color: var(--secondary-text-color);">Please login to view your order status.</p>
-            <form id="login-form">
-                <label for="login-username">Username:</label>
-                <input type="text" id="login-username" required>
-
-                <label for="login-password">Password:</label>
-                <input type="password" id="login-password" required>
-                
-                <button type="submit" class="btn">Login</button>
-            </form>
-            <div id="login-status" class="status-message" style="margin-top: 20px;"></div>
-        </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="main-container-card">
-        <div class="footer-content">
-            <p>&copy; 2025 ImeiHub. All rights reserved.</p>
-            <div class="social-links">
-                <a href="https://instagram.com/yourimeihub" target="_blank">Instagram</a>
-                <a href="https://facebook.com/yourimeihub" target="_blank">Facebook</a>
-                <a href="https://twitter.com/yourimeihub" target="_blank">Twitter</a>
-                <a href="https://t.me/yourimeihub" target="_blank">Telegram</a>
-            </div>
-        </div>
-    </footer>
-
     <script src="script.js"></script>
 </body>
 </html>
