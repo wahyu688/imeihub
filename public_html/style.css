@@ -106,7 +106,7 @@ a:hover {
     color: var(--text-color-dark);
 }
 
-.header-card .brand-logo img {
+.header-card .brand-logo img { /* Menambahkan gaya untuk img di brand-logo */
     height: 40px; /* Logo size */
     margin-right: 10px;
 }

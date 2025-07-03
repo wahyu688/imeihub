@@ -10,85 +10,85 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- TOP NAVBAR - Ini akan menggunakan gaya dari style.css yang Anda berikan -->
-    <nav class="header-card">
-        <!-- Menghapus <div class="container"> yang tidak perlu di sini -->
-        <div class="navbar-left">
-            <div class="brand-logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
-                </svg>
-                <span>ImeiHub</span>
-            </div>
-            <ul class="nav-links-desktop">
-                <li><a href="index.html">Home</a></li> <!-- Menggunakan .html -->
-                <li><a href="services.html">Services</a></li> <!-- Menggunakan .html -->
-                <li><a href="order.html">Order</a></li> <!-- Menggunakan .html -->
-                <li><a href="my-orders.html">My Orders</a></li> <!-- Menggunakan .html -->
-                <li><a href="contact.html">Contact</a></li> <!-- Menggunakan .html -->
-                <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li> <!-- Menggunakan .html -->
-            </ul>
-        </div>
-
-        <div class="navbar-right">
-            <div id="nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div> <!-- Menggunakan .html -->
-            <!-- Elemen untuk tampilan setelah login -->
-            <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
-                <span>Hi, <strong id="username-display"></strong>!</span>
-                <button id="logout-btn-navbar" class="nav-link-button">Logout</button>
-            </div>
-            <!-- Hamburger menu for mobile -->
-            <button class="hamburger-menu" id="hamburger-menu">&#9776;</button>
-        </div>
-    </nav>
-
     <!-- Mobile Navigation Overlay -->
     <div class="mobile-nav-overlay" id="mobile-nav-overlay">
         <button class="close-mobile-nav" id="close-mobile-nav">&times;</button>
         <ul class="mobile-nav-links">
-            <li><a href="index.html">Home</a></li> <!-- Menggunakan .html -->
-            <li><a href="services.html">Services</a></li> <!-- Menggunakan .html -->
-            <li><a href="order.html">Order</a></li> <!-- Menggunakan .html -->
-            <li><a href="my-orders.html">My Orders</a></li> <!-- Menggunakan .html -->
-            <li><a href="contact.html">Contact</a></li> <!-- Menggunakan .html -->
-            <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li> <!-- Menggunakan .html -->
-            <li><div id="mobile-nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div></li> <!-- Menggunakan .html -->
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="order.html">Order</a></li>
+            <li><a href="my-orders.html">My Orders</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+            <li><div id="mobile-nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div></li>
             <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
             <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
         </ul>
     </div>
 
-    <main class="main-content-area">
-        <section class="login-container">
-            <h1>Login</h1>
-            <p class="subtitle">Sign in to continue</p>
-            <form id="login-form">
-                <label for="login-username">EMAIL</label>
-                <input type="text" id="login-username" placeholder="hello@reallygreatsite.com" required>
-
-                <label for="login-password">PASSWORD</label>
-                <input type="password" id="login-password" placeholder="******" required>
-                
-                <button type="submit" class="btn login-btn">sign up</button>
-            </form>
-            <div id="login-status" class="status-message"></div>
-        </section>
-    </main>
-
-    <!-- FOOTER - Ini akan menggunakan gaya dari style.css yang Anda berikan -->
-    <footer class="main-container-card">
-        <div class="footer-content">
-            <p>&copy; 2025 ImeiHub. All rights reserved.</p>
-            <div class="social-links">
-                <a href="https://instagram.com/yourimeihub" target="_blank">Instagram</a>
-                <a href="https://facebook.com/yourimeihub" target="_blank">Facebook</a>
-                <a href="https://twitter.com/yourimeihub" target="_blank">Twitter</a>
-                <a href="https://t.me/yourimeihub" target="_blank">Telegram</a>
+    <!-- Wrapper utama untuk konten agar sesuai dengan desain kartu yang mengambang -->
+    <div class="main-container">
+        <!-- TOP NAVBAR -->
+        <nav class="header-card">
+            <div class="navbar-left">
+                <div class="brand-logo">
+                    <!-- Menggunakan tag img untuk logo agar konsisten dengan order.html -->
+                    <img src="imeihub_logo.png" alt="ImeiHub Logo">
+                    <span>ImeiHub</span>
+                </div>
+                <ul class="nav-links-desktop">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="order.html">Order</a></li>
+                    <li><a href="my-orders.html">My Orders</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+                </ul>
             </div>
-        </div>
-    </footer>
 
-    <!-- Script.js harus dimuat setelah semua elemen HTML yang dimanipulasi -->
+            <div class="navbar-right">
+                <div id="nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div>
+                <!-- Elemen untuk tampilan setelah login -->
+                <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
+                    <span>Hi, <strong id="username-display"></strong>!</span>
+                    <button id="logout-btn-navbar" class="nav-link-button">Logout</button>
+                </div>
+                <!-- Hamburger menu for mobile -->
+                <button class="hamburger-menu" id="hamburger-menu">&#9776;</button>
+            </div>
+        </nav>
+
+        <main class="main-content-area">
+            <section class="login-container">
+                <h1>Login</h1>
+                <p class="subtitle">Sign in to continue</p>
+                <form id="login-form">
+                    <label for="login-username">EMAIL</label>
+                    <input type="text" id="login-username" placeholder="hello@reallygreatsite.com" required>
+
+                    <label for="login-password">PASSWORD</label>
+                    <input type="password" id="login-password" placeholder="******" required>
+                    
+                    <button type="submit" class="btn login-btn">sign up</button>
+                </form>
+                <div id="login-status" class="status-message"></div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="main-container-card">
+            <div class="footer-content">
+                <p>&copy; 2025 ImeiHub. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://instagram.com/yourimeihub" target="_blank">Instagram</a>
+                    <a href="https://facebook.com/yourimeihub" target="_blank">Facebook</a>
+                    <a href="https://twitter.com/yourimeihub" target="_blank">Twitter</a>
+                    <a href="https://t.me/yourimeihub" target="_blank">Telegram</a>
+                </div>
+            </div>
+        </footer>
+    </div> <!-- Penutup main-container -->
+
     <script src="script.js"></script> <!-- Menggunakan path relatif -->
 </body>
 </html>
