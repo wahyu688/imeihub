@@ -688,8 +688,9 @@ footer .social-links a:hover {
 .admin-dashboard-container {
     display: flex;
     gap: 15px; /* Mengurangi jarak antara sidebar dan konten utama lebih lanjut */
-    margin: 30px auto; /* Pusatkan seluruh konten dashboard */
-    max-width: 1800px; /* Memperpanjang lebar maksimum dashboard lebih jauh */
+    margin: 30px 0; /* Diubah: Pusatkan secara vertikal, rata kiri secara horizontal */
+    width: 100%; /* Memastikan mengambil lebar penuh yang tersedia */
+    max-width: 100%; /* Diubah: Memastikan tidak ada batasan lebar yang menghalangi perluasan ke kanan */
     padding: 0; /* Padding ditangani oleh anak-anak */
     box-sizing: border-box;
     align-items: flex-start; /* Sejajarkan item ke atas */
