@@ -69,7 +69,7 @@ a:hover {
 }
 
 /* --- Header (Navbar) - NOT A CARD --- */
-.top-navbar { /* Changed from .header-card to .top-navbar to match login.html */
+.top-navbar {
     background-color: var(--bg-content-color); /* Header background */
     border-radius: 0; /* No border radius */
     box-shadow: 0 5px 15px var(--shadow-color-light); /* Subtle shadow at the bottom */
@@ -88,17 +88,17 @@ a:hover {
     box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
 }
 
-.top-navbar .navbar-left, /* Changed from .header-card to .top-navbar */
-.top-navbar .navbar-right { /* Changed from .header-card to .top-navbar */
+.top-navbar .navbar-left,
+.top-navbar .navbar-right {
     display: flex;
     align-items: center;
 }
 
-.top-navbar .navbar-left { /* Changed from .header-card to .top-navbar */
+.top-navbar .navbar-left {
     gap: 40px; /* Spacing between logo and navigation */
 }
 
-.top-navbar .brand-logo { /* Changed from .header-card to .top-navbar */
+.top-navbar .brand-logo {
     display: flex;
     align-items: center;
     font-weight: 800;
@@ -106,12 +106,12 @@ a:hover {
     color: var(--text-color-dark);
 }
 
-.top-navbar .brand-logo img { /* Changed from .header-card to .top-navbar */
+.top-navbar .brand-logo img {
     height: 40px; /* Logo size */
     margin-right: 10px;
 }
 
-.top-navbar .nav-links-desktop { /* Changed from .header-card to .top-navbar */
+.top-navbar .nav-links-desktop {
     list-style-type: none;
     display: flex;
     padding: 0;
@@ -119,7 +119,7 @@ a:hover {
     gap: 30px; /* Spacing between navigation links */
 }
 
-.top-navbar .nav-links-desktop a { /* Changed from .header-card to .top-navbar */
+.top-navbar .nav-links-desktop a {
     color: var(--secondary-text-color);
     font-weight: 600;
     padding: 8px 15px;
@@ -127,12 +127,12 @@ a:hover {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.top-navbar .nav-links-desktop a:hover { /* Changed from .header-card to .top-navbar */
+.top-navbar .nav-links-desktop a:hover {
     background-color: var(--hover-grey-bg); /* Changed to grey hover background */
     color: var(--hover-grey-text); /* Changed to dark text for grey hover */
 }
 
-.top-navbar .nav-link-button { /* Changed from .header-card to .top-navbar */
+.top-navbar .nav-link-button {
     background-color: var(--accent-color);
     color: var(--text-color-light);
     padding: 12px 25px;
@@ -145,13 +145,13 @@ a:hover {
     box-shadow: 0 4px 10px var(--shadow-color-light);
 }
 
-.top-navbar .nav-link-button:hover { /* Changed from .header-card to .top-navbar */
+.top-navbar .nav-link-button:hover {
     background-color: var(--accent-dark);
     transform: translateY(-2px);
     box-shadow: 0 6px 15px var(--shadow-color-dark);
 }
 
-/* Perubahan: Gaya untuk tampilan username dan logout */
+/* Gaya untuk tampilan username dan logout */
 .user-greeting-container {
     display: flex;
     align-items: center; /* Menyeleraskan teks dan tombol secara vertikal */
@@ -476,8 +476,8 @@ a:hover {
 }
 
 /* --- Forms (Login, Register, Order) --- */
-/* Removed card styles from .order-form and .admin-form-container */
-/* The login-container will now handle its own styling for flat design */
+/* The .order-form and .admin-form-container styles are for other forms that use a card design. */
+/* The .login-container below will override/provide specific styles for the login form. */
 .order-form, .admin-form-container {
     max-width: 700px;
     margin: 60px auto;
@@ -886,7 +886,7 @@ footer .social-links a:hover {
 /* --- Responsiveness --- */
 @media (max-width: 1024px) {
     /* Header/Navbar */
-    .top-navbar { /* Changed from .header-card to .top-navbar */
+    .top-navbar {
         padding: 15px 40px; /* Adjusted padding for smaller screens */
     }
 
@@ -959,9 +959,9 @@ footer .social-links a:hover {
 }
 
 @media (max-width: 768px) {
-    .top-navbar .nav-links-desktop, /* Changed from .header-card to .top-navbar */
-    .top-navbar .nav-link-button, /* Changed from .header-card to .top-navbar */
-    .top-navbar .user-greeting-container { /* Changed from .header-card to .top-navbar */
+    .top-navbar .nav-links-desktop,
+    .top-navbar .nav-link-button,
+    .top-navbar .user-greeting-container {
         display: none; /* Hide desktop nav elements */
     }
 
@@ -969,7 +969,7 @@ footer .social-links a:hover {
         display: block; /* Show hamburger on mobile */
     }
 
-    .top-navbar { /* Changed from .header-card to .top-navbar */
+    .top-navbar {
         padding: 15px 20px;
     }
 
