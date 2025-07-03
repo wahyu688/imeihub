@@ -115,10 +115,6 @@ a:hover {
     margin-right: 10px;
 }
 
-.header-card .brand-logo span { /* Style for the text next to the logo */
-    line-height: 1; /* Ensure text aligns well with image */
-}
-
 .header-card .nav-links-desktop {
     list-style-type: none;
     display: flex;
@@ -684,52 +680,30 @@ footer .social-links a:hover {
 .status-proses-aktif { background-color: #00BCD4; color: var(--text-color-light); }
 .status-unknown { background-color: var(--status-unknown-bg); color: var(--status-unknown-text); }
 
-/* Admin Dashboard specific styles */
+/* Admin Dashboard Specifics */
 .admin-dashboard-container {
     display: flex;
-    gap: 20px; /* Mengurangi jarak antara sidebar dan konten utama */
-    margin: 30px auto; /* Center the entire dashboard content */
-    max-width: 1600px; /* Memperpanjang lebar maksimum dashboard */
-    padding: 0; /* Padding handled by children */
-    box-sizing: border-box;
-    align-items: flex-start; /* Align items to the top */
+    margin: 0 auto; /* Center the card horizontally */
+    width: 100%; /* Take full available width */
+    max-width: 1340px; /* Max width to prevent it from getting too wide */
+    box-sizing: border-box; /* Include padding in width calculation */
+    gap: 30px;
+    align-items: flex-start;
+    padding: 40px 0; /* Vertical padding only, horizontal handled by children */
 }
 
 .left-sidebar {
-    flex: 0 0 280px; /* Fixed width sidebar */
-    background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
+    width: 280px; /* Wider sidebar */
+    background: var(--bg-content-color);
+    border-radius: 20px; /* Kept radius for sidebar */
     box-shadow: 0 8px 20px var(--shadow-color-light);
     padding: 30px;
-    position: sticky;
-    top: 100px; /* Adjust based on navbar height */
-    height: fit-content; /* Fit content height */
     display: flex;
     flex-direction: column;
-    gap: 20px;
-}
-
-/* Gaya khusus untuk logo di sidebar admin */
-.left-sidebar .brand-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Pusatkan logo secara horizontal */
-    font-weight: 800;
-    font-size: 2.5em; /* Ukuran font lebih besar */
-    color: var(--text-color-dark);
-    margin-bottom: 20px; /* Jarak bawah dari menu */
-}
-
-.left-sidebar .brand-logo .imei-text {
-    color: var(--text-color-dark); /* Warna teks "Imei" */
-}
-
-.left-sidebar .brand-logo .hub-text {
-    color: var(--accent-color); /* Warna aksen untuk "hub" */
-}
-
-.left-sidebar .brand-logo img {
-    display: none; /* Sembunyikan gambar logo jika menggunakan teks */
+    gap: 25px;
+    position: sticky;
+    top: 100px; /* Adjusts to header card */
+    min-height: calc(100vh - 120px); /* Slightly taller */
 }
 
 .sidebar-menu ul {
@@ -739,66 +713,56 @@ footer .social-links a:hover {
 }
 
 .sidebar-menu li {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .sidebar-menu a {
     display: flex;
     align-items: center;
-    padding: 12px 15px;
-    border-radius: 10px;
+    padding: 12px 20px;
+    border-radius: 15px; /* Softer corners */
     color: var(--secondary-text-color);
     font-weight: 600;
     transition: background-color 0.2s ease, color 0.2s ease;
-    gap: 10px;
+    gap: 15px;
 }
 
 .sidebar-menu a:hover, .sidebar-menu a.active {
-    background-color: var(--hover-grey-bg);
-    color: var(--hover-grey-text);
+    background-color: var(--hover-grey-bg); /* Changed to grey hover background */
+    color: var(--hover-grey-text); /* Changed to dark text for grey hover */
 }
 
 .sidebar-menu a svg {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-}
-
-/* Gaya untuk ikon plus baru */
-.sidebar-menu a .plus-icon {
-    font-size: 1.5em; /* Ukuran tanda plus */
-    line-height: 1; /* Pastikan vertikal align */
-    display: inline-block; /* Agar bisa diatur gap */
+    fill: currentColor; /* So icon changes color with text */
+    width: 22px;
+    height: 22px;
 }
 
 .admin-content {
     flex-grow: 1;
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius);
+    border-radius: 20px; /* Kept radius for admin content */
     box-shadow: 0 8px 20px var(--shadow-color-light);
     padding: 40px;
-    min-height: 500px; /* Ensure content area has some height */
 }
 
-.admin-content h2 {
-    font-size: 2em;
-    color: var(--text-color-dark);
-    margin-bottom: 25px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px;
+.admin-content h1 {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-align: left; /* Admin title left-aligned */
 }
 
 .stat-cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    gap: 25px;
     margin-bottom: 40px;
 }
 
 .stat-card {
-    background-color: var(--bg-page-color);
+    background-color: var(--bg-page-color); /* Stat card lighter */
     border-radius: 15px;
-    padding: 20px;
+    padding: 25px;
     box-shadow: 0 4px 10px var(--shadow-color-light);
     text-align: center;
 }
@@ -806,12 +770,12 @@ footer .social-links a:hover {
 .stat-card h3 {
     font-size: 1.1em;
     color: var(--secondary-text-color);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .stat-card p {
-    font-size: 2em;
-    font-weight: 700;
+    font-size: 2.2em; /* Larger number */
+    font-weight: 800;
     color: var(--accent-color);
 }
 
@@ -822,48 +786,50 @@ footer .social-links a:hover {
 
 .admin-table {
     width: 100%;
-    border-collapse: separate;
+    border-collapse: separate; /* For border-radius on th */
     border-spacing: 0;
     color: var(--text-color-dark);
-    font-size: 0.9em;
-    table-layout: fixed; /* Penting: Memastikan lebar kolom dihormati */
+    font-size: 0.95em;
 }
 
 .admin-table th, .admin-table td {
-    padding: 12px;
+    padding: 15px;
     border-bottom: 1px solid var(--border-color);
     text-align: left;
-    box-sizing: border-box; /* Memastikan padding tidak menambah lebar */
 }
 
-/* Mengatur lebar kolom tabel secara eksplisit */
-.admin-table th:nth-child(1), .admin-table td:nth-child(1) { width: 12%; } /* Order ID */
-.admin-table th:nth-child(2), .admin-table td:nth-child(2) { width: 10%; } /* User */
-.admin-table th:nth-child(3), .admin-table td:nth-child(3) { width: 25%; } /* Service */
-.admin-table th:nth-child(4), .admin-table td:nth-child(4) { width: 15%; } /* IMEI */
-.admin-table th:nth-child(5), .admin-table td:nth-child(5) { width: 10%; } /* Status */
-.admin-table th:nth-child(6), .admin-table td:nth-child(6) { width: 15%; } /* Date */
-.admin-table th:nth-child(7), .admin-table td:nth-child(7) { width: 13%; } /* Actions */
-
-
 .admin-table th {
-    background-color: var(--bg-page-color);
+    background-color: var(--bg-page-color); /* Table header lighter */
     font-weight: 700;
     color: var(--secondary-text-color);
     text-transform: uppercase;
-    font-size: 0.8em;
+    font-size: 0.85em;
+}
+
+.admin-table thead tr:first-child th:first-child {
+    border-top-left-radius: 15px;
+}
+.admin-table thead tr:first-child th:last-child {
+    border-top-right-radius: 15px;
+}
+
+.admin-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 15px;
+}
+.admin-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 15px;
 }
 
 .admin-table tbody tr:hover {
-    background-color: rgba(74, 74, 74, 0.05);
+    background-color: rgba(74, 74, 74, 0.05); /* Accent light hover updated to neutral */
 }
 
 .status-button {
-    padding: 5px 10px;
-    border-radius: 15px;
+    padding: 6px 12px;
+    border-radius: 20px;
     border: none;
     cursor: pointer;
-    font-size: 0.85em;
+    font-size: 0.9em;
     font-weight: 600;
     transition: opacity 0.3s ease;
 }
@@ -877,8 +843,8 @@ footer .social-links a:hover {
     border: none;
     color: var(--secondary-text-color);
     cursor: pointer;
-    font-size: 1.1em;
-    margin: 0 3px;
+    font-size: 1.2em;
+    margin: 0 5px;
     transition: color 0.3s ease;
 }
 
@@ -965,50 +931,119 @@ footer .social-links a:hover {
     }
 
     .left-sidebar {
-        width: auto; /* Allow sidebar to take full width */
+        width: 100%;
         position: relative;
         top: 0;
-        height: auto;
+        min-height: auto;
     }
 
     .admin-content {
         padding: 30px;
     }
-    /* Adjust table padding for smaller screens */
+
     .admin-table th, .admin-table td {
-        padding: 10px;
+        padding: 12px;
+    }
+
+    /* Footer */
+    footer.main-container-card {
+        padding: 30px 40px; /* Adjusted padding for smaller screens */
     }
 }
 
 @media (max-width: 768px) {
-    .admin-content {
-        padding: 20px;
+    .header-card .nav-links-desktop, /* Class name as per login.html */
+    .header-card .nav-link-button, /* Class name as per login.html */
+    .header-card .user-greeting-container { /* Class name as per login.html */
+        display: none; /* Hide desktop nav elements */
     }
-    .admin-content h2 {
-        font-size: 1.8em;
+
+    .hamburger-menu {
+        display: block; /* Show hamburger on mobile */
     }
-    .stat-card h3 {
-        font-size: 1em;
+
+    .header-card { /* Class name as per login.html */
+        padding: 15px 20px;
     }
-    .stat-card p {
-        font-size: 1.8em;
+
+    .hero-section {
+        padding: 40px 20px;
+        min-height: 400px;
     }
+
+    .hero-section h1 {
+        font-size: 2.8em;
+    }
+
+    .hero-large-text-overlay {
+        font-size: 25vw;
+    }
+
+    .hero-image-container {
+        width: 250px; /* Adjusted width for mobile */
+        height: 250px; /* Adjusted height for mobile */
+    }
+
+    .section-title {
+        font-size: 2em;
+        margin-bottom: 30px;
+    }
+
+    /* Content Cards (e.g., "Mengapa Memilih Kami?") */
+    .content-container-card, .offer-single-grid, .important-notes-grid, #my-orders-section .card-grid, .admin-dashboard-container {
+        padding: 25px 20px; /* Adjusted padding for mobile */
+        width: 100%; /* Take full width on mobile */
+        margin: 15px auto; /* Centered with margin */
+    }
+
+    .order-form, .admin-form-container {
+        padding: 30px;
+        margin: 30px auto;
+    }
+
     .admin-table th, .admin-table td {
-        padding: 8px;
-        font-size: 0.8em;
+        padding: 10px;
+        font-size: 0.85em;
     }
+
     .status-button {
-        min-width: 70px;
-        font-size: 0.8em;
+        font-size: 0.75em;
+        padding: 5px 10px;
+    }
+
+    /* Footer */
+    footer.main-container-card {
+        padding: 30px 20px;
     }
 }
 
 @media (max-width: 480px) {
-    .admin-content h2 {
-        font-size: 1.5em;
+    .hero-section h1 {
+        font-size: 2.2em;
     }
-    .stat-cards-grid {
-        grid-template-columns: 1fr; /* Stack stats on very small screens */
+
+    .hero-large-text-overlay {
+        font-size: 30vw;
+    }
+
+    .hero-image-container {
+        width: 200px; /* Adjusted width for small mobile */
+        height: 200px; /* Adjusted height for small mobile */
+    }
+
+    .btn, .cta-button, .order-form .btn, .admin-form-container .btn {
+        padding: 12px 20px;
+        font-size: 1em;
+    }
+
+    .order-form input, .order-form select,
+    .admin-form-container input, .admin-form-container select, .admin-form-container textarea {
+        padding: 10px;
+        font-size: 1em;
+    }
+
+    .service-card {
+        padding: 25px 20px; /* Adjusted padding for small mobile */
     }
 }
 
@@ -1031,7 +1066,7 @@ footer .social-links a:hover {
     border-radius: 15px; /* Slightly rounded corners for the form area */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Subtle shadow for the form area */
     text-align: center;
-    margin-top: 50px; /* Space from the navbar */
+    margin-top: 20px; /* Space from the navbar */
     margin-bottom: 50px; /* Space from the footer */
 }
 
@@ -1131,7 +1166,7 @@ footer .social-links a:hover {
 
 .main-content-area .order-form label {
     display: block;
-    margin-top: 20px; /* Adjust spacing */
+    margin-top: 10px; /* Adjust spacing */
     margin-bottom: 8px;
     font-weight: 700; /* Bold */
     color: var(--text-color-dark);
