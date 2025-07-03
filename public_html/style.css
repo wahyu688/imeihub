@@ -2,8 +2,8 @@
 
 /* Variables - IMEIHUB THEME (Dark, Light Grey, Neutral Accent) */
 :root {
-    --bg-page-color: #E0E0E0; /* Very light grey for the overall page background */
-    --bg-content-color: #F5F5F5; /* Slightly darker light grey for main content cards/sections */
+    --bg-page-color: #FFFFFF; /* Diubah menjadi putih penuh */
+    --bg-content-color: #FFFFFF; /* Diubah menjadi putih penuh */
     --text-color-dark: #1A1A1A; /* Dark grey for primary text */
     --text-color-light: #FFFFFF; /* White for text on dark backgrounds */
     --secondary-text-color: #6B7280; /* Muted grey for secondary text */
@@ -1121,8 +1121,8 @@ footer .social-links a:hover {
     cursor: pointer;
     transition: background-color 0.3s ease;
     width: 100%; /* Full width */
-    margin-top: 20px; /* Space above button */
-    border: none; /* Remove default button border */
+    margin-top: 20px;
+    border: none;
 }
 
 .login-container .btn.login-btn:hover {
@@ -1185,6 +1185,12 @@ footer .social-links a:hover {
     color: var(--text-color-dark);
     font-size: 1em;
     box-sizing: border-box;
+    /* Hide default arrow for select */
+    -webkit-appearance: none; /* For Chrome, Safari, Opera */
+    -moz-appearance: none; /* For Firefox */
+    appearance: none; /* Standard property */
+    /* Add padding-right to make space for the custom arrow */
+    padding-right: 40px; /* Adjust as needed */
 }
 
 .main-content-area .order-form input::placeholder {
@@ -1212,4 +1218,7 @@ footer .social-links a:hover {
 /* Adjust select arrow for flat design */
 .main-content-area .order-form select {
     background-image: url('data:image/svg+xml;utf8,<svg fill="%231A1A1A" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); /* Darker arrow */
+    background-repeat: no-repeat;
+    background-position: right 15px center; /* Position the arrow */
+    background-size: 20px; /* Size the arrow */
 }
