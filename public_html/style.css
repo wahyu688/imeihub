@@ -853,6 +853,36 @@ footer .social-links a:hover {
     color: var(--accent-color);
 }
 
+/* Perkecil sidebar */
+.admin-sidebar {
+  flex-shrink: 0;
+  width: 220px;
+  margin-left: 0;
+}
+
+/* Biarkan konten kanan menggunakan sisa lebar */
+.admin-content {
+  width: auto;
+  flex-grow: 1;
+}
+
+/* Pastikan table container menggunakan seluruh ruang */
+.admin-table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Pastikan table tidak membatasi diri */
+.admin-table {
+  width: 100%;
+  table-layout: auto;
+}
+
+/* Hilangkan max-width default jika ada pada section pembungkus */
+.admin-section {
+  max-width: none !important;
+}
+
 /* 🔻 Logo dekoratif kanan bawah */
 .floating-logo {
   position: fixed;
