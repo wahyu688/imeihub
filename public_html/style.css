@@ -92,6 +92,7 @@ a:hover {
 .header-card .navbar-right {
     display: flex;
     align-items: center;
+    /* Perubahan: Tambahkan align-items: center untuk menyelaraskan semua item */
 }
 
 .header-card .navbar-left {
@@ -150,6 +151,34 @@ a:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px var(--shadow-color-dark);
 }
+
+/* Perubahan: Gaya untuk tampilan username dan logout */
+.user-greeting-container {
+    display: flex;
+    align-items: center; /* Menyeleraskan teks dan tombol secara vertikal */
+    gap: 10px; /* Jarak antara teks "Hi, username!" dan tombol Logout */
+    color: var(--text-color-dark); /* Warna teks */
+    font-weight: 600;
+    font-size: 1em; /* Ukuran font agar sesuai dengan nav-links */
+}
+
+.user-greeting-container strong {
+    color: var(--accent-color); /* Warna aksen untuk username */
+}
+
+#logout-btn-navbar {
+    padding: 8px 15px; /* Sesuaikan padding agar lebih kecil dan sejajar */
+    font-size: 0.9em; /* Sedikit lebih kecil dari tombol utama */
+    border-radius: var(--button-border-radius);
+    background-color: var(--secondary-text-color); /* Warna tombol logout yang lebih netral */
+    color: var(--text-color-light);
+    transition: background-color 0.3s ease;
+}
+
+#logout-btn-navbar:hover {
+    background-color: var(--accent-dark); /* Hover state */
+}
+
 
 /* Hamburger Menu & Mobile Nav (Keep existing functionality, adjust styles) */
 .hamburger-menu {
@@ -1023,4 +1052,3 @@ footer .social-links a:hover {
         padding: 25px 20px; /* Adjusted padding for small mobile */
     }
 }
-
