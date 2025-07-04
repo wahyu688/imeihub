@@ -653,70 +653,133 @@ footer .social-links a:hover {
     color: var(--accent-color);
 }
 
-/* --- My Orders Page Specifics --- */
-/* Menggunakan gaya tabel admin yang sudah ada untuk konsistensi */
+/* === MY ORDERS PAGE STYLING === */
+
+/* Container tabel */
 #my-orders-section .admin-table-container {
-    /* Gaya kontainer tabel admin */
-    margin: 0 auto; /* Pusatkan tabel di halaman My Orders */
-    max-width: 1340px; /* Sesuaikan dengan admin dashboard */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Tambahkan bayangan seperti admin table */
-    border-radius: 15px; /* Sudut membulat untuk kontainer tabel */
-    overflow: hidden; /* Pastikan sudut membulat diterapkan dengan benar */
-    border: 1px solid var(--border-color); /* Border keseluruhan tabel */
+  margin: 0 auto;
+  max-width: 1340px;
+  box-shadow: 0 8px 20px var(--shadow-color-light);
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
 }
 
+/* Tabel utama */
 #my-orders-section .admin-table {
-    /* Gaya tabel admin */
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    color: var(--text-color-dark);
-    font-size: 0.95em;
-    table-layout: fixed; /* Penting: Memastikan lebar kolom dihormati */
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--text-color-dark);
+  font-size: 0.95em;
+  table-layout: fixed;
 }
 
-#my-orders-section .admin-table th, 
+/* Header dan isi tabel */
+#my-orders-section .admin-table th,
 #my-orders-section .admin-table td {
-    padding: 15px;
-    border-bottom: 1px solid var(--border-color);
-    text-align: left;
-    box-sizing: border-box;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  box-sizing: border-box;
+  vertical-align: middle;
 }
 
+/* Header styling */
 #my-orders-section .admin-table th {
-    background-color: var(--bg-page-color); /* Table header lighter */
-    font-weight: 700;
-    color: var(--secondary-text-color);
-    text-transform: uppercase;
-    font-size: 0.85em;
+  background-color: var(--bg-page-color);
+  font-weight: 700;
+  color: var(--secondary-text-color);
+  text-transform: uppercase;
+  font-size: 0.85em;
 }
 
+/* Hover row */
 #my-orders-section .admin-table tbody tr:hover {
-    background-color: rgba(74, 74, 74, 0.05); /* Hover state */
+  background-color: rgba(74, 74, 74, 0.05);
 }
 
-/* Sudut membulat untuk header dan footer tabel */
+/* Border sudut membulat */
 #my-orders-section .admin-table thead tr:first-child th:first-child {
-    border-top-left-radius: 15px;
+  border-top-left-radius: 15px;
 }
 #my-orders-section .admin-table thead tr:first-child th:last-child {
-    border-top-right-radius: 15px;
+  border-top-right-radius: 15px;
 }
 #my-orders-section .admin-table tbody tr:last-child td:first-child {
-    border-bottom-left-radius: 15px;
+  border-bottom-left-radius: 15px;
 }
 #my-orders-section .admin-table tbody tr:last-child td:last-child {
-    border-bottom-right-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
 
-/* Lebar kolom untuk tabel My Orders (mirip dengan admin dashboard) */
-#my-orders-section .admin-table th:nth-child(1), #my-orders-section .admin-table td:nth-child(1) { width: 15%; } /* Order ID */
-#my-orders-section .admin-table th:nth-child(2), #my-orders-section .admin-table td:nth-child(2) { width: 25%; } /* Service */
-#my-orders-section .admin-table th:nth-child(3), #my-orders-section .admin-table td:nth-child(3) { width: 20%; } /* IMEI */
-#my-orders-section .admin-table th:nth-child(4), #my-orders-section .admin-table td:nth-child(4) { width: 10%; text-align: right; } /* Price */
-#my-orders-section .admin-table th:nth-child(5), #my-orders-section .admin-table td:nth-child(5) { width: 10%; } /* Status */
-#my-orders-section .admin-table th:nth-child(6), #my-orders-section .admin-table td:nth-child(6) { width: 10%; text-align: right; } /* Date */
-#my-orders-section .admin-table th:nth-child(7), #my-orders-section .admin-table td:nth-child(7) { width: 10%; text-align: center; } /* Actions */
+/* Lebar kolom */
+#my-orders-section .admin-table th:nth-child(1),
+#my-orders-section .admin-table td:nth-child(1) {
+  width: 15%;
+}
+#my-orders-section .admin-table th:nth-child(2),
+#my-orders-section .admin-table td:nth-child(2) {
+  width: 25%;
+}
+#my-orders-section .admin-table th:nth-child(3),
+#my-orders-section .admin-table td:nth-child(3) {
+  width: 20%;
+}
+#my-orders-section .admin-table th:nth-child(4),
+#my-orders-section .admin-table td:nth-child(4) {
+  width: 10%;
+  text-align: right;
+}
+#my-orders-section .admin-table th:nth-child(5),
+#my-orders-section .admin-table td:nth-child(5) {
+  width: 10%;
+}
+#my-orders-section .admin-table th:nth-child(6),
+#my-orders-section .admin-table td:nth-child(6) {
+  width: 10%;
+  text-align: right;
+}
+#my-orders-section .admin-table th:nth-child(7),
+#my-orders-section .admin-table td:nth-child(7) {
+  width: 10%;
+  text-align: center;
+}
+
+/* Tombol Cancel */
+#my-orders-section .admin-table .cancel-order-button {
+  background-color: var(--status-dibatalkan-bg);
+  color: var(--status-dibatalkan-text);
+  padding: 8px 14px;
+  font-size: 0.9em;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#my-orders-section .admin-table .cancel-order-button:hover {
+  background-color: #c82333;
+}
+
+/* Animasikan jika ingin efek hapus */
+@keyframes fadeOutRow {
+  from {
+    opacity: 1;
+    height: 48px;
+  }
+  to {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.fade-out-row {
+  animation: fadeOutRow 0.3s ease forwards;
+}
 
 
 /* Status colors (re-using existing variables) */
