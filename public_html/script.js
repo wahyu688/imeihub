@@ -619,18 +619,28 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                             console.log("DEBUG: order.amount =", order.amount, "type =", typeof order.amount);
 
+                            // const orderDate = new Date(order.orderDate);
+                            const formattedDate = orderDate.toLocaleString('id-ID', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                            });
+
                             const row = `
                                 <tr>
                                     <td>${order.orderId}</td>
                                     <td>${order.customerName || order.username}</td>
                                     <td>${order.serviceType}</td>
                                     <td>${order.imei}</td>
-                                    <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
                                     <td>
                                         <button class="status-button status-${order.status.toLowerCase().replace(/\s/g, '-')}" data-order-id="${order.orderId}" data-current-status="${order.status}">
                                             ${order.status}
                                         </button>
                                     </td>
+                                    <td>${formattedDate}</td>
                                     <td>
                                         <select class="admin-status-select" data-order-id="${order.orderId}">
                                             <option value="">Update Status</option>
@@ -645,6 +655,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </tr>
                             `;
                             adminOrdersTableBody.innerHTML += row;
+
                         });
                         const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount');
                         const dashboardAmountSpan = document.getElementById('total-displayed-amount-dashboard');
