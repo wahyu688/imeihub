@@ -950,15 +950,147 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    // Fallback jika tidak ditemukan bagian render orders
-    setTimeout(() => {
-      if (typeof attachInvoiceButtonsOnRender === 'function') {
-        attachInvoiceButtonsOnRender();
-      }
-    }, 200);
-    
 
-// ==== INVOICE PDF GENERATOR ====
+function generateInvoice(orders, groupTitle = 'Invoice') {
+    const invoiceWindow = window.open('', '_blank');
+    const rows = orders.map((order, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${order.orderId}</td>
+            <td>${order.customerName || order.username}</td>
+            <td>${order.imei}</td>
+            <td>${order.serviceType}</td>
+            <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+            <td>${order.status}</td>
+        </tr>
+    `).join('');
+
+    const total = orders
+        .filter(o => o.status.toLowerCase() !== 'dibatalkan')
+        .reduce((sum, o) => sum + (o.amount || 0), 0);
+
+    const html = `
+        <html>
+        <head>
+            <title>${groupTitle}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                th { background: #f3f3f3; }
+                h2 { margin-bottom: 0; }
+                .total { margin-top: 20px; font-weight: bold; font-size: 1.1em; }
+            </style>
+        </head>
+        <body>
+            <h2>${groupTitle}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>IMEI</th>
+                        <th>Service</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+            <div class="total">Total: Rp ${total.toLocaleString('id-ID')}</div>
+            <script>window.print()</script>
+        </body>
+        </html>`;
+
+    invoiceWindow.document.write(html);
+    invoiceWindow.document.close();
+}
+
+
+
+function generateProfessionalInvoice(orders, user, invoiceId, invoiceDate) {
+    const total = orders.reduce((sum, o) => o.status.toLowerCase() !== 'dibatalkan' ? sum + (o.amount || 0) : sum, 0);
+    const rows = orders.map((order, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${order.serviceType}</td>
+          <td>${order.imei}</td>
+          <td>${order.status}</td>
+          <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+        </tr>
+    `).join('');
+
+    const invoiceHtml = `
+    <div id="invoice-content" style="font-family: Arial; padding: 40px; color: #333; width: 800px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Invoice_logo.svg/512px-Invoice_logo.svg.png" style="height: 60px;" />
+        <div style="text-align: right;">
+          <h2 style="margin: 0;">ImeiHub</h2>
+          <div>Jl. Teknologi No. 88</div>
+          <div>Jakarta, Indonesia</div>
+          <div>Email: support@imeihub.id</div>
+          <div>Phone: +62 812 3456 7890</div>
+        </div>
+      </div>
+
+      <h1 style="margin-top: 40px;">Invoice</h1>
+
+      <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <div>
+          <strong>Bill To:</strong><br/>
+          ${user || 'Unknown'}<br/>
+        </div>
+        <div>
+          <strong>Invoice Date:</strong> ${invoiceDate}<br/>
+          <strong>Invoice ID:</strong> ${invoiceId}
+        </div>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; margin-top: 40px;">
+        <thead>
+          <tr style="background: #f3f3f3;">
+            <th style="border: 1px solid #ccc; padding: 10px;">No</th>
+            <th style="border: 1px solid #ccc; padding: 10px;">Service</th>
+            <th style="border: 1px solid #ccc; padding: 10px;">IMEI</th>
+            <th style="border: 1px solid #ccc; padding: 10px;">Status</th>
+            <th style="border: 1px solid #ccc; padding: 10px;">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+          <tr>
+            <td colspan="4" style="border: 1px solid #ccc; padding: 10px; text-align: right; font-weight: bold;">Total</td>
+            <td style="border: 1px solid #ccc; padding: 10px; font-weight: bold;">Rp ${total.toLocaleString('id-ID')}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+
+    const container = document.createElement('div');
+    container.innerHTML = invoiceHtml;
+    html2pdf().from(container).set({
+      filename: `invoice-${invoiceId}.pdf`,
+      margin: 10,
+      jsPDF: { format: 'a4', unit: 'mm', orientation: 'portrait' }
+    }).save();
+}
+
+
+
+document.querySelectorAll('.generate-invoice-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const groupKey = button.dataset.groupKey;
+        const orders = window.groupedOrdersMap[groupKey] || [];
+        if (orders.length > 0) {
+            const invoiceId = `INV-${new Date().toISOString().slice(0,10)}-${Math.floor(Math.random() * 1000)}`;
+            const username = orders[0]?.username || orders[0]?.customerName || 'User';
+            generateProfessionalInvoice(orders, username, invoiceId, new Date().toLocaleDateString('id-ID'));
+        }
+    });
+});
+
+// ===== Generate Professional Invoice PDF =====
 function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
   const validOrders = orders.filter(o => o.status.toLowerCase() !== 'dibatalkan');
   const total = validOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
@@ -974,9 +1106,15 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
 
   const htmlContent = `
     <div style="font-family: Arial; padding: 40px; color: #333;">
-      <h2>ImeiHub</h2>
-      <p>Jl. Teknologi No. 88, Jakarta</p>
-      <hr/>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Invoice_logo.svg/1200px-Invoice_logo.svg.png" style="height: 60px;">
+        <div style="text-align: right;">
+          <h2 style="margin: 0;">ImeiHub</h2>
+          <div>Jl. Teknologi No. 88</div>
+          <div>Jakarta, Indonesia</div>
+        </div>
+      </div>
+      <hr style="margin: 20px 0;">
       <h3>Invoice</h3>
       <p><strong>Invoice ID:</strong> ${invoiceId}</p>
       <p><strong>Customer:</strong> ${user}</p>
@@ -984,38 +1122,65 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
       <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
         <thead>
           <tr style="background-color: #f0f0f0;">
-            <th>No</th><th>Service</th><th>IMEI</th><th>Status</th><th>Price</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">No</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Service</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">IMEI</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Status</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>
-      <h3 style="text-align:right">Total: Rp ${total.toLocaleString('id-ID')}</h3>
+      <h3 style="text-align: right; margin-top: 30px;">Total: Rp ${total.toLocaleString('id-ID')}</h3>
     </div>
   `;
 
-  html2pdf().from(htmlContent).set({
+  const opt = {
     margin: 0.5,
     filename: `invoice-${invoiceId}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  }).save();
+  };
+
+  html2pdf().from(htmlContent).set(opt).save();
 }
 
-// ==== CLICK HANDLER ====
-document.addEventListener('click', function (e) {
-  if (e.target.classList.contains('generate-invoice-button')) {
-    const group = e.target.dataset.group;
-    const orders = window.adminGroupedOrders?.[group];
-    if (!orders || orders.length === 0) {
-      alert('Tidak ada order dalam grup ini.');
-      return;
-    }
+function generateInvoiceButtonForGroup(groupElement, orders) {
+  const btn = document.createElement('button');
+  btn.textContent = '🧾 Generate Invoice';
+  btn.style.marginLeft = '12px';
+  btn.style.padding = '6px 12px';
+  btn.style.borderRadius = '6px';
+  btn.style.border = '1px solid #888';
+  btn.style.backgroundColor = '#ffffff';
+  btn.style.cursor = 'pointer';
+  btn.style.fontSize = '0.85em';
 
-    const invoiceId = 'INV-' + Date.now();
-    const invoiceDate = new Date().toLocaleDateString('id-ID');
-    const username = orders[0]?.username || orders[0]?.customerName || 'User';
-
+  btn.addEventListener('click', () => {
+    const invoiceId = `INV-${Date.now()}`;
+    const invoiceDate = new Date().toLocaleString('id-ID');
+    const username = localStorage.getItem('username') || 'User';
     generateProfessionalInvoicePDF(orders, username, invoiceId, invoiceDate);
-  }
+  });
+
+  groupElement.appendChild(btn);
+}
+
+// Forcefully inject invoice button after group row is added to DOM
+function attachInvoiceButtonsOnRender() {
+  const headers = document.querySelectorAll('.order-group-header');
+  headers.forEach(headerRow => {
+    const cell = headerRow.querySelector('td');
+    if (cell && !cell.querySelector('.generate-invoice-button')) {
+      const groupLabel = cell.textContent.trim();
+      if (window.adminGroupedOrders?.[groupLabel]) {
+        generateInvoiceButtonForGroup(cell, window.adminGroupedOrders[groupLabel]);
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(attachInvoiceButtonsOnRender, 1000);
 });
