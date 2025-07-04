@@ -86,6 +86,14 @@
     </main>
   </div>
 
-  <script src="script.js"></script>
+  <!-- Jalankan script.js hanya setelah DOM siap -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (typeof fetchOrders === "function") {
+        fetchOrders();
+      }
+    });
+  </script>
+  <script src="/script.js"></script>
 </body>
 </html>
