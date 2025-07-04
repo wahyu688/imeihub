@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-    const closeMobileNav = document.querySelector('.close-mobile-nav');
+    const closeMobileNav = document.querySelector('.close-nav'); // Corrected ID
     const mobileNavLoginRegister = document.getElementById('mobile-nav-login-register');
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
@@ -587,7 +587,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             } else {
                                 groupHeaderContent = orderDayStart.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                                groupKey = orderDayStart.toISOString().split('T')[0]; // YYYY-MM-DD
+                                groupKey = orderDayStart.toISOString().split('T')[0]; //YYYY-MM-DD
                             }
 
                             if (currentGroupKey !== groupKey) {
@@ -964,35 +964,124 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==== INVOICE PDF GENERATOR ====
 function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
   const validOrders = orders.filter(o => o.status.toLowerCase() !== 'dibatalkan');
-  const total = validOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+  
+  // Calculate totals
+  const subTotal = validOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+  const saleTaxRate = 0.10; // 10% as per image
+  const saleTax = subTotal * saleTaxRate;
+  const totalAmount = subTotal + saleTax;
+
+  // Generate table rows
   const rows = validOrders.map((order, index) => `
-    <tr>
-      <td>${index + 1}</td>
-      <td>${order.serviceType}</td>
-      <td>${order.imei}</td>
-      <td>${order.status}</td>
-      <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+    <tr style="border-bottom: 1px solid #eee;">
+      <td style="padding: 10px; text-align: left; font-size: 0.9em;">
+        ${order.serviceType || 'N/A'}<br>
+        <span style="color: #666; font-size: 0.8em;">IMEI: ${order.imei || 'N/A'}</span>
+      </td>
+      <td style="padding: 10px; text-align: right; font-size: 0.9em;">1</td>
+      <td style="padding: 10px; text-align: right; font-size: 0.9em;">Rp ${order.amount ? order.amount.toLocaleString('id-ID') : '0'}</td>
+      <td style="padding: 10px; text-align: right; font-size: 0.9em;">Rp ${order.amount ? order.amount.toLocaleString('id-ID') : '0'}</td>
     </tr>
   `).join('');
 
+  // Calculate Due Date (e.g., 30 days from invoiceDate)
+  const invDate = new Date(invoiceDate);
+  const dueDate = new Date(invDate);
+  dueDate.setDate(invDate.getDate() + 30);
+  const formattedDueDate = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+
   const htmlContent = `
-    <div style="font-family: Arial; padding: 40px; color: #333;">
-      <h2>ImeiHub</h2>
-      <p>Jl. Teknologi No. 88, Jakarta</p>
-      <hr/>
-      <h3>Invoice</h3>
-      <p><strong>Invoice ID:</strong> ${invoiceId}</p>
-      <p><strong>Customer:</strong> ${user}</p>
-      <p><strong>Date:</strong> ${invoiceDate}</p>
-      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-        <thead>
-          <tr style="background-color: #f0f0f0;">
-            <th>No</th><th>Service</th><th>IMEI</th><th>Status</th><th>Price</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <h3 style="text-align:right">Total: Rp ${total.toLocaleString('id-ID')}</h3>
+    <div style="font-family: 'Arial', sans-serif; padding: 40px; color: #333; max-width: 800px; margin: auto; background-color: #fff;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <tr>
+                <td style="width: 50%; vertical-align: top;">
+                    <div style="font-size: 2.5em; font-weight: bold; color: #555; margin-bottom: 15px;">INVOICE</div>
+                    <div style="margin-bottom: 20px;">
+                        <img src="https://placehold.co/80x80/000/FFF?text=LOGO" alt="Company Logo" style="width: 80px; height: 80px; border-radius: 50%; display: block; margin-bottom: 10px;">
+                        <strong style="font-size: 1.2em; display: block; margin-bottom: 5px;">ImeiHub Company</strong>
+                        <span style="font-size: 0.9em; color: #666;">Jl. Teknologi No. 88, Jakarta</span><br>
+                        <span style="font-size: 0.9em; color: #666;">DKI Jakarta, 12345</span><br>
+                        <span style="font-size: 0.9em; color: #666;">Indonesia</span>
+                    </div>
+                </td>
+                <td style="width: 50%; vertical-align: top; text-align: right;">
+                    <div style="font-size: 1.8em; font-weight: bold; color: #333; margin-bottom: 20px;"></div>
+                    <table style="width: 100%; text-align: right; font-size: 0.9em;">
+                        <tr>
+                            <td style="padding: 5px 0; color: #666;">Invoice#:</td>
+                            <td style="padding: 5px 0; font-weight: bold;">${invoiceId}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 0; color: #666;">Invoice Date:</td>
+                            <td style="padding: 5px 0; font-weight: bold;">${new Date(invoiceDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 0; color: #666;">Due Date:</td>
+                            <td style="padding: 5px 0; font-weight: bold;">${formattedDueDate}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <tr>
+                <td style="width: 50%; vertical-align: top;">
+                    <strong style="font-size: 1.1em; display: block; margin-bottom: 10px; color: #555;">BILL TO:</strong>
+                    <span style="font-size: 1em; display: block; margin-bottom: 5px;">${user}</span>
+                    <span style="font-size: 0.9em; color: #666;">Client's Address</span><br>
+                    <span style="font-size: 0.9em; color: #666;">City, State Zip</span><br>
+                    <span style="font-size: 0.9em; color: #666;">United States</span>
+                </td>
+                <td style="width: 50%; vertical-align: top;">
+                    <!-- Empty for alignment -->
+                </td>
+            </tr>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; border: 1px solid #eee;">
+            <thead>
+                <tr style="background-color: #f0f0f0;">
+                    <th style="padding: 12px; text-align: left; font-size: 0.9em; color: #555;">ITEM DESCRIPTION</th>
+                    <th style="padding: 12px; text-align: right; font-size: 0.9em; color: #555; width: 10%;">QTY</th>
+                    <th style="padding: 12px; text-align: right; font-size: 0.9em; color: #555; width: 15%;">RATE</th>
+                    <th style="padding: 12px; text-align: right; font-size: 0.9em; color: #555; width: 15%;">AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows}
+                <!-- Empty row for "Enter item name/description" as per image -->
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px; text-align: left; font-size: 0.9em; color: #999;">Enter item name/description</td>
+                    <td style="padding: 10px; text-align: right; font-size: 0.9em; color: #999;"></td>
+                    <td style="padding: 10px; text-align: right; font-size: 0.9em; color: #999;"></td>
+                    <td style="padding: 10px; text-align: right; font-size: 0.9em; color: #999;"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="width: 60%;"></td>
+                <td style="width: 40%;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: right;">
+                        <tr style="background-color: #f9f9f9;">
+                            <td style="padding: 8px 12px; font-size: 0.95em; color: #555;">Sub Total</td>
+                            <td style="padding: 8px 12px; font-size: 0.95em; font-weight: bold;">Rp ${subTotal.toLocaleString('id-ID')}</td>
+                        </tr>
+                        <tr style="background-color: #f9f9f9;">
+                            <td style="padding: 8px 12px; font-size: 0.95em; color: #555;">Sale Tax (10%)</td>
+                            <td style="padding: 8px 12px; font-size: 0.95em; font-weight: bold;">Rp ${saleTax.toLocaleString('id-ID')}</td>
+                        </tr>
+                        <tr style="background-color: #eee;">
+                            <td style="padding: 12px; font-size: 1.1em; font-weight: bold; color: #333;">TOTAL</td>
+                            <td style="padding: 12px; font-size: 1.1em; font-weight: bold; color: #333;">Rp ${totalAmount.toLocaleString('id-ID')}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </div>
   `;
 
@@ -1163,7 +1252,7 @@ document.addEventListener('click', function (e) {
     }
 
     const invoiceId = 'INV-' + Date.now();
-    const invoiceDate = new Date().toLocaleDateString('id-ID');
+    const invoiceDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); // Format date similar to image
     // Ambil nama pengguna dari order pertama di grup (asumsi semua order dalam grup ini milik satu pengguna)
     const username = orders[0]?.customerName || orders[0]?.username || 'User';
 
