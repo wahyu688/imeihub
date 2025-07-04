@@ -827,7 +827,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const { authToken, userId } = checkAuthAndAdminStatus();
 
         const fetchOrders = async () => {
-            orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Memuat pesanan Anda...</p>';
+            // Clear existing orders but keep the header
+            orderListDiv.innerHTML = `
+                <div class="my-orders-table-header">
+                    <div class="order-id-col">Order ID</div>
+                    <div class="service-col">Service</div>
+                    <div class="imei-col">IMEI</div>
+                    <div class="price-col">Price</div>
+                    <div class="status-col">Status</div>
+                    <div class="date-col">Date</div>
+                </div>
+                <p style="color: var(--secondary-text-color); text-align: center; padding: 20px;">Memuat pesanan Anda...</p>
+            `;
+            
             try {
                 console.log(`DEBUG_FRONTEND: Fetching user orders for userId: ${userId}`);
                 const response = await fetch(`${API_BASE_URL}/api/orders/${userId}`, {
@@ -838,23 +850,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
+                    // Clear the "Loading orders..." message
+                    orderListDiv.innerHTML = `
+                        <div class="my-orders-table-header">
+                            <div class="order-id-col">Order ID</div>
+                            <div class="service-col">Service</div>
+                            <div class="imei-col">IMEI</div>
+                            <div class="price-col">Price</div>
+                            <div class="status-col">Status</div>
+                            <div class="date-col">Date</div>
+                        </div>
+                    `;
+
                     if (data.orders && data.orders.length > 0) {
-                        orderListDiv.innerHTML = '';
                         data.orders.forEach(order => {
+                            // Format the date
+                            const orderDate = new Date(order.orderDate);
+                            const formattedDate = orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                            
+                            // Determine status class
+                            const statusClass = `status-${order.status.toLowerCase().replace(/\s/g, '-')}`;
+
                             const row = `
-                                <div class="service-card content-container-card" style="text-align: left;">
-                                    <h3>Order ID: ${order.orderId}</h3>
-                                    <p style="color: var(--secondary-text-color);"><strong>Layanan:</strong> ${order.serviceType}</p>
-                                    <p style="color: var(--secondary-text-color);"><strong>IMEI:</strong> ${order.imei}</p>
-                                    <p style="color: var(--secondary-text-color);"><strong>Status:</strong> <span style="font-weight: bold; color: ${order.status === 'Selesai' ? 'green' : order.status === 'Diproses' ? 'orange' : order.status === 'Menunggu Proses Besok' ? 'purple' : 'grey'};">${order.status}</span></p>
-                                    <p style="font-size: 0.8em; color: var(--secondary-text-color);">Tanggal Pesan: ${new Date(order.orderDate).toLocaleDateString()} ${new Date(order.orderDate).toLocaleTimeString()}</p>
-                                    <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p>
-                                    ${order.status !== 'Diproses' && order.status !== 'Selesai' && order.status !== 'Dibatalkan' ? 
-                                        `<button class="cancel-order-button" data-order-id="${order.orderId}" style="background-color: var(--status-cancelled-bg); color: var(--status-cancelled-text); margin-top: 10px; padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer;">Cancel Order</button>` : ''}
+                                <div class="order-card">
+                                    <div class="order-id-col">${order.orderId}</div>
+                                    <div class="service-col">${order.serviceType}</div>
+                                    <div class="imei-col">${order.imei}</div>
+                                    <div class="price-col">Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</div>
+                                    <div class="status-col"><span class="status ${statusClass}">${order.status}</span></div>
+                                    <div class="date-col">${formattedDate}</div>
                                 </div>
                             `;
                             orderListDiv.innerHTML += row;
                         });
+                        // Attach event listeners for cancel buttons after all orders are rendered
                         document.querySelectorAll('.cancel-order-button').forEach(button => {
                             button.addEventListener('click', async (e) => {
                                 const orderId = e.target.dataset.orderId;
@@ -862,21 +891,23 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                         });
                     } else {
-                        orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Anda belum memiliki pesanan.</p>';
+                        orderListDiv.innerHTML += '<p style="color: var(--secondary-text-color); text-align: center; padding: 20px;">Anda belum memiliki pesanan.</p>';
                     }
                 } else {
                     const errorMessage = data.message || 'Terjadi kesalahan.';
                     console.error('DEBUG: Failed to load orders from API:', errorMessage);
-                    orderListDiv.innerHTML = `<p style="color: red;">Gagal memuat pesanan: ${errorMessage}</p>`;
+                    orderListDiv.innerHTML += `<p style="color: red; text-align: center; padding: 20px;">Gagal memuat pesanan: ${errorMessage}</p>`;
                 }
             } catch (error) {
                 console.error('DEBUG: Error fetching orders (fetch failed/network issue):', error);
-                orderListDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server saat memuat pesanan.</p>`;
+                orderListDiv.innerHTML += `<p style="color: red; text-align: center; padding: 20px;">Terjadi masalah jaringan atau server saat memuat pesanan.</p>`;
             }
         };
 
         // --- Cancel Order by User ---
         async function cancelOrderUser(orderId) {
+            // Mengganti alert/confirm dengan modal kustom jika diperlukan
+            // Untuk saat ini, tetap menggunakan confirm() sesuai instruksi awal
             if (!confirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) {
                 return;
             }

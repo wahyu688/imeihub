@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Wrapper utama untuk konten agar sesuai dengan desain kartu yang mengambang -->
+    <!-- Wrapper utama untuk konten -->
     <div class="main-container">
         <!-- Bagian Navbar Atas -->
         <nav class="header-card">
@@ -59,11 +59,41 @@
         </div>
 
         <main class="main-content-area">
-            <section id="my-orders-section" class="services section-container content-container-card">
+            <section id="my-orders-section" class="services section-container">
                 <h1 class="section-title">My Orders</h1>
                 <p style="text-align: center; max-width: 800px; margin: 0 auto 50px auto; font-size: 1.1em; color: var(--secondary-text-color);">View the status of all your IMEI unlock orders here.</p>
+                
                 <div id="order-list" class="card-grid">
-                    <!-- Order list will be loaded here by JavaScript -->
+                    <!-- Header Tabel untuk My Orders -->
+                    <div class="my-orders-table-header">
+                        <div class="order-id-col">Order ID</div>
+                        <div class="service-col">Service</div>
+                        <div class="imei-col">IMEI</div>
+                        <div class="price-col">Price</div>
+                        <div class="status-col">Status</div>
+                        <div class="date-col">Date</div>
+                    </div>
+
+                    <!-- Contoh Baris Pesanan (Ini akan diisi oleh JavaScript) -->
+                    <!-- Pastikan JavaScript Anda merender setiap pesanan dalam struktur seperti ini: -->
+                    <!--
+                    <div class="order-card">
+                        <div class="order-id-col">ORD-307031-139</div>
+                        <div class="service-col">Temporary IMEI Activation (90 Days)</div>
+                        <div class="imei-col">12312315648451</div>
+                        <div class="price-col">Rp 250.000</div>
+                        <div class="status-col"><span class="status status-selesai">Selesai</span></div>
+                        <div class="date-col">July 3, 2025</div>
+                    </div>
+                    <div class="order-card">
+                        <div class="order-id-col">ORD-776035-636</div>
+                        <div class="service-col">Temporary IMEI Activation (90 Days)</div>
+                        <div class="imei-col">12312315648451</div>
+                        <div class="price-col">Rp 250.000</div>
+                        <div class="status-col"><span class="status status-dibatalkan">Dibatalkan</span></div>
+                        <div class="date-col">July 3, 2025</div>
+                    </div>
+                    -->
                 </div>
             </section>
         </main>
