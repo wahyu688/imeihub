@@ -635,12 +635,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <td>${order.customerName || order.username}</td>
                                     <td>${order.serviceType}</td>
                                     <td>${order.imei}</td>
+                                    <td>${formattedDate}</td>
                                     <td>
                                         <button class="status-button status-${order.status.toLowerCase().replace(/\s/g, '-')}" data-order-id="${order.orderId}" data-current-status="${order.status}">
                                             ${order.status}
                                         </button>
                                     </td>
-                                    <td>${formattedDate}</td>
+
                                     <td>
                                         <select class="admin-status-select" data-order-id="${order.orderId}">
                                             <option value="">Update Status</option>
