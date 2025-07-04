@@ -956,6 +956,7 @@ document.addEventListener('DOMContentLoaded', () => {
         attachInvoiceButtonsOnRender();
       }
     }, 200);
+    
 
 // ==== INVOICE PDF GENERATOR ====
 function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
@@ -963,13 +964,13 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
   const total = validOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
   const rows = validOrders.map((order, index) => `
     <tr>
-        <td>${index + 1}</td>
-        <td>${order.serviceType}</td>
-        <td>${order.imei}</td>
-        <td>${order.status}</td>
-        <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+      <td>${index + 1}</td>
+      <td>${order.serviceType}</td>
+      <td>${order.imei}</td>
+      <td>${order.status}</td>
+      <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
     </tr>
-    `).join('');
+  `).join('');
 
   const htmlContent = `
     <div style="font-family: Arial; padding: 40px; color: #333;">
@@ -1001,8 +1002,8 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
   }).save();
 }
 
-// ==== HANDLE STATIC BUTTON CLICKS ====
-document.addEventListener('click', (e) => {
+// ==== CLICK HANDLER ====
+document.addEventListener('click', function (e) {
   if (e.target.classList.contains('generate-invoice-button')) {
     const group = e.target.dataset.group;
     const orders = window.adminGroupedOrders?.[group];
@@ -1010,9 +1011,11 @@ document.addEventListener('click', (e) => {
       alert('Tidak ada order dalam grup ini.');
       return;
     }
+
     const invoiceId = 'INV-' + Date.now();
     const invoiceDate = new Date().toLocaleDateString('id-ID');
     const username = orders[0]?.username || orders[0]?.customerName || 'User';
+
     generateProfessionalInvoicePDF(orders, username, invoiceId, invoiceDate);
   }
 });
