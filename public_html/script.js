@@ -5,30 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ADMIN API KEY (Ini akan digunakan oleh admin_create_user.html) ---
     const ADMIN_API_KEY = 'your_super_secret_admin_api_key_here'; // <-- GANTI INI DENGAN KUNCI RAHASIA ANDA
 
-    // --- Custom Alert/Confirm Modals (Placeholder for now, implementation suggested below) ---
-    // Gunakan fungsi ini sebagai pengganti alert()
-    function showCustomAlert(message) {
-        // Log pesan ke konsol untuk debugging
-        console.warn("Custom Alert: " + message);
-        // Di aplikasi nyata, Anda akan menampilkan modal kustom di sini.
-        // Untuk saat ini, ini akan mencetak ke konsol.
-        // Anda dapat menambahkan kode untuk menampilkan modal di sini nanti.
-        // Contoh: document.getElementById('custom-alert-modal').style.display = 'block';
-        // document.getElementById('custom-alert-message').textContent = message;
-    }
-
-    // Gunakan fungsi ini sebagai pengganti confirm()
-    function showCustomConfirm(message) {
-        // Log pesan ke konsol untuk debugging
-        console.warn("Custom Confirm: " + message + " (Auto-confirming for now)");
-        // Di aplikasi nyata, Anda akan menampilkan modal kustom di sini dan menunggu input pengguna.
-        // Untuk saat ini, ini akan mencetak ke konsol dan selalu mengembalikan true.
-        // Anda dapat menambahkan kode untuk menampilkan modal dan menunggu respons di sini nanti.
-        return true; // Auto-confirm untuk saat ini agar tidak memblokir eksekusi
-    }
-    // --- End Custom Alert/Confirm Modals ---
-
-
     // --- LOGIKA PROTEKSI HALAMAN ---
     const getCurrentPageName = () => {
         const path = window.location.pathname;
@@ -74,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const { authToken, isAdmin } = checkAuthAndAdminStatus();
         console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
         if (!authToken || !isAdmin) {
-            showCustomAlert('Akses Ditolak: Anda harus login sebagai Admin.'); // Mengganti alert
+            alert('Akses Ditolak: Anda harus login sebagai Admin.');
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
             return;
@@ -171,12 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- Akhir Manajemen Status Login ---
 
+    // --- Hamburger Menu Logic ---
+    // --- End Hamburger Menu Logic ---
+
 
     // --- Page-specific JavaScript Logic ---
 
     // Order Submission (Only on order.html)
-    // FIX PENTING: Mengubah ID dari 'order-submission-form' menjadi 'order-form' agar sesuai dengan order.html
-    const orderForm = document.getElementById('order-form'); 
+    const orderForm = document.getElementById('order-submission-form');
     const imeiCountInput = document.getElementById('imei-count');
     const imeiInputsContainer = document.getElementById('imei-inputs-container');
 
@@ -424,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log("DEBUG: Retrieved token:", token);
             if (!token) {
-                showCustomAlert('Gagal: Anda belum login atau token tidak tersedia.'); // Mengganti alert
+                alert('Gagal: Anda belum login atau token tidak tersedia.');
                 return;
             }
 
@@ -491,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const isAdminCheck = localStorage.getItem('isAdmin') === 'true'; 
         console.log(`DEBUG_FRONTEND: Admin Dashboard access check. IsAdmin: ${isAdminCheck}`);
         if (!isAdminCheck) { 
-            showCustomAlert('Akses Ditolak: Anda harus login sebagai Admin.'); // Mengganti alert
+            alert('Akses Ditolak: Anda harus login sebagai Admin.');
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
             return;
@@ -561,11 +539,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('completed-orders').textContent = data.completedOrders;
                 } else {
                     console.error('DEBUG: Failed to fetch dashboard stats:', data.message || 'Error');
-                    showCustomAlert('Gagal memuat statistik dashboard: ' + (data.message || 'Error')); // Mengganti alert
+                    alert('Gagal memuat statistik dashboard: ' + (data.message || 'Error'));
                 }
             } catch (error) {
                 console.error('DEBUG: Error fetching dashboard stats:', error);
-                showCustomAlert('Terjadi masalah jaringan saat memuat statistik dashboard.'); // Mengganti alert
+                alert('Terjadi masalah jaringan saat memuat statistik dashboard.');
             }
         }
 
@@ -716,7 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         </select>
                                     </td>
                                     <td>
-                                        <button class="delete-user-button" data-user-id="${user.id}" data-username="${user.username}" style="background-color: var(--status-dibatalkan-bg); color: var(--status-dibatalkan-text); padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">Delete</button>
+                                        <button class="delete-user-button" data-user-id="${user.id}" data-username="${user.username}" style="background-color: var(--status-cancelled-bg); color: var(--status-cancelled-text); padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">Delete</button>
                                     </td>
                                 </tr>
                             `;
@@ -753,7 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         async function updateOrderStatusAdmin(orderId, newStatus) {
-            if (!showCustomConfirm(`Are you sure you want to update order ${orderId} to ${newStatus}?`)) { // Mengganti confirm
+            if (!confirm(`Are you sure you want to update order ${orderId} to ${newStatus}?`)) {
                 return;
             }
             try {
@@ -767,16 +745,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    showCustomAlert(`Order ${orderId} updated to ${newStatus} successfully!`); // Mengganti alert
+                    alert(`Order ${orderId} updated to ${newStatus} successfully!`);
                     const currentSortBy = document.getElementById('sort-orders-by') ? document.getElementById('sort-orders-by').value : 'order_date DESC';
                     const currentSearchName = document.getElementById('search-orders-by') ? document.getElementById('search-orders-by').value : '';
                     fetchAdminOrders(currentSortBy, currentSearchName);
                 } else {
-                    showCustomAlert(`Failed to update order ${orderId}: ${data.message || 'Error'}`); // Mengganti alert
+                    alert(`Failed to update order ${orderId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update order status:', data.message || 'Error');
                 }
             } catch (error) {
-                showCustomAlert(`Network error updating order ${orderId}.`); // Mengganti alert
+                alert(`Network error updating order ${orderId}.`);
                 console.error('DEBUG: Network error updating order status:', error);
             }
         }
@@ -784,7 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Update User Role (Admin/User) ---
         async function updateUserRoleAdmin(userId, isAdmin) {
             const roleText = isAdmin ? 'Admin' : 'User';
-            if (!showCustomConfirm(`Are you sure you want to set user ${userId} as ${roleText}?`)) { // Mengganti confirm
+            if (!confirm(`Are you sure you want to set user ${userId} as ${roleText}?`)) {
                 return;
             }
             try {
@@ -799,21 +777,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    showCustomAlert(`User ${userId} role updated to ${roleText} successfully!`); // Mengganti alert
+                    alert(`User ${userId} role updated to ${roleText} successfully!`);
                     fetchAdminUsers(); // Reload users table
                 } else {
-                    showCustomAlert(`Failed to update user role for ${userId}: ${data.message || 'Error'}`); // Mengganti alert
+                    alert(`Failed to update user role for ${userId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to update user role:', data.message || 'Error');
                 }
             } catch (error) {
-                showCustomAlert(`Network error updating user role for ${userId}.`); // Mengganti alert
+                alert(`Network error updating user role for ${userId}.`);
                 console.error('DEBUG: Network error updating user role:', error);
             }
         }
 
         // --- Delete User (Admin) ---
         async function deleteUserAdmin(userId, username) {
-            if (!showCustomConfirm(`Are you sure you want to delete user "${username}" (ID: ${userId})? This action cannot be undone.`)) { // Mengganti confirm
+            if (!confirm(`Are you sure you want to delete user "${username}" (ID: ${userId})? This action cannot be undone.`)) {
                 return;
             }
             try {
@@ -826,14 +804,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    showCustomAlert(`User "${username}" deleted successfully!`); // Mengganti alert
+                    alert(`User "${username}" deleted successfully!`);
                     fetchAdminUsers(); // Reload users table
                 } else {
-                    showCustomAlert(`Failed to delete user "${username}": ${data.message || 'Error'}`); // Mengganti alert
+                    alert(`Failed to delete user "${username}": ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to delete user:', data.message || 'Error');
                 }
             } catch (error) {
-                showCustomAlert(`Network error deleting user "${username}".`); // Mengganti alert
+                alert(`Network error deleting user "${username}".`);
                 console.error('DEBUG: Network error deleting user:', error);
             }
         }
@@ -845,13 +823,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // My Orders Page (Actual Data Fetching after successful authentication check)
     if (currentPage === 'my-orders') {
-        // Target the tbody of the table, not the old div
-        const myOrdersTableBody = document.getElementById('my-orders-table-body');
+        const orderListDiv = document.getElementById('order-list');
         const { authToken, userId } = checkAuthAndAdminStatus();
 
         const fetchOrders = async () => {
-            myOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Memuat pesanan Anda...</td></tr>';
-            
+            orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Memuat pesanan Anda...</p>';
             try {
                 console.log(`DEBUG_FRONTEND: Fetching user orders for userId: ${userId}`);
                 const response = await fetch(`${API_BASE_URL}/api/orders/${userId}`, {
@@ -862,33 +838,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    myOrdersTableBody.innerHTML = ''; // Clear loading message
-
                     if (data.orders && data.orders.length > 0) {
+                        orderListDiv.innerHTML = '';
                         data.orders.forEach(order => {
-                            // Format the date
-                            const orderDate = new Date(order.orderDate);
-                            const formattedDate = orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                            
-                            // Determine status class
-                            const statusClass = `status-${order.status.toLowerCase().replace(/\s/g, '-')}`;
-
                             const row = `
-                                <tr>
-                                    <td>${order.orderId}</td>
-                                    <td>${order.serviceType}</td>
-                                    <td>${order.imei}</td>
-                                    <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
-                                    <td><button class="status-button ${statusClass}">${order.status}</button></td>
-                                    <td>${formattedDate}</td>
-                                    <td>
-                                        <button class="cancel-order-button" data-order-id="${order.orderId}" style="background-color: var(--status-dibatalkan-bg); color: var(--status-dibatalkan-text); padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">Cancel</button>
-                                    </td>
-                                </tr>
+                                <div class="service-card content-container-card" style="text-align: left;">
+                                    <h3>Order ID: ${order.orderId}</h3>
+                                    <p style="color: var(--secondary-text-color);"><strong>Layanan:</strong> ${order.serviceType}</p>
+                                    <p style="color: var(--secondary-text-color);"><strong>IMEI:</strong> ${order.imei}</p>
+                                    <p style="color: var(--secondary-text-color);"><strong>Status:</strong> <span style="font-weight: bold; color: ${order.status === 'Selesai' ? 'green' : order.status === 'Diproses' ? 'orange' : order.status === 'Menunggu Proses Besok' ? 'purple' : 'grey'};">${order.status}</span></p>
+                                    <p style="font-size: 0.8em; color: var(--secondary-text-color);">Tanggal Pesan: ${new Date(order.orderDate).toLocaleDateString()} ${new Date(order.orderDate).toLocaleTimeString()}</p>
+                                    <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p>
+                                    ${order.status !== 'Diproses' && order.status !== 'Selesai' && order.status !== 'Dibatalkan' ? 
+                                        `<button class="cancel-order-button" data-order-id="${order.orderId}" style="background-color: var(--status-cancelled-bg); color: var(--status-cancelled-text); margin-top: 10px; padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer;">Cancel Order</button>` : ''}
+                                </div>
                             `;
-                            myOrdersTableBody.innerHTML += row;
+                            orderListDiv.innerHTML += row;
                         });
-                        // Attach event listeners for cancel buttons after all orders are rendered
                         document.querySelectorAll('.cancel-order-button').forEach(button => {
                             button.addEventListener('click', async (e) => {
                                 const orderId = e.target.dataset.orderId;
@@ -896,22 +862,22 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                         });
                     } else {
-                        myOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--secondary-text-color);">Anda belum memiliki pesanan.</td></tr>';
+                        orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Anda belum memiliki pesanan.</p>';
                     }
                 } else {
                     const errorMessage = data.message || 'Terjadi kesalahan.';
                     console.error('DEBUG: Failed to load orders from API:', errorMessage);
-                    myOrdersTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Gagal memuat pesanan: ${errorMessage}</td></tr>`;
+                    orderListDiv.innerHTML = `<p style="color: red;">Gagal memuat pesanan: ${errorMessage}</p>`;
                 }
             } catch (error) {
                 console.error('DEBUG: Error fetching orders (fetch failed/network issue):', error);
-                myOrdersTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Terjadi masalah jaringan atau server saat memuat pesanan.</td></tr>`;
+                orderListDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server saat memuat pesanan.</p>`;
             }
         };
 
         // --- Cancel Order by User ---
         async function cancelOrderUser(orderId) {
-            if (!showCustomConfirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) { // Mengganti confirm
+            if (!confirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) {
                 return;
             }
             try {
@@ -926,14 +892,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    showCustomAlert(`Order ${orderId} cancelled successfully!`); // Mengganti alert
+                    alert(`Order ${orderId} cancelled successfully!`);
                     fetchOrders(); // Reload orders for user
                 } else {
-                    showCustomAlert(`Failed to cancel order ${orderId}: ${data.message || 'Error'}`); // Mengganti alert
+                    alert(`Failed to cancel order ${orderId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to cancel order:', data.message || 'Error');
                 }
             } catch (error) {
-                showCustomAlert(`Network error cancelling order ${orderId}.`); // Mengganti alert
+                alert(`Network error cancelling order ${orderId}.`);
                 console.error('DEBUG: Network error cancelling order:', error);
             }
         }
