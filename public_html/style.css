@@ -701,8 +701,8 @@ footer .social-links a:hover {
     margin-left: calc(50% - 50vw);
     margin-right: 0; /* Pastikan tidak ada margin kanan yang mengganggu */
     max-width: none; /* Hapus batasan max-width */
-    padding-left: 30px; /* Padding kiri agar sidebar tidak menempel tepi layar */
-    padding-right: 30px; /* Padding kanan untuk konten utama */
+    padding-left: 10px; /* Padding kiri agar sidebar tidak menempel tepi layar */
+    padding-right: 10px; /* Padding kanan untuk konten utama */
     box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
     align-items: flex-start; /* Sejajarkan item ke atas */
 }
@@ -712,7 +712,7 @@ footer .social-links a:hover {
     background-color: var(--bg-content-color);
     border-radius: var(--card-border-radius);
     box-shadow: 0 8px 20px var(--shadow-color-light);
-    padding: 30px;
+    padding: 10px;
     position: sticky;
     top: 100px; /* Sesuaikan berdasarkan tinggi navbar */
     height: fit-content; /* Sesuaikan tinggi konten */
@@ -854,6 +854,8 @@ footer .social-links a:hover {
     border-bottom: 1px solid var(--table-border-light); /* Border lebih tipis dan terang */
     text-align: left;
     box-sizing: border-box; /* Memastikan padding tidak menambah lebar */
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 /* **Diubah:** Hapus sudut membulat untuk header tabel */
