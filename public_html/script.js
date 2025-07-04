@@ -610,6 +610,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (groupHeader) {
                                 adminOrdersTableBody.innerHTML += groupHeader;
                             }
+                            const lastGroupHeaderRow = adminOrdersTableBody.querySelectorAll('.order-group-header');
+                            const lastHeader = lastGroupHeaderRow[lastGroupHeaderRow.length - 1];
+                            if (lastHeader && Array.isArray(groupedOrders[groupHeader])) {
+                                generateInvoiceButtonForGroup(lastHeader.querySelector('td'), groupedOrders[groupHeader]);
+}
 
                             const isCancelled = order.status && order.status.toLowerCase() === 'dibatalkan';
                             if (!isCancelled) {
