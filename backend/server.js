@@ -260,7 +260,7 @@ app.get('/api/orders/:userId', authenticateToken, async (req, res) => {
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const [totalOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders");
-        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok' OR status = 'Proses Aktif'"); // Hitung status baru
+        const [pendingOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Menunggu Pembayaran' OR status = 'Menunggu Proses Besok' OR status = 'Waiting'"); // Hitung status baru
         const [completedOrdersResult] = await pool.query("SELECT COUNT(*) AS count FROM orders WHERE status = 'Selesai'");
 
         res.json({
@@ -357,7 +357,7 @@ app.post('/api/admin/update-order-status', authenticateAdmin, async (req, res) =
         return res.status(400).json({ message: 'Order ID and new status are required.' });
     }
 
-    const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan', 'Menunggu Proses Besok', 'Proses Aktif'];
+    const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan', 'Menunggu Proses Besok', 'Waiting'];
     if (!validStatuses.includes(newStatus)) {
         return res.status(400).json({ message: 'Invalid status provided.' });
     }
@@ -447,7 +447,7 @@ app.post('/api/order/submit', authenticateToken, async (req, res) => {
 
     let initialStatus = 'Menunggu Pembayaran'; // Default status
     if (currentHour >= businessStartHour && currentHour < businessEndHour) { // Dalam jam kerja
-        initialStatus = 'Proses Aktif'; // Status baru
+        initialStatus = 'Waiting'; // Status baru
     } else {
         initialStatus = 'Menunggu Proses Besok'; // Di luar jam kerja
     }

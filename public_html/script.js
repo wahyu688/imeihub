@@ -633,7 +633,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                             <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
                                             <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
                                             <option value="Dibatalkan" ${order.status === 'Dibatalkan' ? 'selected' : ''}>Dibatalkan</option>
-                                            <option value="Proses Aktif" ${order.status === 'Proses Aktif' ? 'selected' : ''}>Proses Aktif</option>
+                                            <option value="Waiting" ${order.status === 'Waiting' ? 'selected' : ''}>Waiting</option>
                                         </select>
                                     </td>
                                 </tr>
