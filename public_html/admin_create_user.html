@@ -110,7 +110,7 @@
             <section class="admin-form-container content-container-card">
                 <h1>Create New User</h1>
                 <p style="color: var(--secondary-text-color); margin-bottom: 30px;">Use this form to create new user accounts.</p>
-                <form id="admin-create-user-form">
+                <form id="admin-create-user-form" method="POST" action="/api/admin/create-user">
                     <label for="admin-username">Username:</label>
                     <input type="text" id="admin-username" required>
 
