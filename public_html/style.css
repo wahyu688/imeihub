@@ -544,6 +544,19 @@ a:hover {
     margin-top: 20px; /* Jarak dari input terakhir */
 }
 
+/* Gaya khusus untuk baris grup tanggal di tabel pesanan admin */
+.order-group-header {
+  background-color: #f4f4f4;        /* ganti sesuai tema kamu */
+  color: #333;
+  font-weight: bold;
+  font-size: 0.95em;
+}
+
+.order-group-header td {
+  padding: 12px 20px;
+  border-bottom: 1px solid #ccc;
+}
+
 /* --- Gaya Pesan Status --- */
 .status-message {
     margin-top: 30px;
