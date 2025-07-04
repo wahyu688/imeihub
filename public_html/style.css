@@ -34,6 +34,13 @@
     --status-menunggu-proses-besok-text: var(--text-color-light);
     --status-proses-aktif-bg: #00BCD4; /* Cyan */
     --status-proses-aktif-text: var(--text-color-light);
+
+    /* New variables for dark table theme */
+    --table-bg-dark: #1A1A1A; /* Dark background for the table */
+    --table-header-bg-dark: #333333; /* Slightly lighter dark for table header */
+    --table-text-light: #FFFFFF; /* Light text for dark table */
+    --table-border-dark: rgba(255, 255, 255, 0.1); /* Light border on dark table */
+    --table-row-hover-dark: rgba(255, 255, 255, 0.05); /* Light hover on dark table */
 }
 
 body {
@@ -822,52 +829,77 @@ footer .social-links a:hover {
 .admin-table-container {
     overflow-x: auto;
     margin-top: 30px;
+    /* Menambahkan border-radius pada container tabel agar sudutnya membulat */
+    border-radius: var(--card-border-radius);
+    /* Menghilangkan shadow dari container tabel jika sudah ada di tabel itu sendiri */
+    box-shadow: none;
 }
 
 .admin-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    color: var(--text-color-dark);
-    font-size: 0.9em;
+    /* Menggunakan variabel warna baru untuk tema gelap tabel */
+    background-color: var(--table-bg-dark);
+    color: var(--table-text-light);
+    font-size: 0.95em; /* Sedikit lebih besar untuk keterbacaan */
     table-layout: fixed; /* Penting: Memastikan lebar kolom dihormati */
+    border-radius: var(--card-border-radius); /* Sudut membulat untuk tabel */
+    overflow: hidden; /* Penting untuk menerapkan border-radius pada konten */
 }
 
 .admin-table th, .admin-table td {
-    padding: 12px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 15px; /* Padding lebih besar untuk keterbacaan */
+    border-bottom: 1px solid var(--table-border-dark); /* Border lebih tipis dan gelap */
     text-align: left;
     box-sizing: border-box; /* Memastikan padding tidak menambah lebar */
 }
 
 /* Mengatur lebar kolom tabel secara eksplisit */
-.admin-table th:nth-child(1), .admin-table td:nth-child(1) { width: 8%; } /* ID Pesanan (sedikit lebih kecil) */
-.admin-table th:nth-child(2), .admin-table td:nth-child(2) { width: 10%; } /* Pengguna */
-.admin-table th:nth-child(3), .admin-table td:nth-child(3) { width: 28%; } /* Layanan (diperlebar) */
+.admin-table th:nth-child(1), .admin-table td:nth-child(1) { width: 8%; } /* Order ID */
+.admin-table th:nth-child(2), .admin-table td:nth-child(2) { width: 12%; } /* Customer Name (baru) */
+.admin-table th:nth-child(3), .admin-table td:nth-child(3) { width: 25%; } /* Service */
 .admin-table th:nth-child(4), .admin-table td:nth-child(4) { width: 15%; } /* IMEI */
-.admin-table th:nth-child(5), .admin-table td:nth-child(5) { width: 10%; } /* Status */
-.admin-table th:nth-child(6), .admin-table td:nth-child(6) { width: 14%; } /* Tanggal */
-.admin-table th:nth-child(7), .admin-table td:nth-child(7) { width: 15%; } /* Tindakan (diperlebar) */
+.admin-table th:nth-child(5), .admin-table td:nth-child(5) { width: 10%; } /* Amount (Rp) (baru) */
+.admin-table th:nth-child(6), .admin-table td:nth-child(6) { width: 10%; } /* Status */
+.admin-table th:nth-child(7), .admin-table td:nth-child(7) { width: 20%; } /* Actions */
 
 
 .admin-table th {
-    background-color: var(--bg-page-color);
+    background-color: var(--table-header-bg-dark); /* Latar belakang header tabel gelap */
     font-weight: 700;
-    color: var(--secondary-text-color);
+    color: var(--table-text-light); /* Teks terang */
     text-transform: uppercase;
-    font-size: 0.8em;
+    font-size: 0.85em; /* Sedikit lebih besar */
 }
 
+/* Sudut membulat untuk header tabel */
+.admin-table thead tr:first-child th:first-child {
+    border-top-left-radius: var(--card-border-radius);
+}
+.admin-table thead tr:first-child th:last-child {
+    border-top-right-radius: var(--card-border-radius);
+}
+
+/* Sudut membulat untuk baris terakhir tabel */
+.admin-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: var(--card-border-radius);
+}
+.admin-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: var(--card-border-radius);
+}
+
+
 .admin-table tbody tr:hover {
-    background-color: rgba(74, 74, 74, 0.05);
+    background-color: var(--table-row-hover-dark); /* Hover terang pada latar belakang gelap */
 }
 
 .status-button {
-    padding: 5px 10px;
-    border-radius: 15px;
+    padding: 6px 12px; /* Padding lebih besar */
+    border-radius: 20px;
     border: none;
     cursor: pointer;
-    font-size: 0.85em;
+    font-size: 0.9em;
     font-weight: 600;
     transition: opacity 0.3s ease;
 }
@@ -879,15 +911,15 @@ footer .social-links a:hover {
 .action-buttons button {
     background: none;
     border: none;
-    color: var(--secondary-text-color);
+    color: var(--table-text-light); /* Warna ikon tindakan agar terlihat pada latar belakang gelap */
     cursor: pointer;
-    font-size: 1.1em;
-    margin: 0 3px;
+    font-size: 1.2em;
+    margin: 0 5px; /* Jarak antar tombol tindakan */
     transition: color 0.3s ease;
 }
 
 .action-buttons button:hover {
-    color: var(--accent-color);
+    color: var(--accent-color); /* Aksen saat hover */
 }
 
 /* 🔻 Logo dekoratif kanan bawah */
