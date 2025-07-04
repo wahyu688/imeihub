@@ -967,9 +967,8 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
   
   // Calculate totals
   const subTotal = validOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
-  const saleTaxRate = 0.10; // 10% as per image
-  const saleTax = subTotal * saleTaxRate;
-  const totalAmount = subTotal + saleTax;
+  // No sale tax as per new requirement
+  const totalAmount = subTotal; // Total is just subTotal without tax
 
   // Generate table rows
   const rows = validOrders.map((order, index) => `
@@ -984,13 +983,6 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
     </tr>
   `).join('');
 
-  // Calculate Due Date (e.g., 30 days from invoiceDate)
-  const invDate = new Date(invoiceDate);
-  const dueDate = new Date(invDate);
-  dueDate.setDate(invDate.getDate() + 30);
-  const formattedDueDate = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-
   const htmlContent = `
     <div style="font-family: 'Arial', sans-serif; padding: 40px; color: #333; max-width: 800px; margin: auto; background-color: #fff;">
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
@@ -998,11 +990,9 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
                 <td style="width: 50%; vertical-align: top;">
                     <div style="font-size: 2.5em; font-weight: bold; color: #555; margin-bottom: 15px;">INVOICE</div>
                     <div style="margin-bottom: 20px;">
-                        <img src="https://placehold.co/80x80/000/FFF?text=LOGO" alt="Company Logo" style="width: 80px; height: 80px; border-radius: 50%; display: block; margin-bottom: 10px;">
+                        <img src="imeihub_logo.png" alt="ImeiHub Logo" style="width: 80px; height: 80px; display: block; margin-bottom: 10px;">
                         <strong style="font-size: 1.2em; display: block; margin-bottom: 5px;">ImeiHub Company</strong>
-                        <span style="font-size: 0.9em; color: #666;">Jl. Teknologi No. 88, Jakarta</span><br>
-                        <span style="font-size: 0.9em; color: #666;">DKI Jakarta, 12345</span><br>
-                        <span style="font-size: 0.9em; color: #666;">Indonesia</span>
+                        <!-- Removed company address -->
                     </div>
                 </td>
                 <td style="width: 50%; vertical-align: top; text-align: right;">
@@ -1014,12 +1004,9 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
                         </tr>
                         <tr>
                             <td style="padding: 5px 0; color: #666;">Invoice Date:</td>
-                            <td style="padding: 5px 0; font-weight: bold;">${new Date(invoiceDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                            <td style="padding: 5px 0; font-weight: bold;">${invoiceDate}</td>
                         </tr>
-                        <tr>
-                            <td style="padding: 5px 0; color: #666;">Due Date:</td>
-                            <td style="padding: 5px 0; font-weight: bold;">${formattedDueDate}</td>
-                        </tr>
+                        <!-- Removed Due Date -->
                     </table>
                 </td>
             </tr>
@@ -1030,9 +1017,7 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
                 <td style="width: 50%; vertical-align: top;">
                     <strong style="font-size: 1.1em; display: block; margin-bottom: 10px; color: #555;">BILL TO:</strong>
                     <span style="font-size: 1em; display: block; margin-bottom: 5px;">${user}</span>
-                    <span style="font-size: 0.9em; color: #666;">Client's Address</span><br>
-                    <span style="font-size: 0.9em; color: #666;">City, State Zip</span><br>
-                    <span style="font-size: 0.9em; color: #666;">United States</span>
+                    <!-- Removed client address -->
                 </td>
                 <td style="width: 50%; vertical-align: top;">
                     <!-- Empty for alignment -->
@@ -1070,10 +1055,7 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
                             <td style="padding: 8px 12px; font-size: 0.95em; color: #555;">Sub Total</td>
                             <td style="padding: 8px 12px; font-size: 0.95em; font-weight: bold;">Rp ${subTotal.toLocaleString('id-ID')}</td>
                         </tr>
-                        <tr style="background-color: #f9f9f9;">
-                            <td style="padding: 8px 12px; font-size: 0.95em; color: #555;">Sale Tax (10%)</td>
-                            <td style="padding: 8px 12px; font-size: 0.95em; font-weight: bold;">Rp ${saleTax.toLocaleString('id-ID')}</td>
-                        </tr>
+                        <!-- Removed Sale Tax row -->
                         <tr style="background-color: #eee;">
                             <td style="padding: 12px; font-size: 1.1em; font-weight: bold; color: #333;">TOTAL</td>
                             <td style="padding: 12px; font-size: 1.1em; font-weight: bold; color: #333;">Rp ${totalAmount.toLocaleString('id-ID')}</td>
