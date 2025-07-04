@@ -85,19 +85,6 @@
       </section>
     </main>
   </div>
-
-  <!-- Jalankan script.js hanya setelah DOM siap -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      if (typeof fetchOrders === "function") {
-        fetchOrders();
-      }
-    });
-  </script>
-
-  <!-- Tambahkan ini agar script.js tidak error -->
- <form id="orderForm" style="display: none;"></form>
-
   <script src="/script.js"></script>
 </body>
 </html>

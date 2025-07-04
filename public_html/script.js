@@ -889,7 +889,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- Cancel Order by User ---
         async function cancelOrderUser(orderId) {
-            if (!showCustomConfirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) { // Mengganti confirm
+            if (!confirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) {
                 return;
             }
             try {
@@ -904,14 +904,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    showCustomAlert(`Order ${orderId} cancelled successfully!`); // Mengganti alert
+                    alert(`Order ${orderId} cancelled successfully!`);
                     fetchOrders(); // Reload orders for user
                 } else {
-                    showCustomAlert(`Failed to cancel order ${orderId}: ${data.message || 'Error'}`); // Mengganti alert
+                    alert(`Failed to cancel order ${orderId}: ${data.message || 'Error'}`);
                     console.error('DEBUG: Failed to cancel order:', data.message || 'Error');
                 }
             } catch (error) {
-                showCustomAlert(`Network error cancelling order ${orderId}.`); // Mengganti alert
+                alert(`Network error cancelling order ${orderId}.`);
                 console.error('DEBUG: Network error cancelling order:', error);
             }
         }
