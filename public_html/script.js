@@ -581,6 +581,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         let isTomorrowOrdersAdded = false;
 
                         data.orders.forEach(order => {
+  const isCancelled = order.status && order.status.toLowerCase() === 'dibatalkan';
+  if (!isCancelled) {
+    if (typeof order.amount === 'number') {
+      totalAmountForDisplay += order.amount;
+    } else if (typeof order.amount === 'string') {
+      const parsed = parseInt(order.amount.replace(/[^\d]/g, ''));
+      if (!isNaN(parsed)) totalAmountForDisplay += parsed;
+    }
+  }
                             const orderDate = new Date(order.orderDate);
                             const orderDayStart = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate(), 0, 0, 0);
 
@@ -870,6 +879,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (data.orders && data.orders.length > 0) {
                         data.orders.forEach(order => {
+  const isCancelled = order.status && order.status.toLowerCase() === 'dibatalkan';
+  if (!isCancelled) {
+    if (typeof order.amount === 'number') {
+      totalAmountForDisplay += order.amount;
+    } else if (typeof order.amount === 'string') {
+      const parsed = parseInt(order.amount.replace(/[^\d]/g, ''));
+      if (!isNaN(parsed)) totalAmountForDisplay += parsed;
+    }
+  }
                             // Format the date
                             const orderDate = new Date(order.orderDate);
                             const formattedDate = orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
