@@ -111,20 +111,23 @@
                 </section>
 
                 <section id="manage-orders-content" style="display: none;">
-                <!-- Baris atas: Search + Revenue -->
-                <div style="display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; margin-bottom: 16px; gap: 16px;">
-                    <!-- Input pencarian nama -->
-                    <div style="margin-left: auto; display: flex; gap: 16px; align-items: center;">
+                <!-- Header atas: Search + Total -->
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px; gap: 16px;">
+                    <h1 id="admin-content-title">Manage Orders</h1>
+                    <div style="display: flex; gap: 16px; align-items: center;">
                     <input
                         type="text"
                         id="search-orders-by"
                         placeholder="Search by name..."
                         style="padding: 8px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95em; width: 220px;"
                     />
+                    <div class="total-revenue-display" style="font-weight: 600; font-size: 0.95em; color: var(--text-color-dark); background: #f3f4f6; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+                        Total: <span id="total-displayed-amount">Rp 0</span>
+                    </div>
                     </div>
                 </div>
 
-                <!-- Tabel pesanan -->
+                <!-- Tabel -->
                 <div class="admin-table-container">
                     <table class="admin-table">
                     <thead>
@@ -134,14 +137,7 @@
                         <th>Service</th>
                         <th>IMEI</th>
                         <th>Status</th>
-                        <th>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>Date</span>
-                            <span style="font-size: 0.8em; font-weight: 600;">
-                                Total: <span id="total-displayed-amount">Rp 0</span>
-                            </span>
-                            </div>
-                        </th>
+                        <th>Date</th>
                         <th>Actions</th>
                         </tr>
                     </thead>
