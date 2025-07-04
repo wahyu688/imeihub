@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const { authToken, isAdmin } = checkAuthAndAdminStatus();
         console.log(`DEBUG_FRONTEND: Accessing admin page (${currentPage}). AuthToken: ${!!authToken}, IsAdmin (from localStorage): ${isAdmin}`);
         if (!authToken || !isAdmin) {
-            alert('Akses Ditolak: Anda harus login sebagai Admin.');
+            // Mengganti alert dengan modal kustom atau pesan di UI
+            displayMessage('Akses Ditolak: Anda harus login sebagai Admin.', 'error');
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
             return;
@@ -251,11 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const { authToken, userId } = checkAuthAndAdminStatus();
             if (!authToken || !userId) {
                 console.error('DEBUG: User not logged in or data missing during order submission.');
-                orderStatusDiv.innerHTML = '<p style="color: red;">Error: Anda harus login untuk membuat pesanan.</p>';
-                orderStatusDiv.classList.add('error');
-                orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                orderStatusDiv.style.borderColor = 'red';
-                orderStatusDiv.style.color = 'red';
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage('Error: Anda harus login untuk membuat pesanan.', 'error', orderStatusDiv);
                 return;
             }
             orderData.userId = userId;
@@ -306,19 +304,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     const errorMessage = result.message || `Gagal membuat pesanan. Status: ${response.status}.`;
                     console.error('DEBUG: Order submission API responded with error:', errorMessage);
-                    orderStatusDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${errorMessage}</p>`;
-                    orderStatusDiv.classList.add('error');
-                    orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                    orderStatusDiv.style.borderColor = 'red';
-                    orderStatusDiv.style.color = 'red';
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`Terjadi kesalahan: ${errorMessage}`, 'error', orderStatusDiv);
                 }
             } catch (error) {
                 console.error('DEBUG: Error submitting order (fetch failed/network issue):', error);
-                orderStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
-                orderStatusDiv.classList.add('error');
-                orderStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                orderStatusDiv.style.borderColor = 'red';
-                orderStatusDiv.style.color = 'red';
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage(`Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.`, 'error', orderStatusDiv);
                 return;
             }
         });
@@ -368,19 +360,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     const errorMessage = data.message || 'Login gagal. Username atau password salah.';
                     console.error('DEBUG: Login API responded with error:', errorMessage);
-                    loginStatusDiv.innerHTML = `<p style="color: red;">${errorMessage}</p>`;
-                    loginStatusDiv.classList.add('error');
-                    loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                    loginStatusDiv.style.borderColor = 'red';
-                    loginStatusDiv.style.color = 'red';
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`${errorMessage}`, 'error', loginStatusDiv);
                 }
             } catch (error) {
                 console.error('DEBUG: Login error (fetch failed/network issue):', error);
-                loginStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
-                loginStatusDiv.classList.add('error');
-                loginStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                loginStatusDiv.style.borderColor = 'red';
-                loginStatusDiv.style.color = 'red';
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage(`Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.`, 'error', loginStatusDiv);
                 return;
             }
         });
@@ -402,7 +388,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log("DEBUG: Retrieved token:", token);
             if (!token) {
-                alert('Gagal: Anda belum login atau token tidak tersedia.');
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage('Gagal: Anda belum login atau token tidak tersedia.', 'error');
                 return;
             }
 
@@ -435,19 +422,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     const errorMessage = data.message || 'Failed to create user. Please try again.';
                     console.error('DEBUG: Admin Create User API responded with error:', errorMessage);
-                    adminCreateUserStatusDiv.innerHTML = `<p style="color: red;">Error: ${errorMessage}</p>`;
-                    adminCreateUserStatusDiv.classList.add('error');
-                    adminCreateUserStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                    adminCreateUserStatusDiv.style.borderColor = 'red';
-                    adminCreateUserStatusDiv.style.color = 'red';
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`Error: ${errorMessage}`, 'error', adminCreateUserStatusDiv);
                 }
             } catch (error) {
                 console.error('DEBUG: Admin Create User error (fetch failed/network issue):', error);
-                adminCreateUserStatusDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.</p>`;
-                adminCreateUserStatusDiv.classList.add('error');
-                adminCreateUserStatusDiv.style.backgroundColor = 'var(--card-bg)';
-                adminCreateUserStatusDiv.style.borderColor = 'red';
-                adminCreateUserStatusDiv.style.color = 'red';
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage(`Terjadi masalah jaringan atau server. Pastikan backend berjalan dengan benar dan coba lagi nanti.`, 'error', adminCreateUserStatusDiv);
                 return;
             }
         });
@@ -465,11 +446,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const manageUsersLink = document.getElementById('manage-users-link');
     const createUserLink = document.getElementById('create-user-link');
 
+    // Global variable to store grouped orders for invoice generation
+    window.adminGroupedOrders = {}; 
+
     if (currentPage === 'admin_dashboard') { // Diubah dari admin_dashboard.html
         const isAdminCheck = localStorage.getItem('isAdmin') === 'true'; 
         console.log(`DEBUG_FRONTEND: Admin Dashboard access check. IsAdmin: ${isAdminCheck}`);
         if (!isAdminCheck) { 
-            alert('Akses Ditolak: Anda harus login sebagai Admin.');
+            // Mengganti alert dengan modal kustom atau pesan di UI
+            displayMessage('Akses Ditolak: Anda harus login sebagai Admin.', 'error');
             localStorage.setItem('redirectAfterLogin', window.location.href);
             window.location.href = 'login.html';
             return;
@@ -537,13 +522,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('total-orders').textContent = data.totalOrders;
                     document.getElementById('pending-orders').textContent = data.pendingOrders;
                     document.getElementById('completed-orders').textContent = data.completedOrders;
+                    document.getElementById('total-displayed-amount-dashboard').textContent = `Rp ${data.totalRevenue ? data.totalRevenue.toLocaleString('id-ID') : '0'}`;
                 } else {
                     console.error('DEBUG: Failed to fetch dashboard stats:', data.message || 'Error');
-                    alert('Gagal memuat statistik dashboard: ' + (data.message || 'Error'));
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage('Gagal memuat statistik dashboard: ' + (data.message || 'Error'), 'error');
                 }
             } catch (error) {
                 console.error('DEBUG: Error fetching dashboard stats:', error);
-                alert('Terjadi masalah jaringan saat memuat statistik dashboard.');
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage('Terjadi masalah jaringan saat memuat statistik dashboard.', 'error');
             }
         }
 
@@ -554,6 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount');
             adminOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading orders...</td></tr>';
             totalDisplayedAmountSpan.textContent = 'Rp 0';
+            window.adminGroupedOrders = {}; // Reset grouped orders
 
             try {
                 let url = `${API_BASE_URL}/api/admin/orders?sortBy=${encodeURIComponent(sortBy)}`;
@@ -576,40 +565,49 @@ document.addEventListener('DOMContentLoaded', () => {
                         const todayCutoffHour = 17; // 5 PM in 24-hour format
                         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
                         
-                        let currentGroupDate = null;
-                        let isTodayBusinessOrdersAdded = false;
-                        let isTomorrowOrdersAdded = false;
+                        let currentGroupKey = null;
+                        
+                        // Sort orders by date for consistent grouping
+                        data.orders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
 
                         data.orders.forEach(order => {
                             const orderDate = new Date(order.orderDate);
                             const orderDayStart = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate(), 0, 0, 0);
-
-                            let groupHeader = '';
+                            
+                            let groupHeaderContent = '';
+                            let groupKey = '';
 
                             if (orderDayStart.toDateString() === todayStart.toDateString()) {
                                 if (orderDate.getHours() >= 7 && orderDate.getHours() < todayCutoffHour) {
-                                    if (!isTodayBusinessOrdersAdded) {
-                                        groupHeader = `<tr class="order-group-header"><td colspan="7">Today's Orders (7 AM - 5 PM)</td></tr>`;
-                                        isTodayBusinessOrdersAdded = true;
-                                    }
+                                    groupHeaderContent = "Today's Orders (7 AM - 5 PM)";
+                                    groupKey = 'today-business-orders';
                                 } else {
-                                    if (!isTomorrowOrdersAdded) {
-                                        groupHeader = `<tr class="order-group-header"><td colspan="7">Tomorrow's Orders (After 5 PM Today / Before 7 AM Tomorrow)</td></tr>`;
-                                        isTomorrowOrdersAdded = true;
-                                    }
+                                    groupHeaderContent = "Tomorrow's Orders (After 5 PM Today / Before 7 AM Tomorrow)";
+                                    groupKey = 'tomorrow-orders';
                                 }
                             } else {
-                                if (currentGroupDate === null || orderDayStart.toDateString() !== currentGroupDate.toDateString()) {
-                                    groupHeader = `<tr class="order-group-header"><td colspan="7">${orderDayStart.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>`;
-                                    currentGroupDate = orderDayStart;
-                                    isTodayBusinessOrdersAdded = false;
-                                    isTomorrowOrdersAdded = false;
-                                }
+                                groupHeaderContent = orderDayStart.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                                groupKey = orderDayStart.toISOString().split('T')[0]; // YYYY-MM-DD
                             }
 
-                            if (groupHeader) {
-                                adminOrdersTableBody.innerHTML += groupHeader;
+                            if (currentGroupKey !== groupKey) {
+                                adminOrdersTableBody.innerHTML += `
+                                    <tr class="order-group-header">
+                                        <td colspan="7">
+                                            ${groupHeaderContent}
+                                            <button class="generate-invoice-button" data-group="${groupKey}"
+                                            style="margin-left: 12px; padding: 6px 12px; background: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                            🧾 Generate Invoice
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                                currentGroupKey = groupKey;
+                                window.adminGroupedOrders[groupKey] = []; // Initialize array for this group
                             }
+
+                            // Add order to the current group
+                            window.adminGroupedOrders[groupKey].push(order);
 
                             const isCancelled = order.status && order.status.toLowerCase() === 'dibatalkan';
                             if (!isCancelled) {
@@ -621,14 +619,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             }
 
-                            // const orderDate = new Date(order.orderDate);
                             const formattedDate = orderDate.toLocaleString('id-ID', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
                             });
 
                             const row = `
@@ -643,7 +640,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                             ${order.status}
                                         </button>
                                     </td>
-
                                     <td>
                                         <select class="admin-status-select" data-order-id="${order.orderId}">
                                             <option value="">Update Status</option>
@@ -658,16 +654,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </tr>
                             `;
                             adminOrdersTableBody.innerHTML += row;
-
                         });
-                        const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount');
-                        const dashboardAmountSpan = document.getElementById('total-displayed-amount-dashboard');
 
-                        if (totalDisplayedAmountSpan) {
-                        totalDisplayedAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
+                        const totalDisplayedAmountSpanElement = document.getElementById('total-displayed-amount');
+                        const dashboardAmountSpanElement = document.getElementById('total-displayed-amount-dashboard');
+
+                        if (totalDisplayedAmountSpanElement) {
+                            totalDisplayedAmountSpanElement.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
                         }
-                        if (dashboardAmountSpan) {
-                        dashboardAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
+                        if (dashboardAmountSpanElement) {
+                            dashboardAmountSpanElement.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
                         }
 
                         document.querySelectorAll('.admin-status-select').forEach(select => {
@@ -722,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         </select>
                                     </td>
                                     <td>
-                                        <button class="delete-user-button" data-user-id="${user.id}" data-username="${user.username}" style="background-color: var(--status-cancelled-bg); color: var(--status-cancelled-text); padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">Delete</button>
+                                        <button class="delete-user-button" data-user-id="${user.id}" data-username="${user.username}" style="background-color: var(--status-dibatalkan-bg); color: var(--status-dibatalkan-text); padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">Delete</button>
                                     </td>
                                 </tr>
                             `;
@@ -759,7 +755,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         async function updateOrderStatusAdmin(orderId, newStatus) {
-            if (!confirm(`Are you sure you want to update order ${orderId} to ${newStatus}?`)) {
+            // Mengganti confirm dengan modal kustom atau pesan di UI
+            if (!await showConfirmation(`Are you sure you want to update order ${orderId} to ${newStatus}?`)) {
                 return;
             }
             try {
@@ -773,16 +770,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    alert(`Order ${orderId} updated to ${newStatus} successfully!`);
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`Order ${orderId} updated to ${newStatus} successfully!`, 'success');
                     const currentSortBy = document.getElementById('sort-orders-by') ? document.getElementById('sort-orders-by').value : 'order_date DESC';
                     const currentSearchName = document.getElementById('search-orders-by') ? document.getElementById('search-orders-by').value : '';
                     fetchAdminOrders(currentSortBy, currentSearchName);
                 } else {
-                    alert(`Failed to update order ${orderId}: ${data.message || 'Error'}`);
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`Failed to update order ${orderId}: ${data.message || 'Error'}`, 'error');
                     console.error('DEBUG: Failed to update order status:', data.message || 'Error');
                 }
             } catch (error) {
-                alert(`Network error updating order ${orderId}.`);
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage(`Network error updating order ${orderId}.`, 'error');
                 console.error('DEBUG: Network error updating order status:', error);
             }
         }
@@ -790,7 +790,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Update User Role (Admin/User) ---
         async function updateUserRoleAdmin(userId, isAdmin) {
             const roleText = isAdmin ? 'Admin' : 'User';
-            if (!confirm(`Are you sure you want to set user ${userId} as ${roleText}?`)) {
+            // Mengganti confirm dengan modal kustom atau pesan di UI
+            if (!await showConfirmation(`Are you sure you want to set user ${userId} as ${roleText}?`)) {
                 return;
             }
             try {
@@ -805,21 +806,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    alert(`User ${userId} role updated to ${roleText} successfully!`);
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`User ${userId} role updated to ${roleText} successfully!`, 'success');
                     fetchAdminUsers(); // Reload users table
                 } else {
-                    alert(`Failed to update user role for ${userId}: ${data.message || 'Error'}`);
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`Failed to update user role for ${userId}: ${data.message || 'Error'}`, 'error');
                     console.error('DEBUG: Failed to update user role:', data.message || 'Error');
                 }
             } catch (error) {
-                alert(`Network error updating user role for ${userId}.`);
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage(`Network error updating user role for ${userId}.`, 'error');
                 console.error('DEBUG: Network error updating user role:', error);
             }
         }
 
         // --- Delete User (Admin) ---
         async function deleteUserAdmin(userId, username) {
-            if (!confirm(`Are you sure you want to delete user "${username}" (ID: ${userId})? This action cannot be undone.`)) {
+            // Mengganti confirm dengan modal kustom atau pesan di UI
+            if (!await showConfirmation(`Are you sure you want to delete user "${username}" (ID: ${userId})? This action cannot be undone.`)) {
                 return;
             }
             try {
@@ -832,14 +837,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    alert(`User "${username}" deleted successfully!`);
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`User "${username}" deleted successfully!`, 'success');
                     fetchAdminUsers(); // Reload users table
                 } else {
-                    alert(`Failed to delete user "${username}": ${data.message || 'Error'}`);
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`Failed to delete user "${username}": ${data.message || 'Error'}`, 'error');
                     console.error('DEBUG: Failed to delete user:', data.message || 'Error');
                 }
             } catch (error) {
-                alert(`Network error deleting user "${username}".`);
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage(`Network error deleting user "${username}".`, 'error');
                 console.error('DEBUG: Network error deleting user:', error);
             }
         }
@@ -917,7 +925,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- Cancel Order by User ---
         async function cancelOrderUser(orderId) {
-            if (!confirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) {
+            // Mengganti confirm dengan modal kustom atau pesan di UI
+            if (!await showConfirmation(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) {
                 return;
             }
             try {
@@ -932,14 +941,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    alert(`Order ${orderId} cancelled successfully!`);
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`Order ${orderId} cancelled successfully!`, 'success');
                     fetchOrders(); // Reload orders for user
                 } else {
-                    alert(`Failed to cancel order ${orderId}: ${data.message || 'Error'}`);
+                    // Mengganti alert dengan modal kustom atau pesan di UI
+                    displayMessage(`Failed to cancel order ${orderId}: ${data.message || 'Error'}`, 'error');
                     console.error('DEBUG: Failed to cancel order:', data.message || 'Error');
                 }
             } catch (error) {
-                alert(`Network error cancelling order ${orderId}.`);
+                // Mengganti alert dengan modal kustom atau pesan di UI
+                displayMessage(`Network error cancelling order ${orderId}.`, 'error');
                 console.error('DEBUG: Network error cancelling order:', error);
             }
         }
@@ -949,148 +961,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
-
-function generateInvoice(orders, groupTitle = 'Invoice') {
-    const invoiceWindow = window.open('', '_blank');
-    const rows = orders.map((order, index) => `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${order.orderId}</td>
-            <td>${order.customerName || order.username}</td>
-            <td>${order.imei}</td>
-            <td>${order.serviceType}</td>
-            <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
-            <td>${order.status}</td>
-        </tr>
-    `).join('');
-
-    const total = orders
-        .filter(o => o.status.toLowerCase() !== 'dibatalkan')
-        .reduce((sum, o) => sum + (o.amount || 0), 0);
-
-    const html = `
-        <html>
-        <head>
-            <title>${groupTitle}</title>
-            <style>
-                body { font-family: Arial, sans-serif; padding: 20px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-                th { background: #f3f3f3; }
-                h2 { margin-bottom: 0; }
-                .total { margin-top: 20px; font-weight: bold; font-size: 1.1em; }
-            </style>
-        </head>
-        <body>
-            <h2>${groupTitle}</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Order ID</th>
-                        <th>User</th>
-                        <th>IMEI</th>
-                        <th>Service</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>
-            <div class="total">Total: Rp ${total.toLocaleString('id-ID')}</div>
-            <script>window.print()</script>
-        </body>
-        </html>`;
-
-    invoiceWindow.document.write(html);
-    invoiceWindow.document.close();
-}
-
-
-
-function generateProfessionalInvoice(orders, user, invoiceId, invoiceDate) {
-    const total = orders.reduce((sum, o) => o.status.toLowerCase() !== 'dibatalkan' ? sum + (o.amount || 0) : sum, 0);
-    const rows = orders.map((order, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${order.serviceType}</td>
-          <td>${order.imei}</td>
-          <td>${order.status}</td>
-          <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
-        </tr>
-    `).join('');
-
-    const invoiceHtml = `
-    <div id="invoice-content" style="font-family: Arial; padding: 40px; color: #333; width: 800px;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Invoice_logo.svg/512px-Invoice_logo.svg.png" style="height: 60px;" />
-        <div style="text-align: right;">
-          <h2 style="margin: 0;">ImeiHub</h2>
-          <div>Jl. Teknologi No. 88</div>
-          <div>Jakarta, Indonesia</div>
-          <div>Email: support@imeihub.id</div>
-          <div>Phone: +62 812 3456 7890</div>
-        </div>
-      </div>
-
-      <h1 style="margin-top: 40px;">Invoice</h1>
-
-      <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-        <div>
-          <strong>Bill To:</strong><br/>
-          ${user || 'Unknown'}<br/>
-        </div>
-        <div>
-          <strong>Invoice Date:</strong> ${invoiceDate}<br/>
-          <strong>Invoice ID:</strong> ${invoiceId}
-        </div>
-      </div>
-
-      <table style="width: 100%; border-collapse: collapse; margin-top: 40px;">
-        <thead>
-          <tr style="background: #f3f3f3;">
-            <th style="border: 1px solid #ccc; padding: 10px;">No</th>
-            <th style="border: 1px solid #ccc; padding: 10px;">Service</th>
-            <th style="border: 1px solid #ccc; padding: 10px;">IMEI</th>
-            <th style="border: 1px solid #ccc; padding: 10px;">Status</th>
-            <th style="border: 1px solid #ccc; padding: 10px;">Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows}
-          <tr>
-            <td colspan="4" style="border: 1px solid #ccc; padding: 10px; text-align: right; font-weight: bold;">Total</td>
-            <td style="border: 1px solid #ccc; padding: 10px; font-weight: bold;">Rp ${total.toLocaleString('id-ID')}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>`;
-
-    const container = document.createElement('div');
-    container.innerHTML = invoiceHtml;
-    html2pdf().from(container).set({
-      filename: `invoice-${invoiceId}.pdf`,
-      margin: 10,
-      jsPDF: { format: 'a4', unit: 'mm', orientation: 'portrait' }
-    }).save();
-}
-
-
-
-document.querySelectorAll('.generate-invoice-button').forEach(button => {
-    button.addEventListener('click', () => {
-        const groupKey = button.dataset.groupKey;
-        const orders = window.groupedOrdersMap[groupKey] || [];
-        if (orders.length > 0) {
-            const invoiceId = `INV-${new Date().toISOString().slice(0,10)}-${Math.floor(Math.random() * 1000)}`;
-            const username = orders[0]?.username || orders[0]?.customerName || 'User';
-            generateProfessionalInvoice(orders, username, invoiceId, new Date().toLocaleDateString('id-ID'));
-        }
-    });
-});
-
-// ===== Generate Professional Invoice PDF =====
+// ==== INVOICE PDF GENERATOR ====
 function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
   const validOrders = orders.filter(o => o.status.toLowerCase() !== 'dibatalkan');
   const total = validOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
@@ -1106,15 +977,9 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
 
   const htmlContent = `
     <div style="font-family: Arial; padding: 40px; color: #333;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Invoice_logo.svg/1200px-Invoice_logo.svg.png" style="height: 60px;">
-        <div style="text-align: right;">
-          <h2 style="margin: 0;">ImeiHub</h2>
-          <div>Jl. Teknologi No. 88</div>
-          <div>Jakarta, Indonesia</div>
-        </div>
-      </div>
-      <hr style="margin: 20px 0;">
+      <h2>ImeiHub</h2>
+      <p>Jl. Teknologi No. 88, Jakarta</p>
+      <hr/>
       <h3>Invoice</h3>
       <p><strong>Invoice ID:</strong> ${invoiceId}</p>
       <p><strong>Customer:</strong> ${user}</p>
@@ -1122,65 +987,186 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
       <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
         <thead>
           <tr style="background-color: #f0f0f0;">
-            <th style="padding: 10px; border: 1px solid #ddd;">No</th>
-            <th style="padding: 10px; border: 1px solid #ddd;">Service</th>
-            <th style="padding: 10px; border: 1px solid #ddd;">IMEI</th>
-            <th style="padding: 10px; border: 1px solid #ddd;">Status</th>
-            <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
+            <th>No</th><th>Service</th><th>IMEI</th><th>Status</th><th>Price</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>
-      <h3 style="text-align: right; margin-top: 30px;">Total: Rp ${total.toLocaleString('id-ID')}</h3>
+      <h3 style="text-align:right">Total: Rp ${total.toLocaleString('id-ID')}</h3>
     </div>
   `;
 
-  const opt = {
+  html2pdf().from(htmlContent).set({
     margin: 0.5,
     filename: `invoice-${invoiceId}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().from(htmlContent).set(opt).save();
+  }).save();
 }
 
-function generateInvoiceButtonForGroup(groupElement, orders) {
-  const btn = document.createElement('button');
-  btn.textContent = '🧾 Generate Invoice';
-  btn.style.marginLeft = '12px';
-  btn.style.padding = '6px 12px';
-  btn.style.borderRadius = '6px';
-  btn.style.border = '1px solid #888';
-  btn.style.backgroundColor = '#ffffff';
-  btn.style.cursor = 'pointer';
-  btn.style.fontSize = '0.85em';
-
-  btn.addEventListener('click', () => {
-    const invoiceId = `INV-${Date.now()}`;
-    const invoiceDate = new Date().toLocaleString('id-ID');
-    const username = localStorage.getItem('username') || 'User';
-    generateProfessionalInvoicePDF(orders, username, invoiceId, invoiceDate);
-  });
-
-  groupElement.appendChild(btn);
-}
-
-// Forcefully inject invoice button after group row is added to DOM
-function attachInvoiceButtonsOnRender() {
-  const headers = document.querySelectorAll('.order-group-header');
-  headers.forEach(headerRow => {
-    const cell = headerRow.querySelector('td');
-    if (cell && !cell.querySelector('.generate-invoice-button')) {
-      const groupLabel = cell.textContent.trim();
-      if (window.adminGroupedOrders?.[groupLabel]) {
-        generateInvoiceButtonForGroup(cell, window.adminGroupedOrders[groupLabel]);
-      }
+// ==== CUSTOM MESSAGE/CONFIRMATION BOX ====
+// Function to display custom messages (replaces alert)
+function displayMessage(message, type = 'info', targetElement = null) {
+    const messageDiv = document.createElement('div');
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        animation: fadeOut 5s forwards;
+        text-align: center;
+    `;
+    if (type === 'success') {
+        messageDiv.style.backgroundColor = '#4CAF50';
+        messageDiv.style.color = 'white';
+    } else if (type === 'error') {
+        messageDiv.style.backgroundColor = '#F44336';
+        messageDiv.style.color = 'white';
+    } else { // info
+        messageDiv.style.backgroundColor = '#2196F3';
+        messageDiv.style.color = 'white';
     }
-  });
+    messageDiv.textContent = message;
+
+    if (targetElement) {
+        // If a target element is provided, append message there
+        targetElement.innerHTML = ''; // Clear previous messages
+        targetElement.appendChild(messageDiv);
+        messageDiv.style.position = 'static'; // Make it flow with the document
+        messageDiv.style.transform = 'none';
+        messageDiv.style.margin = '20px auto';
+    } else {
+        document.body.appendChild(messageDiv);
+    }
+
+    // Add CSS for fadeOut animation
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; display: none; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.parentNode.removeChild(messageDiv);
+        }
+    }, 4000); // Message disappears after 4 seconds
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(attachInvoiceButtonsOnRender, 1000);
+// Function to display custom confirmation (replaces confirm)
+function showConfirmation(message) {
+    return new Promise((resolve) => {
+        const modalOverlay = document.createElement('div');
+        modalOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        `;
+
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            color: var(--text-color-dark);
+            font-family: 'Inter', sans-serif;
+        `;
+
+        const messageParagraph = document.createElement('p');
+        messageParagraph.textContent = message;
+        messageParagraph.style.marginBottom = '25px';
+        messageParagraph.style.fontSize = '1.1em';
+        messageParagraph.style.fontWeight = '600';
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.justifyContent = 'center';
+        buttonContainer.style.gap = '15px';
+
+        const confirmButton = document.createElement('button');
+        confirmButton.textContent = 'Yes';
+        confirmButton.style.cssText = `
+            padding: 10px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        `;
+        confirmButton.onmouseover = () => confirmButton.style.backgroundColor = '#45a049';
+        confirmButton.onmouseout = () => confirmButton.style.backgroundColor = '#4CAF50';
+        confirmButton.addEventListener('click', () => {
+            document.body.removeChild(modalOverlay);
+            resolve(true);
+        });
+
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = 'No';
+        cancelButton.style.cssText = `
+            padding: 10px 25px;
+            background-color: #F44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        `;
+        cancelButton.onmouseover = () => cancelButton.style.backgroundColor = '#da190b';
+        cancelButton.onmouseout = () => cancelButton.style.backgroundColor = '#F44336';
+        cancelButton.addEventListener('click', () => {
+            document.body.removeChild(modalOverlay);
+            resolve(false);
+        });
+
+        buttonContainer.appendChild(confirmButton);
+        buttonContainer.appendChild(cancelButton);
+        modalContent.appendChild(messageParagraph);
+        modalContent.appendChild(buttonContainer);
+        modalOverlay.appendChild(modalContent);
+        document.body.appendChild(modalOverlay);
+    });
+}
+
+// ==== CLICK HANDLER FOR INVOICE BUTTONS ====
+document.addEventListener('click', function (e) {
+  if (e.target.classList.contains('generate-invoice-button')) {
+    const group = e.target.dataset.group;
+    const orders = window.adminGroupedOrders?.[group];
+    if (!orders || orders.length === 0) {
+      displayMessage('Tidak ada order dalam grup ini.', 'info');
+      return;
+    }
+
+    const invoiceId = 'INV-' + Date.now();
+    const invoiceDate = new Date().toLocaleDateString('id-ID');
+    // Ambil nama pengguna dari order pertama di grup (asumsi semua order dalam grup ini milik satu pengguna)
+    const username = orders[0]?.customerName || orders[0]?.username || 'User';
+
+    generateProfessionalInvoicePDF(orders, username, invoiceId, invoiceDate);
+  }
 });
