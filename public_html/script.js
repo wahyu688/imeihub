@@ -618,7 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (!isNaN(parsed)) totalAmountForDisplay += parsed;
                             }
                             console.log("DEBUG: order.amount =", order.amount, "type =", typeof order.amount);
-                            
+
                             const row = `
                                 <tr>
                                     <td>${order.orderId}</td>
@@ -646,7 +646,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             adminOrdersTableBody.innerHTML += row;
                         });
-                        totalDisplayedAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
+                        const dashboardAmountSpan = document.getElementById('total-displayed-amount-dashboard');
+
+                        if (dashboardAmountSpan) {
+                            totalDisplayedAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
+                            const dashboardAmountSpan = document.getElementById('total-displayed-amount-dashboard');
+                            if (dashboardAmountSpan) {
+                            dashboardAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
+                            }
+                        }
 
                         document.querySelectorAll('.admin-status-select').forEach(select => {
                             select.addEventListener('change', async (e) => {
