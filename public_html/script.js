@@ -611,8 +611,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 adminOrdersTableBody.innerHTML += groupHeader;
                             }
 
-                            totalAmountForDisplay += order.amount || 0;
-
+                            if (typeof order.amount === 'number') {
+                                totalAmountForDisplay += order.amount;
+                            } else if (typeof order.amount === 'string') {
+                                const parsed = parseInt(order.amount.replace(/[^\d]/g, ''));
+                            if (!isNaN(parsed)) totalAmountForDisplay += parsed;
+                            }
                             const row = `
                                 <tr>
                                     <td>${order.orderId}</td>
