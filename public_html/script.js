@@ -1089,3 +1089,80 @@ document.querySelectorAll('.generate-invoice-button').forEach(button => {
         }
     });
 });
+
+// ===== Generate Professional Invoice PDF =====
+function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
+  const validOrders = orders.filter(o => o.status.toLowerCase() !== 'dibatalkan');
+  const total = validOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+  const rows = validOrders.map((order, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${order.serviceType}</td>
+      <td>${order.imei}</td>
+      <td>${order.status}</td>
+      <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+    </tr>
+  `).join('');
+
+  const htmlContent = `
+    <div style="font-family: Arial; padding: 40px; color: #333;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Invoice_logo.svg/1200px-Invoice_logo.svg.png" style="height: 60px;">
+        <div style="text-align: right;">
+          <h2 style="margin: 0;">ImeiHub</h2>
+          <div>Jl. Teknologi No. 88</div>
+          <div>Jakarta, Indonesia</div>
+        </div>
+      </div>
+      <hr style="margin: 20px 0;">
+      <h3>Invoice</h3>
+      <p><strong>Invoice ID:</strong> ${invoiceId}</p>
+      <p><strong>Customer:</strong> ${user}</p>
+      <p><strong>Date:</strong> ${invoiceDate}</p>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+          <tr style="background-color: #f0f0f0;">
+            <th style="padding: 10px; border: 1px solid #ddd;">No</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Service</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">IMEI</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Status</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <h3 style="text-align: right; margin-top: 30px;">Total: Rp ${total.toLocaleString('id-ID')}</h3>
+    </div>
+  `;
+
+  const opt = {
+    margin: 0.5,
+    filename: `invoice-${invoiceId}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().from(htmlContent).set(opt).save();
+}
+
+function generateInvoiceButtonForGroup(groupElement, orders) {
+  const btn = document.createElement('button');
+  btn.textContent = '🧾 Generate Invoice';
+  btn.style.marginLeft = '12px';
+  btn.style.padding = '6px 12px';
+  btn.style.borderRadius = '6px';
+  btn.style.border = '1px solid #888';
+  btn.style.backgroundColor = '#ffffff';
+  btn.style.cursor = 'pointer';
+  btn.style.fontSize = '0.85em';
+
+  btn.addEventListener('click', () => {
+    const invoiceId = `INV-${Date.now()}`;
+    const invoiceDate = new Date().toLocaleString('id-ID');
+    const username = localStorage.getItem('username') || 'User';
+    generateProfessionalInvoicePDF(orders, username, invoiceId, invoiceDate);
+  });
+
+  groupElement.appendChild(btn);
+}
