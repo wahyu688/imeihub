@@ -684,20 +684,23 @@ footer .social-links a:hover {
 .status-proses-aktif { background-color: #00BCD4; color: var(--text-color-light); }
 .status-unknown { background-color: var(--status-unknown-bg); color: var(--status-unknown-text); }
 
+
 /* Spesifik Admin Dashboard */
 .admin-dashboard-container {
     display: flex;
     gap: 15px; /* Mengurangi jarak antara sidebar dan konten utama lebih lanjut */
-    margin: 30px 0; /* Diubah: Pusatkan secara vertikal, rata kiri secara horizontal */
-    width: 100%; /* Memastikan mengambil lebar penuh yang tersedia */
-    max-width: 100%; /* Diubah: Memastikan tidak ada batasan lebar yang menghalangi perluasan ke kanan */
-    padding: 0; /* Padding ditangani oleh anak-anak */
-    box-sizing: border-box;
+    /* **Penting:** Ubah ini agar melampaui padding main-container */
+    margin-left: -30px; /* Tarik ke kiri sejauh padding main-container */
+    margin-right: -30px; /* Tarik ke kanan sejauh padding main-container */
+    width: calc(100% + 60px); /* Kompensasi untuk margin negatif agar lebar totalnya 100% dari viewport - margin */
+    max-width: none; /* Hapus batasan max-width */
+    padding: 0 30px; /* Berikan padding internal yang sama dengan main-container untuk kontennya */
+    box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
     align-items: flex-start; /* Sejajarkan item ke atas */
 }
 
 .left-sidebar {
-    flex: 0 0 250px; /* Mengurangi lebar tetap sidebar sedikit */
+    flex: 0 0 220px; /* **Diubah:** Mengurangi lebar tetap sidebar dari 250px menjadi 220px */
     background-color: var(--bg-content-color);
     border-radius: var(--card-border-radius);
     box-shadow: 0 8px 20px var(--shadow-color-light);
@@ -838,13 +841,13 @@ footer .social-links a:hover {
 }
 
 /* Mengatur lebar kolom tabel secara eksplisit */
-.admin-table th:nth-child(1), .admin-table td:nth-child(1) { width: 10%; } /* ID Pesanan (sedikit lebih kecil) */
+.admin-table th:nth-child(1), .admin-table td:nth-child(1) { width: 8%; } /* ID Pesanan (sedikit lebih kecil) */
 .admin-table th:nth-child(2), .admin-table td:nth-child(2) { width: 10%; } /* Pengguna */
-.admin-table th:nth-child(3), .admin-table td:nth-child(3) { width: 25%; } /* Layanan (tetap besar) */
+.admin-table th:nth-child(3), .admin-table td:nth-child(3) { width: 28%; } /* Layanan (diperlebar) */
 .admin-table th:nth-child(4), .admin-table td:nth-child(4) { width: 15%; } /* IMEI */
 .admin-table th:nth-child(5), .admin-table td:nth-child(5) { width: 10%; } /* Status */
-.admin-table th:nth-child(6), .admin-table td:nth-child(6) { width: 15%; } /* Tanggal */
-.admin-table th:nth-child(7), .admin-table td:nth-child(7) { width: 15%; } /* Tindakan (sedikit lebih besar) */
+.admin-table th:nth-child(6), .admin-table td:nth-child(6) { width: 14%; } /* Tanggal */
+.admin-table th:nth-child(7), .admin-table td:nth-child(7) { width: 15%; } /* Tindakan (diperlebar) */
 
 
 .admin-table th {
@@ -943,6 +946,15 @@ footer .social-links a:hover {
         height: 300px; /* Tinggi disesuaikan untuk layar lebih kecil */
     }
 
+    /* **Diubah:** Untuk admin-dashboard-container di mobile */
+    .admin-dashboard-container {
+        flex-direction: column; /* Tumpuk sidebar dan konten */
+        margin-left: -20px; /* Kompensasi padding main-container yang disesuaikan */
+        margin-right: -20px;
+        width: calc(100% + 40px); /* Kompensasi padding 20px * 2 */
+        padding: 0 20px; /* Padding internal agar konten tidak menempel tepi */
+    }
+
     .main-container {
         padding: 0 20px; /* Padding disesuaikan untuk layar lebih kecil */
         gap: 20px; /* Jarak disesuaikan */
@@ -954,7 +966,7 @@ footer .social-links a:hover {
     }
 
     /* Kartu Konten (misalnya, "Mengapa Memilih Kami?") */
-    .content-container-card, .offer-single-grid, .important-notes-grid, #my-orders-section .card-grid, .admin-dashboard-container {
+    .content-container-card, .offer-single-grid, .important-notes-grid, #my-orders-section .card-grid {
         padding: 30px 40px; /* Padding disesuaikan untuk seluler */
         width: 100%; /* Mengambil lebar penuh di layar lebih kecil */
         margin: 15px auto; /* Terpusat dengan margin */
@@ -970,6 +982,7 @@ footer .social-links a:hover {
         position: relative;
         top: 0;
         height: auto;
+        flex: none; /* Hapus flex tetap */
     }
 
     .admin-content {
