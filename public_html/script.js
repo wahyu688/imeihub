@@ -1006,3 +1006,86 @@ function generateInvoice(orders, groupTitle = 'Invoice') {
     invoiceWindow.document.write(html);
     invoiceWindow.document.close();
 }
+
+
+
+function generateProfessionalInvoice(orders, user, invoiceId, invoiceDate) {
+    const total = orders.reduce((sum, o) => o.status.toLowerCase() !== 'dibatalkan' ? sum + (o.amount || 0) : sum, 0);
+    const rows = orders.map((order, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${order.serviceType}</td>
+          <td>${order.imei}</td>
+          <td>${order.status}</td>
+          <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+        </tr>
+    `).join('');
+
+    const invoiceHtml = `
+    <div id="invoice-content" style="font-family: Arial; padding: 40px; color: #333; width: 800px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Invoice_logo.svg/512px-Invoice_logo.svg.png" style="height: 60px;" />
+        <div style="text-align: right;">
+          <h2 style="margin: 0;">ImeiHub</h2>
+          <div>Jl. Teknologi No. 88</div>
+          <div>Jakarta, Indonesia</div>
+          <div>Email: support@imeihub.id</div>
+          <div>Phone: +62 812 3456 7890</div>
+        </div>
+      </div>
+
+      <h1 style="margin-top: 40px;">Invoice</h1>
+
+      <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <div>
+          <strong>Bill To:</strong><br/>
+          ${user || 'Unknown'}<br/>
+        </div>
+        <div>
+          <strong>Invoice Date:</strong> ${invoiceDate}<br/>
+          <strong>Invoice ID:</strong> ${invoiceId}
+        </div>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; margin-top: 40px;">
+        <thead>
+          <tr style="background: #f3f3f3;">
+            <th style="border: 1px solid #ccc; padding: 10px;">No</th>
+            <th style="border: 1px solid #ccc; padding: 10px;">Service</th>
+            <th style="border: 1px solid #ccc; padding: 10px;">IMEI</th>
+            <th style="border: 1px solid #ccc; padding: 10px;">Status</th>
+            <th style="border: 1px solid #ccc; padding: 10px;">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+          <tr>
+            <td colspan="4" style="border: 1px solid #ccc; padding: 10px; text-align: right; font-weight: bold;">Total</td>
+            <td style="border: 1px solid #ccc; padding: 10px; font-weight: bold;">Rp ${total.toLocaleString('id-ID')}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+
+    const container = document.createElement('div');
+    container.innerHTML = invoiceHtml;
+    html2pdf().from(container).set({
+      filename: `invoice-${invoiceId}.pdf`,
+      margin: 10,
+      jsPDF: { format: 'a4', unit: 'mm', orientation: 'portrait' }
+    }).save();
+}
+
+
+
+document.querySelectorAll('.generate-invoice-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const groupKey = button.dataset.groupKey;
+        const orders = window.groupedOrdersMap[groupKey] || [];
+        if (orders.length > 0) {
+            const invoiceId = `INV-${new Date().toISOString().slice(0,10)}-${Math.floor(Math.random() * 1000)}`;
+            const username = orders[0]?.username || orders[0]?.customerName || 'User';
+            generateProfessionalInvoice(orders, username, invoiceId, new Date().toLocaleDateString('id-ID'));
+        }
+    });
+});
