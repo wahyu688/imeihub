@@ -1257,3 +1257,77 @@ function attachInvoiceButtonsOnRender() {
 document.addEventListener("DOMContentLoaded", () => {
   setTimeout(attachInvoiceButtonsOnRender, 1000);
 });
+
+// ========== INVOICE PDF GENERATOR ==========
+
+function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
+  const validOrders = orders.filter(o => o.status.toLowerCase() !== 'dibatalkan');
+  const total = validOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+  const rows = validOrders.map((order, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${order.serviceType}</td>
+      <td>${order.imei}</td>
+      <td>${order.status}</td>
+      <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+    </tr>
+  `).join('');
+
+  const htmlContent = `
+    <div style="font-family: Arial; padding: 40px; color: #333;">
+      <h2>ImeiHub</h2>
+      <p>Jl. Teknologi No. 88, Jakarta</p>
+      <hr/>
+      <h3>Invoice</h3>
+      <p><strong>Invoice ID:</strong> ${invoiceId}</p>
+      <p><strong>Customer:</strong> ${user}</p>
+      <p><strong>Date:</strong> ${invoiceDate}</p>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+          <tr style="background-color: #f0f0f0;">
+            <th>No</th><th>Service</th><th>IMEI</th><th>Status</th><th>Price</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <h3 style="text-align:right">Total: Rp ${total.toLocaleString('id-ID')}</h3>
+    </div>
+  `;
+
+  html2pdf().from(htmlContent).set({
+    margin: 0.5,
+    filename: `invoice-${invoiceId}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  }).save();
+}
+
+function generateInvoiceButtonForGroup(cell, orders) {
+  const btn = document.createElement('button');
+  btn.textContent = '🧾 Generate Invoice';
+  btn.className = 'generate-invoice-button';
+  btn.style.cssText = 'margin-left: 12px; padding: 6px 12px; background: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer;';
+  btn.onclick = () => {
+    const invoiceId = 'INV-' + Date.now();
+    const invoiceDate = new Date().toLocaleDateString('id-ID');
+    const username = orders[0]?.username || orders[0]?.customerName || 'User';
+    generateProfessionalInvoicePDF(orders, username, invoiceId, invoiceDate);
+  };
+  cell.appendChild(btn);
+}
+
+function attachInvoiceButtonsOnRender() {
+  const headers = document.querySelectorAll('.order-group-header');
+  headers.forEach(header => {
+    const cell = header.querySelector('td');
+    const groupLabel = cell?.textContent.trim();
+    if (cell && groupLabel && window.adminGroupedOrders?.[groupLabel] && !cell.querySelector('.generate-invoice-button')) {
+      generateInvoiceButtonForGroup(cell, window.adminGroupedOrders[groupLabel]);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(attachInvoiceButtonsOnRender, 1000);
+});
