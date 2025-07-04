@@ -702,7 +702,7 @@ footer .social-links a:hover {
 .status-dibatalkan { background-color: var(--status-dibatalkan-bg); color: var(--status-dibatalkan-text); }
 .status-menunggu-proses-besok { background-color: #8A2BE2; color: var(--text-color-light); }
 .status-proses-aktif { background-color: #00BCD4; color: var(--text-color-light); }
-.status-unknown { background-color: var(--status-unknown-bg); color: var(--status-unknown-text); }
+.status-unknown { background-color: #6C757D; color: var(--text-color-light); }
 
 
 /* Spesifik Admin Dashboard */
