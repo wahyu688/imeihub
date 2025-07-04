@@ -617,6 +617,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const parsed = parseInt(order.amount.replace(/[^\d]/g, ''));
                             if (!isNaN(parsed)) totalAmountForDisplay += parsed;
                             }
+                            console.log("DEBUG: order.amount =", order.amount, "type =", typeof order.amount);
+                            
                             const row = `
                                 <tr>
                                     <td>${order.orderId}</td>
