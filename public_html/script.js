@@ -1403,5 +1403,5 @@ function attachInvoiceButtonsOnRender() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(attachInvoiceButtonsOnRender, 800);
+  setTimeout(attachInvoiceButtonsOnRender, 1000);
 });
