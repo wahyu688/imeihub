@@ -951,9 +951,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-document.addEventListener("click", function (e) {
-  if (e.target.classList.contains("generate-invoice-group-btn")) {
-    const date = e.target.dataset.date;
-    generateInvoiceForGroup(date);
-  }
-});
+function generateInvoice(orders, groupTitle = 'Invoice') {
+    const invoiceWindow = window.open('', '_blank');
+    const rows = orders.map((order, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${order.orderId}</td>
+            <td>${order.customerName || order.username}</td>
+            <td>${order.imei}</td>
+            <td>${order.serviceType}</td>
+            <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+            <td>${order.status}</td>
+        </tr>
+    `).join('');
+
+    const total = orders
+        .filter(o => o.status.toLowerCase() !== 'dibatalkan')
+        .reduce((sum, o) => sum + (o.amount || 0), 0);
+
+    const html = `
+        <html>
+        <head>
+            <title>${groupTitle}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                th { background: #f3f3f3; }
+                h2 { margin-bottom: 0; }
+                .total { margin-top: 20px; font-weight: bold; font-size: 1.1em; }
+            </style>
+        </head>
+        <body>
+            <h2>${groupTitle}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>IMEI</th>
+                        <th>Service</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+            <div class="total">Total: Rp ${total.toLocaleString('id-ID')}</div>
+            <script>window.print()</script>
+        </body>
+        </html>`;
+
+    invoiceWindow.document.write(html);
+    invoiceWindow.document.close();
+}
