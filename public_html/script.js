@@ -646,14 +646,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             adminOrdersTableBody.innerHTML += row;
                         });
+                        const totalDisplayedAmountSpan = document.getElementById('total-displayed-amount');
                         const dashboardAmountSpan = document.getElementById('total-displayed-amount-dashboard');
 
+                        if (totalDisplayedAmountSpan) {
+                        totalDisplayedAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
+                        }
                         if (dashboardAmountSpan) {
-                            totalDisplayedAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
-                            const dashboardAmountSpan = document.getElementById('total-displayed-amount-dashboard');
-                            if (dashboardAmountSpan) {
-                            dashboardAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
-                            }
+                        dashboardAmountSpan.textContent = `Rp ${totalAmountForDisplay.toLocaleString('id-ID')}`;
                         }
 
                         document.querySelectorAll('.admin-status-select').forEach(select => {
