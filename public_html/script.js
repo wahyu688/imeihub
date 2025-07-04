@@ -821,13 +821,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- End Admin Dashboard Logic ---
 
 
-    // My Orders Page (Actual Data Fetching after successful authentication check)
+   // My Orders Page (Actual Data Fetching after successful authentication check)
     if (currentPage === 'my-orders') {
-        const orderListDiv = document.getElementById('order-list');
+        // Target the tbody of the table, not the old div
+        const myOrdersTableBody = document.getElementById('my-orders-table-body');
         const { authToken, userId } = checkAuthAndAdminStatus();
 
         const fetchOrders = async () => {
-            orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Memuat pesanan Anda...</p>';
+            myOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Memuat pesanan Anda...</td></tr>';
+            
             try {
                 console.log(`DEBUG_FRONTEND: Fetching user orders for userId: ${userId}`);
                 const response = await fetch(`${API_BASE_URL}/api/orders/${userId}`, {
@@ -838,23 +840,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
+                    myOrdersTableBody.innerHTML = ''; // Clear loading message
+
                     if (data.orders && data.orders.length > 0) {
-                        orderListDiv.innerHTML = '';
                         data.orders.forEach(order => {
+                            // Format the date
+                            const orderDate = new Date(order.orderDate);
+                            const formattedDate = orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                            
+                            // Determine status class
+                            const statusClass = `status-${order.status.toLowerCase().replace(/\s/g, '-')}`;
+
                             const row = `
-                                <div class="service-card content-container-card" style="text-align: left;">
-                                    <h3>Order ID: ${order.orderId}</h3>
-                                    <p style="color: var(--secondary-text-color);"><strong>Layanan:</strong> ${order.serviceType}</p>
-                                    <p style="color: var(--secondary-text-color);"><strong>IMEI:</strong> ${order.imei}</p>
-                                    <p style="color: var(--secondary-text-color);"><strong>Status:</strong> <span style="font-weight: bold; color: ${order.status === 'Selesai' ? 'green' : order.status === 'Diproses' ? 'orange' : order.status === 'Menunggu Proses Besok' ? 'purple' : 'grey'};">${order.status}</span></p>
-                                    <p style="font-size: 0.8em; color: var(--secondary-text-color);">Tanggal Pesan: ${new Date(order.orderDate).toLocaleDateString()} ${new Date(order.orderDate).toLocaleTimeString()}</p>
-                                    <p style="font-size: 0.9em; color: var(--secondary-text-color);">Total Bayar: <strong>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</strong></p>
-                                    ${order.status !== 'Diproses' && order.status !== 'Selesai' && order.status !== 'Dibatalkan' ? 
-                                        `<button class="cancel-order-button" data-order-id="${order.orderId}" style="background-color: var(--status-cancelled-bg); color: var(--status-cancelled-text); margin-top: 10px; padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer;">Cancel Order</button>` : ''}
-                                </div>
+                                <tr>
+                                    <td>${order.orderId}</td>
+                                    <td>${order.serviceType}</td>
+                                    <td>${order.imei}</td>
+                                    <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+                                    <td><button class="status-button ${statusClass}">${order.status}</button></td>
+                                    <td>${formattedDate}</td>
+                                    <td>
+                                        <button class="cancel-order-button" data-order-id="${order.orderId}" style="background-color: var(--status-dibatalkan-bg); color: var(--status-dibatalkan-text); padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">Cancel</button>
+                                    </td>
+                                </tr>
                             `;
-                            orderListDiv.innerHTML += row;
+                            myOrdersTableBody.innerHTML += row;
                         });
+                        // Attach event listeners for cancel buttons after all orders are rendered
                         document.querySelectorAll('.cancel-order-button').forEach(button => {
                             button.addEventListener('click', async (e) => {
                                 const orderId = e.target.dataset.orderId;
@@ -862,22 +874,22 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                         });
                     } else {
-                        orderListDiv.innerHTML = '<p style="color: var(--secondary-text-color);">Anda belum memiliki pesanan.</p>';
+                        myOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--secondary-text-color);">Anda belum memiliki pesanan.</td></tr>';
                     }
                 } else {
                     const errorMessage = data.message || 'Terjadi kesalahan.';
                     console.error('DEBUG: Failed to load orders from API:', errorMessage);
-                    orderListDiv.innerHTML = `<p style="color: red;">Gagal memuat pesanan: ${errorMessage}</p>`;
+                    myOrdersTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Gagal memuat pesanan: ${errorMessage}</td></tr>`;
                 }
             } catch (error) {
                 console.error('DEBUG: Error fetching orders (fetch failed/network issue):', error);
-                orderListDiv.innerHTML = `<p style="color: red;">Terjadi masalah jaringan atau server saat memuat pesanan.</p>`;
+                myOrdersTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Terjadi masalah jaringan atau server saat memuat pesanan.</td></tr>`;
             }
         };
 
         // --- Cancel Order by User ---
         async function cancelOrderUser(orderId) {
-            if (!confirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) {
+            if (!showCustomConfirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) { // Mengganti confirm
                 return;
             }
             try {
@@ -892,14 +904,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    alert(`Order ${orderId} cancelled successfully!`);
+                    showCustomAlert(`Order ${orderId} cancelled successfully!`); // Mengganti alert
                     fetchOrders(); // Reload orders for user
                 } else {
-                    alert(`Failed to cancel order ${orderId}: ${data.message || 'Error'}`);
+                    showCustomAlert(`Failed to cancel order ${orderId}: ${data.message || 'Error'}`); // Mengganti alert
                     console.error('DEBUG: Failed to cancel order:', data.message || 'Error');
                 }
             } catch (error) {
-                alert(`Network error cancelling order ${orderId}.`);
+                showCustomAlert(`Network error cancelling order ${orderId}.`); // Mengganti alert
                 console.error('DEBUG: Network error cancelling order:', error);
             }
         }
@@ -907,3 +919,4 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchOrders();
     }
 });
+
