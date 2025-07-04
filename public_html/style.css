@@ -380,7 +380,7 @@ a:hover {
     justify-content: center;
 }
 
-/* --- Bagian Fitur (Apa yang Kami Tawarkan & Catatan Penting) - TETAP KARTU --- */
+/* --- Bagian Fitur (Apa yang Kami Tawarkan & Catatan Penting) - TETAP KARTU */
 .offer-single-grid, .important-notes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -696,18 +696,19 @@ footer .social-links a:hover {
 .admin-dashboard-container {
     display: flex;
     gap: 15px; /* Mengurangi jarak antara sidebar dan konten utama lebih lanjut */
-    /* **Penting:** Ubah ini agar melampaui padding main-container */
-    margin-left: -30px; /* Tarik ke kiri sejauh padding main-container */
-    margin-right: -30px; /* Tarik ke kanan sejauh padding main-container */
-    width: calc(100% + 60px); /* Kompensasi untuk margin negatif agar lebar totalnya 100% dari viewport - margin */
+    /* **Diubah:** Gunakan lebar viewport penuh dan margin negatif untuk rata kiri */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: 0; /* Pastikan tidak ada margin kanan yang mengganggu */
     max-width: none; /* Hapus batasan max-width */
-    padding: 0 30px; /* Berikan padding internal yang sama dengan main-container untuk kontennya */
+    padding-left: 30px; /* Padding kiri agar sidebar tidak menempel tepi layar */
+    padding-right: 30px; /* Padding kanan untuk konten utama */
     box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
     align-items: flex-start; /* Sejajarkan item ke atas */
 }
 
 .left-sidebar {
-    flex: 0 0 200px; /* **Diubah:** Mengurangi lebar tetap sidebar dari 220px menjadi 200px */
+    flex: 0 0 180px; /* Lebar tetap sidebar */
     background-color: var(--bg-content-color);
     border-radius: var(--card-border-radius);
     box-shadow: 0 8px 20px var(--shadow-color-light);
