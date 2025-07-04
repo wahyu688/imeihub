@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Wrapper utama untuk konten -->
+    <!-- Wrapper utama untuk konten agar sesuai dengan desain kartu yang mengambang -->
     <div class="main-container">
         <!-- Bagian Navbar Atas -->
         <nav class="header-card">
@@ -22,16 +22,16 @@
                 </div>
                 <ul class="nav-links-desktop">
                     <li><a href="/">Home</a></li>
-                    <li><a href="services">Services</a></li>
-                    <li><a href="order">Order</a></li>
-                    <li><a href="my-orders">My Orders</a></li>
-                    <li><a href="contact">Contact</a></li>
-                    <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard">Admin Dashboard</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="order.html">Order</a></li>
+                    <li><a href="my-orders.html">My Orders</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
                 </ul>
             </div>
 
             <div class="navbar-right">
-                <div id="nav-login-register"><a href="login" class="nav-link-button">Login/Register</a></div>
+                <div id="nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div>
                 <!-- Elemen untuk tampilan setelah login -->
                 <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
                     <span>Hi, <strong id="username-display"></strong>!</span>
@@ -47,56 +47,56 @@
             <button class="close-mobile-nav" id="close-mobile-nav">&times;</button>
             <ul class="mobile-nav-links">
                 <li><a href="/">Home</a></li>
-                <li><a href="services">Services</a></li>
-                <li><a href="order">Order</a></li>
-                <li><a href="my-orders">My Orders</a></li>
-                <li><a href="contact">Contact</a></li>
-                <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard">Admin Dashboard</a></li>
-                <li><div id="mobile-nav-login-register"><a href="login" class="nav-link-button">Login/Register</a></div></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="my-orders.html">My Orders</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard.html">Admin Dashboard</a></li>
+                <li><div id="mobile-nav-login-register"><a href="login.html" class="nav-link-button">Login/Register</a></div></li>
                 <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
                 <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">Logout</button></li>
             </ul>
         </div>
 
         <main class="main-content-area">
-            <section id="my-orders-section" class="services section-container">
+            <section id="my-orders-section" class="services section-container content-container-card">
                 <h1 class="section-title">My Orders</h1>
                 <p style="text-align: center; max-width: 800px; margin: 0 auto 50px auto; font-size: 1.1em; color: var(--secondary-text-color);">View the status of all your IMEI unlock orders here.</p>
                 
-                <div id="order-list" class="card-grid">
-                    <!-- Header Tabel untuk My Orders -->
-                    <div class="my-orders-table-header">
-                        <div class="order-id-col">Order ID</div>
-                        <div class="service-col">Service</div>
-                        <div class="imei-col">IMEI</div>
-                        <div class="price-col">Price</div>
-                        <div class="status-col">Status</div>
-                        <div class="date-col">Date</div>
-                    </div>
-
-                    <!-- Contoh Baris Pesanan (Ini akan diisi oleh JavaScript) -->
-                    <!-- Pastikan JavaScript Anda merender setiap pesanan dalam struktur seperti ini: -->
-                    <!--
-                    <div class="order-card">
-                        <div class="order-id-col">ORD-307031-139</div>
-                        <div class="service-col">Temporary IMEI Activation (90 Days)</div>
-                        <div class="imei-col">12312315648451</div>
-                        <div class="price-col">Rp 250.000</div>
-                        <div class="status-col"><span class="status status-selesai">Selesai</span></div>
-                        <div class="date-col">July 3, 2025</div>
-                    </div>
-                    <div class="order-card">
-                        <div class="order-id-col">ORD-776035-636</div>
-                        <div class="service-col">Temporary IMEI Activation (90 Days)</div>
-                        <div class="imei-col">12312315648451</div>
-                        <div class="price-col">Rp 250.000</div>
-                        <div class="status-col"><span class="status status-dibatalkan">Dibatalkan</span></div>
-                        <div class="date-col">July 3, 2025</div>
-                    </div>
-                    -->
+                <div class="admin-table-container"> <!-- Menggunakan kelas kontainer tabel admin -->
+                    <table class="admin-table" id="my-orders-table"> <!-- Menggunakan kelas tabel admin dan ID baru -->
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Service</th>
+                                <th>IMEI</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th> <!-- Kolom Actions untuk tombol Cancel -->
+                            </tr>
+                        </thead>
+                        <tbody id="my-orders-table-body">
+                            <!-- Order list will be loaded here by JavaScript -->
+                            <tr><td colspan="7" style="text-align: center;">Memuat pesanan Anda...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </main>
+
+        <!-- FOOTER -->
+        <footer class="main-container-card">
+            <div class="footer-content">
+                <p>&copy; 2025 ImeiHub. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://instagram.com/yourimeihub" target="_blank">Instagram</a>
+                    <a href="https://facebook.com/yourimeihub" target="_blank">Facebook</a>
+                    <a href="https://twitter.com/yourimeihub" target="_blank">Twitter</a>
+                    <a href="https://t.me/yourimeihub" target="_blank">Telegram</a>
+                </div>
+            </div>
+        </footer>
     </div>
     <script src="script.js"></script>
 </body>

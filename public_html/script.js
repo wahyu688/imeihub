@@ -147,14 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- Akhir Manajemen Status Login ---
 
-    // --- Hamburger Menu Logic ---
-    // --- End Hamburger Menu Logic ---
-
 
     // --- Page-specific JavaScript Logic ---
 
     // Order Submission (Only on order.html)
-    const orderForm = document.getElementById('order-submission-form');
+    const orderForm = document.getElementById('order-form'); // Mengubah dari order-submission-form
     const imeiCountInput = document.getElementById('imei-count');
     const imeiInputsContainer = document.getElementById('imei-inputs-container');
 
@@ -823,22 +820,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // My Orders Page (Actual Data Fetching after successful authentication check)
     if (currentPage === 'my-orders') {
-        const orderListDiv = document.getElementById('order-list');
+        const myOrdersTableBody = document.getElementById('my-orders-table-body');
         const { authToken, userId } = checkAuthAndAdminStatus();
 
         const fetchOrders = async () => {
-            // Clear existing orders but keep the header
-            orderListDiv.innerHTML = `
-                <div class="my-orders-table-header">
-                    <div class="order-id-col">Order ID</div>
-                    <div class="service-col">Service</div>
-                    <div class="imei-col">IMEI</div>
-                    <div class="price-col">Price</div>
-                    <div class="status-col">Status</div>
-                    <div class="date-col">Date</div>
-                </div>
-                <p style="color: var(--secondary-text-color); text-align: center; padding: 20px;">Memuat pesanan Anda...</p>
-            `;
+            myOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Memuat pesanan Anda...</td></tr>';
             
             try {
                 console.log(`DEBUG_FRONTEND: Fetching user orders for userId: ${userId}`);
@@ -850,17 +836,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Clear the "Loading orders..." message
-                    orderListDiv.innerHTML = `
-                        <div class="my-orders-table-header">
-                            <div class="order-id-col">Order ID</div>
-                            <div class="service-col">Service</div>
-                            <div class="imei-col">IMEI</div>
-                            <div class="price-col">Price</div>
-                            <div class="status-col">Status</div>
-                            <div class="date-col">Date</div>
-                        </div>
-                    `;
+                    myOrdersTableBody.innerHTML = ''; // Clear loading message
 
                     if (data.orders && data.orders.length > 0) {
                         data.orders.forEach(order => {
@@ -872,16 +848,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             const statusClass = `status-${order.status.toLowerCase().replace(/\s/g, '-')}`;
 
                             const row = `
-                                <div class="order-card">
-                                    <div class="order-id-col">${order.orderId}</div>
-                                    <div class="service-col">${order.serviceType}</div>
-                                    <div class="imei-col">${order.imei}</div>
-                                    <div class="price-col">Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</div>
-                                    <div class="status-col"><span class="status ${statusClass}">${order.status}</span></div>
-                                    <div class="date-col">${formattedDate}</div>
-                                </div>
+                                <tr>
+                                    <td>${order.orderId}</td>
+                                    <td>${order.serviceType}</td>
+                                    <td>${order.imei}</td>
+                                    <td>Rp ${order.amount ? order.amount.toLocaleString('id-ID') : 'N/A'}</td>
+                                    <td><button class="status-button ${statusClass}">${order.status}</button></td>
+                                    <td>${formattedDate}</td>
+                                    <td>
+                                        <button class="cancel-order-button" data-order-id="${order.orderId}" style="background-color: var(--status-dibatalkan-bg); color: var(--status-dibatalkan-text); padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">Cancel</button>
+                                    </td>
+                                </tr>
                             `;
-                            orderListDiv.innerHTML += row;
+                            myOrdersTableBody.innerHTML += row;
                         });
                         // Attach event listeners for cancel buttons after all orders are rendered
                         document.querySelectorAll('.cancel-order-button').forEach(button => {
@@ -891,23 +870,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                         });
                     } else {
-                        orderListDiv.innerHTML += '<p style="color: var(--secondary-text-color); text-align: center; padding: 20px;">Anda belum memiliki pesanan.</p>';
+                        myOrdersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--secondary-text-color);">Anda belum memiliki pesanan.</td></tr>';
                     }
                 } else {
                     const errorMessage = data.message || 'Terjadi kesalahan.';
                     console.error('DEBUG: Failed to load orders from API:', errorMessage);
-                    orderListDiv.innerHTML += `<p style="color: red; text-align: center; padding: 20px;">Gagal memuat pesanan: ${errorMessage}</p>`;
+                    myOrdersTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Gagal memuat pesanan: ${errorMessage}</td></tr>`;
                 }
             } catch (error) {
                 console.error('DEBUG: Error fetching orders (fetch failed/network issue):', error);
-                orderListDiv.innerHTML += `<p style="color: red; text-align: center; padding: 20px;">Terjadi masalah jaringan atau server saat memuat pesanan.</p>`;
+                myOrdersTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Terjadi masalah jaringan atau server saat memuat pesanan.</td></tr>`;
             }
         };
 
         // --- Cancel Order by User ---
         async function cancelOrderUser(orderId) {
-            // Mengganti alert/confirm dengan modal kustom jika diperlukan
-            // Untuk saat ini, tetap menggunakan confirm() sesuai instruksi awal
             if (!confirm(`Are you sure you want to cancel order ${orderId}? This action cannot be undone.`)) {
                 return;
             }

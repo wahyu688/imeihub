@@ -654,70 +654,86 @@ footer .social-links a:hover {
 }
 
 /* --- My Orders Page Specifics --- */
-/* Kontainer utama untuk daftar pesanan, sekarang menyerupai tabel */
-#my-orders-section .card-grid {
-    display: flex; /* Menggunakan Flexbox untuk susunan vertikal baris */
-    flex-direction: column; /* Susun baris secara vertikal */
-    gap: 0; /* Tidak ada jarak antar baris untuk tampilan tabel yang berkelanjutan */
-    padding: 0;
-    background-color: var(--bg-content-color); /* Latar belakang putih solid untuk seluruh area tabel */
-    border-radius: 0; /* Tidak ada border radius untuk kontainer tabel */
-    box-shadow: none; /* Tidak ada bayangan untuk kontainer tabel */
-    margin: 30px auto;
-    max-width: 1340px; /* Lebar maksimum untuk tabel agar tidak terlalu lebar */
+/* Menggunakan gaya tabel admin yang sudah ada untuk konsistensi */
+#my-orders-section .admin-table-container {
+    /* Gaya kontainer tabel admin */
+    margin: 0 auto; /* Pusatkan tabel di halaman My Orders */
+    max-width: 1340px; /* Sesuaikan dengan admin dashboard */
+    box-shadow: 0 8px 20px var(--shadow-color-light); /* Tambahkan bayangan seperti admin table */
+    border-radius: 15px; /* Sudut membulat untuk kontainer tabel */
+    overflow: hidden; /* Pastikan sudut membulat diterapkan dengan benar */
     border: 1px solid var(--border-color); /* Border keseluruhan tabel */
-    box-sizing: border-box;
-    overflow: hidden; /* Untuk memotong border anak jika meluap */
 }
 
-/* Gaya untuk header tabel di halaman My Orders */
-.my-orders-table-header {
-    display: flex;
-    background-color: var(--table-header-bg-light); /* Latar belakang header tabel, sedikit berbeda dari latar belakang baris */
+#my-orders-section .admin-table {
+    /* Gaya tabel admin */
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--text-color-dark);
+    font-size: 0.95em;
+    table-layout: fixed; /* Penting: Memastikan lebar kolom dihormati */
+}
+
+#my-orders-section .admin-table th, 
+#my-orders-section .admin-table td {
     padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    box-sizing: border-box;
+}
+
+#my-orders-section .admin-table th {
+    background-color: var(--bg-page-color); /* Table header lighter */
     font-weight: 700;
     color: var(--secondary-text-color);
     text-transform: uppercase;
     font-size: 0.85em;
-    border-bottom: 1px solid var(--border-color);
 }
 
-.my-orders-table-header div {
-    box-sizing: border-box;
-    padding: 0 5px;
+#my-orders-section .admin-table tbody tr:hover {
+    background-color: rgba(74, 74, 74, 0.05); /* Hover state */
 }
 
-/* Gaya untuk setiap baris pesanan individu */
-.order-card {
-    background-color: transparent; /* Latar belakang transparan untuk baris, sehingga latar belakang .card-grid terlihat */
-    border-radius: 0;
-    padding: 15px;
-    box-shadow: none !important; /* Paksa tanpa bayangan */
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--text-color-dark);
-    border-bottom: 1px solid var(--border-color); /* Border bawah untuk setiap baris */
-    transition: background-color 0.2s ease;
+/* Sudut membulat untuk header dan footer tabel */
+#my-orders-section .admin-table thead tr:first-child th:first-child {
+    border-top-left-radius: 15px;
 }
-
-.order-card:last-child {
-    border-bottom: none;
+#my-orders-section .admin-table thead tr:first-child th:last-child {
+    border-top-right-radius: 15px;
 }
-
-.order-card:hover {
-    background-color: var(--table-row-hover-light); /* Latar belakang hover untuk baris */
+#my-orders-section .admin-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 15px;
+}
+#my-orders-section .admin-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 15px;
 }
 
 /* Lebar kolom untuk tabel My Orders (mirip dengan admin dashboard) */
-.my-orders-table-header .order-id-col, .order-card .order-id-col { flex: 0 0 15%; font-weight: bold; color: var(--accent-color); }
-.my-orders-table-header .service-col, .order-card .service-col { flex: 0 0 30%; }
-.my-orders-table-header .imei-col, .order-card .imei-col { flex: 0 0 20%; }
-.my-orders-table-header .price-col, .order-card .price-col { flex: 0 0 10%; text-align: right; }
-.my-orders-table-header .status-col, .order-card .status-col { flex: 0 0 10%; }
-.my-orders-table-header .date-col, .order-card .date-col { flex: 0 0 15%; text-align: right; }
+#my-orders-section .admin-table th:nth-child(1), #my-orders-section .admin-table td:nth-child(1) { width: 15%; } /* Order ID */
+#my-orders-section .admin-table th:nth-child(2), #my-orders-section .admin-table td:nth-child(2) { width: 25%; } /* Service */
+#my-orders-section .admin-table th:nth-child(3), #my-orders-section .admin-table td:nth-child(3) { width: 20%; } /* IMEI */
+#my-orders-section .admin-table th:nth-child(4), #my-orders-section .admin-table td:nth-child(4) { width: 10%; text-align: right; } /* Price */
+#my-orders-section .admin-table th:nth-child(5), #my-orders-section .admin-table td:nth-child(5) { width: 10%; } /* Status */
+#my-orders-section .admin-table th:nth-child(6), #my-orders-section .admin-table td:nth-child(6) { width: 10%; text-align: right; } /* Date */
+#my-orders-section .admin-table th:nth-child(7), #my-orders-section .admin-table td:nth-child(7) { width: 10%; text-align: center; } /* Actions */
 
-/* Warna status (menggunakan variabel yang ada) */
+
+/* Status colors (re-using existing variables) */
+.status-button {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: opacity 0.3s ease;
+}
+
+.status-button:hover {
+    opacity: 0.8;
+}
+
 .status-pending { background-color: var(--status-pending-bg); color: var(--status-pending-text); }
 .status-diproses { background-color: var(--status-diproses-bg); color: var(--status-diproses-text); }
 .status-selesai { background-color: var(--status-selesai-bg); color: var(--status-selesai-text); }
@@ -727,26 +743,7 @@ footer .social-links a:hover {
 .status-unknown { background-color: var(--status-unknown-bg); color: var(--status-unknown-text); }
 
 
-/* Responsivitas untuk Tabel My Orders */
-@media (max-width: 768px) {
-    .my-orders-table-header, .order-card {
-        flex-wrap: wrap; /* Izinkan baris membungkus pada layar kecil */
-        padding: 10px;
-    }
-    .my-orders-table-header div, .order-card div {
-        flex: 1 1 100%; /* Setiap kolom mengambil lebar penuh pada layar kecil */
-        padding: 5px 0;
-        text-align: left !important; /* Pastikan teks rata kiri */
-    }
-    .order-card .price-col, .order-card .date-col {
-        text-align: left !important; /* Sesuaikan perataan untuk mobile */
-    }
-    .order-card .status {
-        align-self: flex-start; /* Pastikan status rata kiri di mobile */
-    }
-}
-
-/* Spesifik Admin Dashboard */
+/* Admin Dashboard Specifics */
 .admin-dashboard-container {
     display: flex;
     margin: 0 auto; /* Center the card horizontally */
@@ -985,10 +982,15 @@ footer .social-links a:hover {
     }
 
     /* Content Cards (e.g., "Mengapa Memilih Kami?") */
-    .content-container-card, .offer-single-grid, .important-notes-grid, #my-orders-section .card-grid, .admin-dashboard-container {
+    .content-container-card, .offer-single-grid, .important-notes-grid, .admin-dashboard-container {
         padding: 30px 40px; /* Adjusted padding for smaller screens */
         width: 100%; /* Take full width on smaller screens */
         margin: 15px auto; /* Centered with margin */
+    }
+
+    /* My Orders table container responsiveness */
+    #my-orders-section .admin-table-container {
+        padding: 0; /* Remove padding from this container on smaller screens if it causes issues */
     }
 
     .order-form, .admin-form-container {
@@ -1056,10 +1058,15 @@ footer .social-links a:hover {
     }
 
     /* Content Cards (e.g., "Mengapa Memilih Kami?") */
-    .content-container-card, .offer-single-grid, .important-notes-grid, #my-orders-section .card-grid, .admin-dashboard-container {
+    .content-container-card, .offer-single-grid, .important-notes-grid, .admin-dashboard-container {
         padding: 25px 20px; /* Adjusted padding for mobile */
         width: 100%; /* Take full width on mobile */
         margin: 15px auto; /* Centered with margin */
+    }
+
+    /* My Orders table container responsiveness */
+    #my-orders-section .admin-table-container {
+        padding: 0; /* Remove padding from this container on smaller screens if it causes issues */
     }
 
     .order-form, .admin-form-container {
@@ -1067,6 +1074,7 @@ footer .social-links a:hover {
         margin: 30px auto;
     }
 
+    /* Table cells on smaller screens */
     .admin-table th, .admin-table td {
         padding: 10px;
         font-size: 0.85em;
