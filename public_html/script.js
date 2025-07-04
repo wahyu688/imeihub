@@ -610,11 +610,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (groupHeader) {
                                 adminOrdersTableBody.innerHTML += groupHeader;
                             }
-                            const lastGroupHeaderRow = adminOrdersTableBody.querySelectorAll('.order-group-header');
-                            const lastHeader = lastGroupHeaderRow[lastGroupHeaderRow.length - 1];
-                            if (lastHeader && Array.isArray(groupedOrders[groupHeader])) {
-                                generateInvoiceButtonForGroup(lastHeader.querySelector('td'), groupedOrders[groupHeader]);
-}
 
                             const isCancelled = order.status && order.status.toLowerCase() === 'dibatalkan';
                             if (!isCancelled) {
@@ -1171,3 +1166,21 @@ function generateInvoiceButtonForGroup(groupElement, orders) {
 
   groupElement.appendChild(btn);
 }
+
+// Forcefully inject invoice button after group row is added to DOM
+function attachInvoiceButtonsOnRender() {
+  const headers = document.querySelectorAll('.order-group-header');
+  headers.forEach(headerRow => {
+    const cell = headerRow.querySelector('td');
+    if (cell && !cell.querySelector('.generate-invoice-button')) {
+      const groupLabel = cell.textContent.trim();
+      if (window.adminGroupedOrders?.[groupLabel]) {
+        generateInvoiceButtonForGroup(cell, window.adminGroupedOrders[groupLabel]);
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(attachInvoiceButtonsOnRender, 1000);
+});
