@@ -948,63 +948,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// === Generate Invoice Group Function ===
-function generateInvoiceForGroup(dateKey, orders) {
-  const invoiceDiv = document.createElement('div');
-  let total = 0;
 
-  const rows = orders.map(order => {
-    total += order.amount || 0;
-    return `
-      <tr>
-        <td>${order.orderId}</td>
-        <td>${order.username}</td>
-        <td>${order.serviceType}</td>
-        <td>${order.imei}</td>
-        <td>${order.status}</td>
-      </tr>
-    `;
-  }).join('');
 
-  invoiceDiv.innerHTML = `
-    <h2>Invoice for ${dateKey}</h2>
-    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>User</th>
-          <th>Service</th>
-          <th>IMEI</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-      <tfoot>
-        <tr>
-          <td colspan="4" style="text-align: right;"><strong>Total</strong></td>
-          <td><strong>Rp ${total.toLocaleString('id-ID')}</strong></td>
-        </tr>
-      </tfoot>
-    </table>
-  `;
 
-  html2pdf().from(invoiceDiv).set({
-    filename: `Invoice-${dateKey}.pdf`,
-    margin: 10,
-    jsPDF: {unit: 'mm', format: 'a4', orientation: 'portrait'}
-  }).save();
-}
-
-// === Bind generate invoice buttons after rendering ===
-function bindInvoiceButtons(allOrders) {
-  document.querySelectorAll('.generate-invoice-group-btn').forEach(button => {
-    button.addEventListener('click', () => {
-      const dateKey = button.dataset.date;
-      const filtered = allOrders.filter(order => {
-        const orderDate = new Date(order.orderDate).toISOString().split('T')[0];
-        return orderDate === dateKey && order.status.toLowerCase() !== 'dibatalkan';
-      });
-      generateInvoiceForGroup(dateKey, filtered);
-    });
-  });
-}
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("generate-invoice-group-btn")) {
+    const date = e.target.dataset.date;
+    generateInvoiceForGroup(date);
+  }
+});
