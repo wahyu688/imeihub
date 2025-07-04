@@ -1223,3 +1223,50 @@ footer .social-links a:hover {
     background-position: right 15px center; /* Posisikan panah */
     background-size: 20px; /* Ukuran panah */
 }
+
+/* --- Gaya Khusus untuk contact.html --- */
+.main-content-area .contact-preview {
+    max-width: 700px; /* Batasi lebar kartu kontak */
+    margin: 40px auto; /* Pusatkan kartu dengan margin atas/bawah */
+    padding: 50px; /* Tambahkan padding agar konten tidak terlalu rapat */
+    text-align: center; /* Pusatkan semua teks di dalam kartu */
+    display: flex; /* Gunakan flexbox untuk tata letak vertikal */
+    flex-direction: column;
+    align-items: center; /* Pusatkan item secara horizontal */
+    gap: 20px; /* Jarak antar elemen di dalam kartu */
+}
+
+.main-content-area .contact-preview .section-title {
+    margin-bottom: 20px; /* Kurangi margin bawah judul */
+}
+
+.main-content-area .contact-preview p {
+    max-width: 600px; /* Batasi lebar paragraf untuk keterbacaan */
+    margin: 0 auto; /* Pusatkan paragraf */
+    line-height: 1.8; /* Tingkatkan tinggi baris untuk keterbacaan */
+}
+
+.main-content-area .contact-preview .cta-button {
+    margin-top: 20px; /* Jarak dari paragraf sebelumnya */
+    padding: 15px 35px; /* Sesuaikan padding tombol */
+    font-size: 1.15em; /* Ukuran font tombol sedikit lebih besar */
+}
+
+/* Responsivitas untuk halaman kontak */
+@media (max-width: 768px) {
+    .main-content-area .contact-preview {
+        padding: 30px; /* Kurangi padding pada layar kecil */
+        margin: 20px auto; /* Sesuaikan margin */
+    }
+    .main-content-area .contact-preview .section-title {
+        font-size: 2em; /* Kurangi ukuran judul */
+        margin-bottom: 15px;
+    }
+    .main-content-area .contact-preview p {
+        font-size: 0.95em; /* Kurangi ukuran teks paragraf */
+    }
+    .main-content-area .contact-preview .cta-button {
+        padding: 12px 30px; /* Sesuaikan padding tombol */
+        font-size: 1.05em; /* Sesuaikan ukuran font tombol */
+    }
+}
