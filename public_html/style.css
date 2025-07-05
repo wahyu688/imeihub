@@ -2366,3 +2366,28 @@ body {
         justify-content: space-between;
     }
 }
+
+
+/* === FIX: ONLY HIDE USER/LOGOUT, KEEP HAMBURGER VISIBLE === */
+
+@media (max-width: 768px) {
+    .navbar-right {
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .navbar-right .user-greeting,
+    .navbar-right .logout-btn {
+        display: none !important;
+    }
+
+    .hamburger-menu {
+        display: block !important;
+        font-size: 1.8em;
+        color: var(--text-color-dark);
+        background: none;
+        border: none;
+    }
+}
