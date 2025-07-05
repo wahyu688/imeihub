@@ -2316,3 +2316,36 @@ body {
         padding: 6px 10px;
     }
 }
+
+
+/* === NAVBAR MOBILE ADJUSTMENT: HIDE USER/LOGOUT IN MAIN NAV === */
+
+@media (max-width: 768px) {
+    .navbar-right {
+        display: none !important;
+    }
+
+    .mobile-nav-overlay {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 80px 20px 40px;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .mobile-nav-user-info {
+        margin-top: auto;
+        text-align: center;
+        font-size: 0.95em;
+        color: var(--text-color-dark);
+    }
+
+    .mobile-nav-user-info .logout-btn {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 0.95em;
+    }
+}
