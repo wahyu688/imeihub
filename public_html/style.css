@@ -961,11 +961,12 @@ footer .social-links a:hover {
     border-radius: 0;
     box-shadow: none;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling di iOS */
+    width: 100%; /* Memastikan kontainer mengambil lebar penuh */
 }
 
 .admin-table {
     width: 100%;
-    min-width: 800px; /* Lebar minimum agar tabel bisa di-scroll di mobile */
+    min-width: 900px; /* Lebar minimum agar tabel bisa di-scroll di mobile, ditingkatkan */
     border-collapse: separate;
     border-spacing: 0;
     background-color: transparent; /* Latar belakang transparan */
