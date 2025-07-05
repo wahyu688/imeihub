@@ -290,7 +290,6 @@ a:hover {
     width: calc(100% + 60px); /* Kompensasi padding main-container */
     max-width: none; /* Tanpa lebar maksimum */
     box-sizing: border-box; /* Memastikan padding dihitung dalam lebar */
-    margin-top: 10px;
 }
 
 .hero-large-text-overlay {
@@ -1517,4 +1516,20 @@ body, html {
     align-items: center;
     height: 100%;
     text-align: center;
+}
+
+
+/* === PATCH: HERO CONTENT POSITIONING === */
+
+/* === HERO SECTION REPOSITION - MOVE CONTENT UP === */
+.hero-section {
+    justify-content: flex-start !important; /* Ganti center ke atas */
+    padding-top: 100px !important;          /* Tambahkan jarak dari atas */
+    padding-bottom: 60px !important;
+    height: 100vh !important;
+}
+
+.hero-content {
+    margin-top: 0 !important;
+    height: auto !important;
 }
