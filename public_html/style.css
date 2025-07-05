@@ -1829,3 +1829,61 @@ body {
         text-align: center;
     }
 }
+
+
+/* === POLISH: SERVICES SECTION FOR MOBILE === */
+
+/* === RESPONSIVE POLISH FOR SERVICES SECTION ON MOBILE === */
+@media (max-width: 480px) {
+    .content-container-card {
+        padding: 20px;
+        margin: 10px auto;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .content-container-card h2,
+    .content-container-card h3 {
+        font-size: 1.3em;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .content-container-card p {
+        font-size: 0.95em;
+        line-height: 1.5;
+        text-align: center;
+        padding: 0 6px;
+    }
+
+    .content-container-card .cta-button,
+    .content-container-card .button,
+    .content-container-card button {
+        font-size: 0.95em;
+        padding: 10px 20px;
+        display: block;
+        margin: 20px auto 10px;
+        border-radius: 999px;
+    }
+
+    .content-container-card img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 10px auto;
+    }
+
+    .service-card {
+        padding: 16px;
+        margin-bottom: 20px;
+        border-radius: 16px;
+    }
+
+    .service-card h3 {
+        font-size: 1.1em;
+    }
+
+    .service-card p {
+        font-size: 0.9em;
+    }
+}
