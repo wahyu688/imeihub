@@ -4,18 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ImeiHub</title>
-    <!-- Pastikan path ke style.css ini benar. Jika style.css berada di folder yang berbeda, sesuaikan path-nya. -->
     <link rel="stylesheet" href="style.css">
-    <!-- Menggunakan Google Font Inter untuk tipografi yang bersih dan modern -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome untuk ikon (jika diperlukan, meskipun saya akan mencoba SVG/CSS murni untuk kesederhanaan) -->
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> -->
 </head>
 <body>
-    <!-- Wrapper utama untuk konten agar sesuai dengan desain kartu yang mengambang -->
     <div class="main-container">
-        <!-- Bagian Navbar Atas -->
-         <nav class="header-card">
+        <nav class="header-card">
             <div class="navbar-left">
                 <div class="brand-logo">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,17 +29,14 @@
 
             <div class="navbar-right">
                 <div id="nav-login-register"><a href="login" class="nav-link-button">LOGIN</a></div>
-                <!-- Elemen untuk tampilan setelah login -->
                 <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
                     <span>Hi, <strong id="username-display"></strong>!</span>
                     <button id="logout-btn-navbar" class="nav-link-button">LOGOUT</button>
                 </div>
-                <!-- Hamburger menu for mobile -->
                 <button class="hamburger-menu" id="hamburger-menu">&#9776;</button>
             </div>
         </nav>
 
-        <!-- Mobile Navigation Overlay -->
         <div class="mobile-nav-overlay" id="mobile-nav-overlay">
             <button class="close-mobile-nav" id="close-mobile-nav">&times;</button>
             <ul class="mobile-nav-links">
@@ -61,21 +52,18 @@
             </ul>
         </div>
 
-        <!-- Main Hero Section -->
         <header class="hero-section">
-            <div class="hero-large-text-overlay">IMEIHUB</div> <!-- Large background text -->
+            <div class="hero-large-text-overlay">IMEIHUB</div>
             <div class="hero-content">
                 <h1>Solusi Terdepan untuk <span class="accent-text">Unlock IMEI</span> Anda</h1>
                 <p>Kami menyediakan layanan unlock IMEI yang cepat, aman, dan terpercaya untuk semua jenis perangkat.</p>
                 <a href="order" class="cta-button">Order Sekarang</a>
             </div>
             <div class="floating-logo">
-                <!-- Placeholder for 3D isometric illustration -->
                 <img src="imeihub_logo.png" alt="Logo IMEIHUB" class="decorative-logo">
             </div>
         </header>
-
-
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
