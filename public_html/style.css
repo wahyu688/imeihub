@@ -2267,3 +2267,52 @@ body {
         min-width: 110px;
     }
 }
+
+
+/* === FINAL TABLE STACKING & SCROLL FIX === */
+
+@media (max-width: 768px) {
+    .admin-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+        max-width: 100%;
+    }
+
+    .admin-table {
+        min-width: 900px;
+        table-layout: auto;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        font-size: 0.9em;
+        padding: 10px 12px;
+        white-space: nowrap;
+        text-align: left;
+    }
+
+    .admin-table th:nth-child(1),
+    .admin-table td:nth-child(1) { min-width: 140px; }
+    .admin-table th:nth-child(2),
+    .admin-table td:nth-child(2) { min-width: 180px; }
+    .admin-table th:nth-child(3),
+    .admin-table td:nth-child(3) { min-width: 200px; }
+    .admin-table th:nth-child(4),
+    .admin-table td:nth-child(4) { min-width: 130px; }
+    .admin-table th:nth-child(5),
+    .admin-table td:nth-child(5) { min-width: 100px; }
+    .admin-table th:nth-child(6),
+    .admin-table td:nth-child(6) { min-width: 110px; }
+
+    .status-button {
+        font-size: 0.85em;
+        padding: 6px 10px;
+        white-space: nowrap;
+    }
+
+    .action-buttons button {
+        font-size: 0.9em;
+        padding: 6px 10px;
+    }
+}
