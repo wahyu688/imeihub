@@ -134,7 +134,7 @@ a:hover {
 
 .header-card .nav-links-desktop {
     list-style-type: none;
-    display: flex;
+    display: flex; /* Default: flex for desktop */
     padding: 0;
     margin: 0;
     gap: 30px; /* Jarak antar tautan navigasi */
@@ -201,7 +201,7 @@ a:hover {
 
 /* Menu Hamburger & Navigasi Seluler */
 .hamburger-menu {
-    display: none; /* Tersembunyi secara default */
+    display: none; /* Default: hidden on desktop */
     background: none;
     border: none;
     font-size: 2em;
@@ -387,55 +387,54 @@ a:hover {
 }
 
 .hero-image-container {
-    flex: 0 0 auto; /* Jangan biarkan flex mengambil semua ruang */
-    width: 400px; /* Tetapkan lebar tetap untuk kontainer gambar */
-    height: 400px; /* Tetapkan tinggi tetap untuk kontainer gambar */
-    display: flex; /* Gunakan flexbox untuk memusatkan gambar */
-    justify-content: center; /* Pusatkan gambar secara horizontal */
-    align-items: center; /* Pusatkan gambar secara vertikal */
-    z-index: 2; /* Di atas overlay */
+    flex: 0 0 auto;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
 }
 
 .hero-image-container img {
-    max-width: 100%; /* Gambar mengisi 100% dari kontainer */
-    max-height: 100%; /* Gambar mengisi 100% dari kontainer */
-    width: auto; /* Biarkan lebar otomatis */
-    height: auto; /* Biarkan tinggi otomatis */
-    object-fit: contain; /* Pastikan gambar pas di dalam kotak tanpa terpotong */
-    border-radius: 0; /* Dihapus: Sudut membulat untuk gambar di dalam hero */
-    box-shadow: none; /* Dihapus: Bayangan lebih lembut untuk gambar */
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 /* --- Gaya Bagian & Kartu Umum --- */
 .section-container {
-    padding: 0; /* Tanpa padding di sini, content-container-card akan menanganinya */
-    margin-bottom: 0; /* Tanpa margin di sini, gap di main-container menanganinya */
+    padding: 0;
+    margin-bottom: 0;
 }
 
 .section-title {
-    font-size: 3em; /* Lebih besar */
+    font-size: 3em;
     color: var(--text-color-dark);
     text-align: center;
     margin-bottom: 50px;
-    font-weight: 800; /* Lebih tebal */
+    font-weight: 800;
 }
 
-/* Kartu konten (misalnya, "Mengapa Memilih Kami?", "Layanan Kami", "Catatan Penting") - TETAP KARTU */
 .content-container-card {
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius); /* Sudut membulat untuk tampilan kartu */
-    padding: 40px 60px; /* Padding yang disesuaikan untuk konten di dalam kartu */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Menambahkan box-shadow */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Menambahkan transisi untuk efek hover */
-    margin: 0 auto; /* Pusatkan kartu secara horizontal */
-    width: 100%; /* Mengambil lebar penuh yang tersedia */
-    max-width: 1340px; /* Lebar maksimum untuk mencegah terlalu lebar */
-    box-sizing: border-box; /* Sertakan padding dalam perhitungan lebar */
+    border-radius: var(--card-border-radius);
+    padding: 40px 60px;
+    box-shadow: 0 8px 20px var(--shadow-color-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1340px;
+    box-sizing: border-box;
 }
 
 .content-container-card:hover {
-    transform: translateY(-5px); /* Menambahkan transform pada hover */
-    box-shadow: 0 12px 30px var(--shadow-color-dark); /* Menambahkan box-shadow pada hover */
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px var(--shadow-color-dark);
 }
 
 .card-grid {
@@ -451,14 +450,14 @@ a:hover {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
-    padding: 30px 60px; /* Padding yang disesuaikan untuk konten di dalam kartu */
+    padding: 30px 60px;
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius); /* Sudut membulat untuk tampilan kartu */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Menambahkan box-shadow */
-    margin: 0 auto; /* Pusatkan kartu secara horizontal */
-    width: 100%; /* Mengambil lebar penuh yang tersedia */
-    max-width: 1340px; /* Lebar maksimum untuk mencegah terlalu lebar */
-    box-sizing: border-box; /* Sertakan padding dalam perhitungan lebar */
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 20px var(--shadow-color-light);
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1340px;
+    box-sizing: border-box;
 }
 
 .offer-item,
@@ -470,15 +469,15 @@ a:hover {
 
 .offer-icon,
 .important-note-icon {
-    font-size: 2.8em; /* Ukuran ikon lebih besar */
+    font-size: 2.8em;
     flex-shrink: 0;
     color: var(--accent-color);
     line-height: 1;
 }
 
 .offer-details h3 {
-    color: var(--text-color-dark); /* Judul item lebih gelap */
-    font-size: 1.5em; /* Ukuran lebih besar */
+    color: var(--text-color-dark);
+    font-size: 1.5em;
     margin-top: 0;
     margin-bottom: 10px;
     font-weight: 700;
@@ -502,13 +501,13 @@ a:hover {
 
 .offer-details ul li::before,
 .important-note-details ul li::before {
-    content: '•'; /* Menggunakan bullet biasa */
+    content: '•';
     color: var(--accent-color);
     position: absolute;
     left: 0;
-    font-size: 1.5em; /* Bullet lebih besar */
+    font-size: 1.5em;
     line-height: 1;
-    top: 2px; /* Penyesuaian posisi vertikal */
+    top: 2px;
 }
 
 /* --- Terbaik Untuk Spesifik --- */
@@ -521,7 +520,7 @@ a:hover {
 }
 
 .best-for-icon {
-    font-size: 3em; /* Ikon lebih besar */
+    font-size: 3em;
     color: var(--accent-color);
 }
 
@@ -535,16 +534,16 @@ a:hover {
 .btn,
 .cta-button {
     display: inline-block;
-    padding: 14px 30px; /* Padding lebih besar */
+    padding: 14px 30px;
     background-color: var(--accent-color);
-    color: var(--text-color-light); /* Teks putih pada tombol aksen */
+    color: var(--text-color-light);
     border: none;
     border-radius: var(--button-border-radius);
     text-decoration: none;
     text-align: center;
     cursor: pointer;
-    font-size: 1.1em; /* Ukuran font lebih besar */
-    font-weight: 700; /* Lebih tebal */
+    font-size: 1.1em;
+    font-weight: 700;
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     box-shadow: 0 5px 15px var(--shadow-color-light);
 }
@@ -557,13 +556,12 @@ a:hover {
 }
 
 /* --- Formulir (Login, Register, Order) --- */
-/* Gaya ini untuk formulir yang menggunakan desain kartu. Kami akan menimpa .order-form di bawah */
-.admin-form-container { /* Hanya formulir admin yang menggunakan gaya kartu default ini sekarang */
+.admin-form-container {
     max-width: 600px;
     margin: 60px auto;
-    padding: 50px; /* Padding lebih besar */
+    padding: 50px;
     background-color: var(--bg-content-color);
-    border-radius: 20px; /* Radius tetap untuk formulir karena terpusat */
+    border-radius: 20px;
     box-shadow: 0 10px 30px var(--shadow-color-light);
     color: var(--text-color-dark);
     text-align: center;
@@ -584,24 +582,24 @@ a:hover {
 
 .admin-form-container label {
     display: block;
-    margin-top: 25px; /* Margin lebih besar */
+    margin-top: 25px;
     margin-bottom: 10px;
     font-weight: 700;
     color: var(--text-color-dark);
-    text-align: left; /* Label rata kiri */
+    text-align: left;
 }
 
 .admin-form-container input,
 .admin-form-container select,
 .admin-form-container textarea {
-    width: calc(100% - 30px); /* Menyesuaikan untuk padding */
-    padding: 15px; /* Padding lebih besar */
+    width: calc(100% - 30px);
+    padding: 15px;
     margin-top: 0;
     margin-bottom: 25px;
     border: 1px solid var(--border-color);
-    border-radius: 10px; /* Sudut lebih lembut */
+    border-radius: 10px;
     font-size: 1.1em;
-    background-color: #FDFDFD; /* Latar belakang input lebih terang */
+    background-color: #FDFDFD;
     color: var(--text-color-dark);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -611,20 +609,19 @@ a:hover {
 .admin-form-container textarea:focus {
     border-color: var(--accent-color);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(74, 74, 74, 0.2); /* Bayangan fokus aksen diperbarui ke netral */
+    box-shadow: 0 0 0 4px rgba(74, 74, 74, 0.2);
 }
 
 .admin-form-container .btn {
     width: 100%;
-    padding: 18px; /* Tombol formulir lebih besar */
+    padding: 18px;
     font-size: 1.3em;
     border-radius: var(--button-border-radius);
-    margin-top: 20px; /* Jarak dari input terakhir */
+    margin-top: 20px;
 }
 
-/* Gaya khusus untuk baris grup tanggal di tabel pesanan admin */
 .order-group-header {
-    background-color: #f4f4f4; /* ganti sesuai tema kamu */
+    background-color: #f4f4f4;
     color: #333;
     font-weight: bold;
     font-size: 0.95em;
@@ -639,25 +636,25 @@ a:hover {
 /* --- Kartu Layanan (untuk services.html) --- */
 .service-card {
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius); /* Sudut membulat untuk tampilan kartu */
-    padding: 35px; /* Padding asli */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Menambahkan box-shadow */
+    border-radius: var(--card-border-radius);
+    padding: 35px;
+    box-shadow: 0 8px 20px var(--shadow-color-light);
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Menambahkan transisi */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: center; /* Untuk memusatkan ikon/judul jika ada */
+    align-items: center;
 }
 
 .service-card:hover {
-    transform: translateY(-5px); /* Menambahkan transform pada hover */
-    box-shadow: 0 12px 30px var(--shadow-color-dark); /* Menambahkan box-shadow pada hover */
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px var(--shadow-color-dark);
 }
 
 .service-card h3 {
     font-size: 1.6em;
-    margin-top: 15px; /* Jarak dari ikon jika ada */
+    margin-top: 15px;
     margin-bottom: 15px;
     font-weight: 700;
     color: var(--text-color-dark);
@@ -671,23 +668,23 @@ a:hover {
 }
 
 .service-card .btn {
-    margin-top: auto; /* Mendorong tombol ke bawah */
-    padding: 12px 25px; /* Ukuran tombol lebih kecil dari CTA utama */
+    margin-top: auto;
+    padding: 12px 25px;
     font-size: 1em;
 }
 
 /* --- Footer - BUKAN KARTU --- */
 footer.main-container-card {
-    background-color: var(--text-color-dark); /* Latar belakang footer lebih gelap */
+    background-color: var(--text-color-dark);
     color: var(--secondary-text-color);
-    padding: 30px 60px; /* Padding yang disesuaikan untuk konten di dalamnya */
+    padding: 30px 60px;
     text-align: center;
-    border-radius: 0; /* Tanpa border radius */
-    margin: 0; /* Tanpa margin, lebar penuh */
-    width: 100%; /* Lebar penuh */
-    max-width: none; /* Tanpa lebar maksimum */
-    box-shadow: none; /* Tanpa box shadow */
-    box-sizing: border-box; /* Memastikan padding dihitung dalam lebar */
+    border-radius: 0;
+    margin: 0;
+    width: 100%;
+    max-width: none;
+    box-shadow: none;
+    box-sizing: border-box;
 }
 
 footer .footer-content p {
@@ -711,15 +708,15 @@ footer .social-links a:hover {
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     padding: 20px;
     background-color: var(--bg-content-color);
-    border-radius: var(--card-border-radius); /* Sudut membulat untuk tampilan kartu */
-    box-shadow: 0 8px 20px var(--shadow-color-light); /* Menambahkan box-shadow */
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 8px 20px var(--shadow-color-light);
     margin: 0 auto;
-    max-width: 1000px; /* Lebar maksimum untuk grid ini */
+    max-width: 1000px;
 }
 
 .order-card {
-    background-color: var(--bg-page-color); /* Kartu pesanan lebih terang dari kontainer */
-    border-radius: 15px; /* Radius tetap untuk kartu pesanan individual */
+    background-color: var(--bg-page-color);
+    border-radius: 15px;
     padding: 25px;
     box-shadow: 0 4px 10px var(--shadow-color-light);
     display: flex;
@@ -746,7 +743,7 @@ footer .social-links a:hover {
     font-weight: bold;
     text-align: center;
     margin-top: 10px;
-    align-self: flex-start; /* Tetap rata kiri */
+    align-self: flex-start;
 }
 
 /* Warna status (menggunakan variabel yang ada) */
@@ -788,52 +785,51 @@ footer .social-links a:hover {
 /* Spesifik Admin Dashboard */
 .admin-dashboard-container {
     display: flex;
-    gap: 15px; /* Mengurangi jarak antara sidebar dan konten utama lebih lanjut */
-    width: 100vw; /* Gunakan lebar viewport penuh */
-    margin-left: calc(50% - 50vw); /* Kompensasi margin agar rata kiri */
-    margin-right: 0; /* Pastikan tidak ada margin kanan yang mengganggu */
-    max-width: none; /* Hapus batasan max-width */
-    padding-left: 10px; /* Padding kiri agar sidebar tidak menempel tepi layar */
-    padding-right: 10px; /* Padding kanan untuk konten utama */
-    box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
-    align-items: flex-start; /* Sejajarkan item ke atas */
+    gap: 15px;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: 0;
+    max-width: none;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    align-items: flex-start;
 }
 
 .left-sidebar {
-    flex: 0 0 180px; /* Lebar tetap sidebar */
+    flex: 0 0 180px;
     background-color: var(--bg-content-color);
     border-radius: var(--card-border-radius);
     box-shadow: 0 8px 20px var(--shadow-color-light);
     padding: 10px;
     position: sticky;
-    top: 100px; /* Sesuaikan berdasarkan tinggi navbar */
-    height: fit-content; /* Sesuaikan tinggi konten */
+    top: 100px;
+    height: fit-content;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* Gaya khusus untuk logo di sidebar admin */
 .left-sidebar .brand-logo {
     display: flex;
     align-items: center;
-    justify-content: center; /* Pusatkan logo secara horizontal */
+    justify-content: center;
     font-weight: 800;
-    font-size: 2.5em; /* Ukuran font lebih besar */
+    font-size: 2.5em;
     color: var(--text-color-dark);
-    margin-bottom: 20px; /* Jarak bawah dari menu */
+    margin-bottom: 20px;
 }
 
 .left-sidebar .brand-logo .imei-text {
-    color: var(--text-color-dark); /* Warna teks "Imei" */
+    color: var(--text-color-dark);
 }
 
 .left-sidebar .brand-logo .hub-text {
-    color: var(--accent-color); /* Warna aksen untuk "hub" */
+    color: var(--accent-color);
 }
 
 .left-sidebar .brand-logo img {
-    display: none; /* Sembunyikan gambar logo jika menggunakan teks */
+    display: none;
 }
 
 .sidebar-menu ul {
@@ -867,20 +863,19 @@ footer .social-links a:hover {
     fill: currentColor;
 }
 
-/* Gaya untuk ikon plus baru */
 .sidebar-menu a .plus-icon {
-    font-size: 1.5em; /* Ukuran tanda plus */
-    line-height: 1; /* Pastikan vertikal align */
-    display: inline-block; /* Agar bisa diatur gap */
+    font-size: 1.5em;
+    line-height: 1;
+    display: inline-block;
 }
 
 .admin-content {
     flex-grow: 1;
-    background-color: transparent; /* Latar belakang transparan */
-    border-radius: 0; /* Tanpa border radius */
-    box-shadow: none; /* Tanpa box shadow */
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
     padding: 40px;
-    min-height: 500px; /* Memastikan area konten memiliki tinggi tertentu */
+    min-height: 500px;
 }
 
 .admin-content h2 {
@@ -899,7 +894,7 @@ footer .social-links a:hover {
 }
 
 .stat-card {
-    background-color: var(--bg-content-color); /* Tetap card untuk stat card */
+    background-color: var(--bg-content-color);
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 4px 10px var(--shadow-color-light);
@@ -929,38 +924,38 @@ footer .social-links a:hover {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    background-color: transparent; /* Latar belakang transparan */
+    background-color: transparent;
     color: var(--table-text-dark);
-    font-size: 0.95em; /* Sedikit lebih besar untuk keterbacaan */
-    table-layout: fixed; /* Penting: Memastikan lebar kolom dihormati */
-    border-radius: 0; /* Tanpa border-radius */
-    overflow: visible; /* Tidak lagi tersembunyi */
+    font-size: 0.95em;
+    table-layout: fixed;
+    border-radius: 0;
+    overflow: visible;
 }
 
 .admin-table th,
 .admin-table td {
-    padding: 15px; /* Padding lebih besar untuk keterbacaan */
-    border-bottom: 1px solid var(--table-border-light); /* Border lebih tipis dan terang */
+    padding: 15px;
+    border-bottom: 1px solid var(--table-border-light);
     text-align: left;
-    box-sizing: border-box; /* Memastikan padding tidak menambah lebar */
+    box-sizing: border-box;
     padding-left: 20px;
     padding-right: 20px;
 }
 
 .admin-table th {
-    background-color: var(--table-header-bg-light); /* Latar belakang header tabel terang */
+    background-color: var(--table-header-bg-light);
     font-weight: 700;
-    color: var(--secondary-text-color); /* Teks sekunder */
+    color: var(--secondary-text-color);
     text-transform: uppercase;
-    font-size: 0.85em; /* Sedikit lebih besar */
+    font-size: 0.85em;
 }
 
 .admin-table tbody tr:hover {
-    background-color: var(--table-row-hover-light); /* Hover terang pada latar belakang terang */
+    background-color: var(--table-row-hover-light);
 }
 
 .status-button {
-    padding: 6px 12px; /* Padding lebih besar */
+    padding: 6px 12px;
     border-radius: 20px;
     border: none;
     cursor: pointer;
@@ -976,15 +971,15 @@ footer .social-links a:hover {
 .action-buttons button {
     background: none;
     border: none;
-    color: var(--secondary-text-color); /* Warna ikon tindakan agar terlihat pada latar belakang terang */
+    color: var(--secondary-text-color);
     cursor: pointer;
     font-size: 1.2em;
-    margin: 0 5px; /* Jarak antar tombol tindakan */
+    margin: 0 5px;
     transition: color 0.3s ease;
 }
 
 .action-buttons button:hover {
-    color: var(--accent-color); /* Aksen saat hover */
+    color: var(--accent-color);
 }
 
 /* 🔻 Logo dekoratif kanan bawah */
@@ -995,7 +990,7 @@ footer .social-links a:hover {
     z-index: 50;
     opacity: 0.75;
     transition: opacity 0.3s ease, transform 0.3s ease;
-    scale: 1.75; /* Skala default */
+    scale: 1.75;
 }
 
 .floating-logo img {
@@ -1012,53 +1007,52 @@ footer .social-links a:hover {
 
 /* Gaya untuk login.html agar sesuai dengan gambar contoh (desain datar) */
 .main-content-area {
-    /* Memastikan area konten utama fleksibel untuk memusatkan formulir login */
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Sejajakan ke atas untuk memberikan ruang di bawah navbar */
-    min-height: calc(100vh - 150px); /* Sesuaikan berdasarkan tinggi navbar dan footer */
-    padding: 20px; /* Tambahkan padding di sekitar formulir login */
+    align-items: flex-start;
+    min-height: calc(100vh - 150px);
+    padding: 20px;
     box-sizing: border-box;
 }
 
 .login-container {
-    max-width: 400px; /* Lebar maksimum untuk formulir login */
-    width: 90%; /* Lebar responsif */
-    padding: 40px; /* Padding di dalam kontainer formulir */
-    background-color: #FFFFFF; /* Latar belakang putih untuk area formulir */
-    border-radius: 15px; /* Sudut sedikit membulat untuk area formulir */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Bayangan tipis untuk area formulir */
+    max-width: 400px;
+    width: 90%;
+    padding: 40px;
+    background-color: #FFFFFF;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     text-align: center;
-    margin-top: 20px; /* Jarak dari navbar */
-    margin-bottom: 50px; /* Jarak dari footer */
+    margin-top: 20px;
+    margin-bottom: 50px;
 }
 
 .login-container h1 {
-    font-size: 3em; /* Ukuran font lebih besar untuk "Login" */
-    font-weight: 800; /* Lebih tebal */
-    color: #1A1A1A; /* Teks gelap */
+    font-size: 3em;
+    font-weight: 800;
+    color: #1A1A1A;
     margin-bottom: 10px;
 }
 
 .login-container .subtitle {
     font-size: 1.1em;
-    color: #6B7280; /* Abu-abu redup */
-    margin-bottom: 40px; /* Jarak lebih banyak di bawah subtitle */
+    color: #6B7280;
+    margin-bottom: 40px;
 }
 
 .login-container form {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Jarak antar elemen formulir */
+    gap: 20px;
 }
 
 .login-container label {
     text-align: left;
     font-size: 0.9em;
-    font-weight: 700; /* Tebal */
-    color: #1A1A1A; /* Teks gelap */
-    text-transform: uppercase; /* Huruf besar */
-    margin-bottom: -10px; /* Tarik label lebih dekat ke input */
+    font-weight: 700;
+    color: #1A1A1A;
+    text-transform: uppercase;
+    margin-bottom: -10px;
 }
 
 .login-container input[type="text"],
@@ -1066,58 +1060,58 @@ footer .social-links a:hover {
 .login-container input[type="email"] {
     width: 100%;
     padding: 15px;
-    border: 1px solid #D1D5DB; /* Border terang */
-    border-radius: 10px; /* Sudut membulat */
-    background-color: #E0E0E0; /* Latar belakang abu-abu terang */
-    color: #1A1A1A; /* Teks gelap */
+    border: 1px solid #D1D5DB;
+    border-radius: 10px;
+    background-color: #E0E0E0;
+    color: #1A1A1A;
     font-size: 1em;
-    box-sizing: border-box; /* Sertakan padding dalam lebar */
+    box-sizing: border-box;
 }
 
 .login-container input::placeholder {
-    color: #9CA3AF; /* Warna placeholder */
+    color: #9CA3AF;
 }
 
-.login-container .btn.login-btn { /* Kelas spesifik untuk tombol login */
-    background-color: #1A1A1A; /* Tombol gelap */
-    color: #FFFFFF; /* Teks putih */
+.login-container .btn.login-btn {
+    background-color: #1A1A1A;
+    color: #FFFFFF;
     padding: 15px 30px;
-    border-radius: 10px; /* Sudut membulat */
+    border-radius: 10px;
     font-size: 1.1em;
     font-weight: 700;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 100%; /* Lebar penuh */
+    width: 100%;
     margin-top: 20px;
     border: none;
 }
 
 .login-container .btn.login-btn:hover {
-    background-color: #333333; /* Gelap sedikit lebih terang saat hover */
+    background-color: #333333;
 }
 
 /* Gaya pesan status */
 .status-message {
     margin-top: 20px;
     font-size: 0.9em;
-    color: #EF4444; /* Merah untuk pesan kesalahan */
+    color: #EF4444;
     text-align: center;
 }
 
 /* --- Gaya baru untuk Formulir Pesanan agar datar --- */
-.main-content-area .order-form { /* Targetkan order-form secara spesifik di dalam main-content-area */
-    max-width: 600px; /* Pertahankan lebar maksimum untuk keterbacaan */
-    margin: 20px auto; /* Pusatkan, berikan ruang dari navbar/footer */
-    padding: 40px; /* Padding konsisten */
-    background-color: #FFFFFF; /* Latar belakang putih untuk area formulir */
-    border-radius: 15px; /* Sudut sedikit membulat */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Bayangan tipis seperti login */
+.main-content-area .order-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 40px;
+    background-color: #FFFFFF;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     color: var(--text-color-dark);
     text-align: center;
 }
 
 .main-content-area .order-form h1 {
-    font-size: 2.8em; /* Pertahankan ukuran yang ada */
+    font-size: 2.8em;
     margin-bottom: 30px;
     color: var(--text-color-dark);
 }
@@ -1129,12 +1123,12 @@ footer .social-links a:hover {
 
 .main-content-area .order-form label {
     display: block;
-    margin-top: 10px; /* Sesuaikan jarak */
+    margin-top: 10px;
     margin-bottom: 8px;
-    font-weight: 700; /* Tebal */
+    font-weight: 700;
     color: var(--text-color-dark);
     text-align: left;
-    text-transform: uppercase; /* Label huruf besar */
+    text-transform: uppercase;
 }
 
 .main-content-area .order-form input[type="text"],
@@ -1143,322 +1137,162 @@ footer .social-links a:hover {
 .main-content-area .order-form input[type="number"],
 .main-content-area .order-form select,
 .main-content-area .order-form textarea {
-    width: 100%; /* Lebar penuh */
-    padding: 15px; /* Padding konsisten */
+    width: 100%;
+    padding: 15px;
     margin-bottom: 15px;
-    border: 1px solid #D1D5DB; /* Border terang */
-    border-radius: 10px; /* Sudut membulat */
-    background-color: #E0E0E0; /* Latar belakang abu-abu terang */
+    border: 1px solid #D1D5DB;
+    border-radius: 10px;
+    background-color: #E0E0E0;
     color: var(--text-color-dark);
     font-size: 1em;
     box-sizing: border-box;
-    /* Sembunyikan panah default untuk select */
-    -webkit-appearance: none; /* Untuk Chrome, Safari, Opera */
-    -moz-appearance: none; /* Untuk Firefox */
-    appearance: none; /* Properti standar */
-    /* Tambahkan padding-right untuk membuat ruang bagi panah kustom */
-    padding-right: 40px; /* Sesuaikan sesuai kebutuhan */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 40px;
 }
 
 .main-content-area .order-form input::placeholder {
-    color: #9CA3AF; /* Warna placeholder */
+    color: #9CA3AF;
 }
 
 .main-content-area .order-form .btn {
-    background-color: #1A1A1A; /* Tombol gelap */
-    color: #FFFFFF; /* Teks putih */
+    background-color: #1A1A1A;
+    color: #FFFFFF;
     padding: 15px 30px;
-    border-radius: 10px; /* Sudut membulat */
+    border-radius: 10px;
     font-size: 1.1em;
     font-weight: 700;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 100%; /* Lebar penuh */
+    width: 100%;
     margin-top: 20px;
     border: none;
 }
 
 .main-content-area .order-form .btn:hover {
-    background-color: #333333; /* Gelap sedikit lebih terang saat hover */
+    background-color: #333333;
 }
 
-/* Sesuaikan panah select untuk desain datar */
 .main-content-area .order-form select {
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%231A1A1A" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); /* Panah lebih gelap */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%231A1A1A" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
     background-repeat: no-repeat;
-    background-position: right 15px center; /* Posisikan panah */
-    background-size: 20px; /* Ukuran panah */
+    background-position: right 15px center;
+    background-size: 20px;
 }
 
 /* --- Gaya Khusus untuk contact.html --- */
 .main-content-area .contact-preview {
-    max-width: 700px; /* Batasi lebar kartu kontak */
-    margin: 40px auto; /* Pusatkan kartu dengan margin atas/bawah */
-    padding: 50px; /* Tambahkan padding agar konten tidak terlalu rapat */
-    text-align: center; /* Pusatkan semua teks di dalam kartu */
-    display: flex; /* Gunakan flexbox untuk tata letak vertikal */
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 50px;
+    text-align: center;
+    display: flex;
     flex-direction: column;
-    align-items: center; /* Pusatkan item secara horizontal */
-    gap: 20px; /* Jarak antar elemen di dalam kartu */
+    align-items: center;
+    gap: 20px;
 }
 
 .main-content-area .contact-preview .section-title {
-    margin-bottom: 20px; /* Kurangi margin bawah judul */
+    margin-bottom: 20px;
 }
 
 .main-content-area .contact-preview p {
-    max-width: 600px; /* Batasi lebar paragraf untuk keterbacaan */
-    margin: 0 auto; /* Pusatkan paragraf */
-    line-height: 1.8; /* Tingkatkan tinggi baris untuk keterbacaan */
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.8;
 }
 
 .main-content-area .contact-preview .cta-button {
-    margin-top: 20px; /* Jarak dari paragraf sebelumnya */
-    padding: 15px 35px; /* Sesuaikan padding tombol */
-    font-size: 1.15em; /* Ukuran font tombol sedikit lebih besar */
+    margin-top: 20px;
+    padding: 15px 35px;
+    font-size: 1.15em;
 }
 
 /* --- Responsivitas --- */
 @media (max-width: 1024px) {
-    /* Header/Navbar */
     .header-card {
-        padding: 15px 40px; /* Padding disesuaikan untuk layar lebih kecil */
+        padding: 15px 40px;
     }
-
-    /* Bagian Hero */
     .hero-section {
         padding-top: 100px;
         padding-bottom: 60px;
     }
-
     .hero-large-text-overlay {
         font-size: 32vw;
         letter-spacing: -4px;
     }
-
     .hero-section h1 {
         font-size: 7vw;
     }
-
     .hero-section p {
         font-size: 3.5vw;
     }
-
     .cta-button {
         font-size: 4vw;
         padding: 14px 30px;
     }
-
     .hero-image-container {
-        width: 300px; /* Lebar disesuaikan untuk layar lebih kecil */
-        height: 300px; /* Tinggi disesuaikan untuk layar lebih kecil */
+        width: 300px;
+        height: 300px;
     }
-
-    /* Admin Dashboard Container */
     .admin-dashboard-container {
-        flex-direction: column; /* Tumpuk sidebar dan konten */
-        margin-left: -20px; /* Kompensasi padding main-container yang disesuaikan */
+        flex-direction: column;
+        margin-left: -20px;
         margin-right: -20px;
-        width: calc(100% + 40px); /* Kompensasi padding 20px * 2 */
-        padding: 0 20px; /* Padding internal agar konten tidak menempel tepi */
+        width: calc(100% + 40px);
+        padding: 0 20px;
     }
-
     .main-container {
-        padding: 0 20px; /* Padding disesuaikan untuk layar lebih kecil */
-        gap: 20px; /* Jarak disesuaikan */
+        padding: 0 20px;
+        gap: 20px;
     }
-
     .section-title {
-        font-size: 2em;
-        margin-bottom: 30px;
+        font-size: 2.5em;
+        margin-bottom: 40px;
     }
-
-    /* Kartu Konten (misalnya, "Mengapa Memilih Kami?") */
     .content-container-card,
     .offer-single-grid,
     .important-notes-grid,
     #my-orders-section .card-grid {
-        padding: 25px;
-        margin: 15px auto;
+        padding: 30px 40px;
         width: 100%;
+        margin: 15px auto;
     }
-
     .admin-form-container,
     .order-form {
-        padding: 30px;
-        margin: 30px auto;
+        padding: 40px;
+        margin: 40px auto;
     }
-
     .left-sidebar {
-        width: 100%;
+        width: auto;
         position: relative;
         top: 0;
         height: auto;
         flex: none;
-        margin-bottom: 20px;
     }
-
     .admin-content {
-        padding: 20px;
+        padding: 30px;
     }
-
-    .admin-content h2 {
-        font-size: 1.5em;
-    }
-
-    .stat-cards-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .stat-card h3 {
-        font-size: 1em;
-    }
-
-    .stat-card p {
-        font-size: 1.8em;
-    }
-
-    .admin-table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        display: block;
-        max-width: 100%;
-        padding-bottom: 12px;
-        background: transparent; /* Pastikan latar belakang transparan */
-    }
-
-    .admin-table {
-        min-width: 900px; /* Pastikan lebar minimum untuk tabel agar bisa discroll */
-        table-layout: auto;
-    }
-
     .admin-table th,
     .admin-table td {
-        padding: 10px 12px;
-        font-size: 0.9em;
-        white-space: nowrap;
-        text-align: left;
-    }
-
-    .admin-table th:first-child,
-    .admin-table td:first-child {
-        padding-left: 16px;
-    }
-
-    .admin-table th:last-child,
-    .admin-table td:last-child {
-        padding-right: 16px;
-    }
-
-    .admin-table th:nth-child(1),
-    .admin-table td:nth-child(1) {
-        min-width: 140px;
-    } /* ORDER ID */
-    .admin-table th:nth-child(2),
-    .admin-table td:nth-child(2) {
-        min-width: 180px;
-    } /* SERVICE */
-    .admin-table th:nth-child(3),
-    .admin-table td:nth-child(3) {
-        min-width: 200px;
-    } /* IMEI */
-    .admin-table th:nth-child(4),
-    .admin-table td:nth-child(4) {
-        min-width: 130px;
-    } /* PRICE */
-    .admin-table th:nth-child(5),
-    .admin-table td:nth-child(5) {
-        min-width: 100px;
-    } /* STATUS */
-    .admin-table th:nth-child(6),
-    .admin-table td:nth-child(6) {
-        min-width: 110px;
-    } /* ACTIONS */
-
-    .status-button {
-        font-size: 0.85em;
-        padding: 6px 10px;
-        white-space: nowrap;
-    }
-
-    .action-buttons button {
-        font-size: 0.9em;
-        padding: 6px 10px;
-    }
-
-    /* Service Card */
-    .service-card {
-        padding: 20px;
-    }
-
-    .service-card h3 {
-        font-size: 1.3em;
-    }
-
-    .service-card p {
-        font-size: 1em;
-    }
-
-    /* Login Container */
-    .login-container {
-        padding: 30px;
-        margin-top: 30px;
-    }
-
-    .login-container h1 {
-        font-size: 2em;
-    }
-
-    .login-container .subtitle {
-        font-size: 1em;
-    }
-
-    .login-container input[type="text"],
-    .login-container input[type="password"],
-    .login-container input[type="email"] {
-        padding: 12px;
-        font-size: 1em;
-    }
-
-    .login-container .btn.login-btn {
-        padding: 12px;
-        font-size: 1em;
-    }
-
-    /* Contact Preview */
-    .main-content-area .contact-preview {
-        padding: 20px;
-    }
-
-    .main-content-area .contact-preview p {
-        font-size: 0.95em;
-    }
-
-    .main-content-area .contact-preview .cta-button {
-        font-size: 1em;
-        padding: 12px 24px;
+        padding: 10px;
     }
 }
 
-@media (max-width: 480px) {
-    /* Global Font Sizes */
+@media (max-width: 768px) {
     body {
-        font-size: 14px;
+        font-size: 15px;
     }
-
     h1 {
-        font-size: 1.6em;
+        font-size: 2em;
     }
-
     h2 {
-        font-size: 1.4em;
+        font-size: 1.8em;
     }
-
     h3 {
-        font-size: 1.2em;
+        font-size: 1.5em;
     }
-
     p,
     li,
     a,
@@ -1467,14 +1301,309 @@ footer .social-links a:hover {
         font-size: 0.95em;
         line-height: 1.4;
     }
+    .cta-button,
+    .btn,
+    button {
+        font-size: 1em;
+        padding: 12px 24px;
+    }
+    input,
+    select,
+    textarea {
+        font-size: 1em;
+        padding: 12px;
+    }
 
+    /* Navbar Specifics */
+    .header-card {
+        width: calc(100% + 40px) !important;
+        margin-left: -20px !important;
+        margin-right: -20px !important;
+        max-width: none !important;
+        border-radius: 0;
+        margin-top: 0;
+
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        flex-wrap: nowrap;
+
+        padding: 12px 16px;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    /* Sembunyikan navigasi desktop secara eksplisit di dalam navbar-left */
+    .header-card .navbar-left .nav-links-desktop {
+        display: none !important;
+    }
+
+    /* Pastikan navbar-left hanya berisi logo dan tidak tumbuh */
+    .header-card .navbar-left {
+        display: flex !important;
+        align-items: center !important;
+        flex-grow: 0 !important; /* Penting: Jangan biarkan tumbuh */
+        flex-shrink: 0 !important; /* Penting: Jangan biarkan menyusut */
+        gap: 0 !important; /* Hapus gap di sini agar logo saja yang dipertimbangkan */
+    }
+
+    /* Pastikan navbar-right menampilkan hamburger dan menyembunyikan elemen lainnya */
+    .header-card .navbar-right {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important; /* Dorong ke kanan */
+        flex-grow: 0 !important; /* Penting: Jangan biarkan tumbuh */
+        flex-shrink: 0 !important; /* Penting: Jangan biarkan menyusut */
+        gap: 8px; /* Jarak antar item di navbar-right */
+        white-space: nowrap;
+    }
+
+    .header-card .navbar-right #nav-login-register,
+    .header-card .navbar-right #nav-user-greeting {
+        display: none !important;
+    }
+
+    /* Tampilkan hamburger menu */
+    .header-card .navbar-right .hamburger-menu {
+        display: block !important;
+    }
+
+    /* Mobile Overlay Navigation (already fine, just ensure it's not conflicting) */
+    .mobile-nav-overlay {
+        border-radius: 30px 30px 0 0;
+        padding-top: 100px;
+    }
+    .mobile-nav-overlay.open {
+        transform: translateY(0);
+    }
+    .mobile-nav-links {
+        gap: 24px;
+        font-size: 1.3em;
+        font-weight: 500;
+        width: 100%;
+        text-align: center;
+    }
+    .mobile-nav-links a {
+        color: var(--text-color-dark);
+        padding: 10px 0;
+    }
+    .close-mobile-nav {
+        color: var(--text-color-dark);
+    }
+    .mobile-nav-links li:last-child {
+        display: none !important;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        padding-top: 80px;
+        padding-bottom: 40px;
+        height: auto;
+        padding-left: 16px;
+        padding-right: 16px;
+        width: 100%;
+    }
+    .hero-large-text-overlay {
+        font-size: 28vw;
+        letter-spacing: -2px;
+        line-height: 1;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+    .hero-section h1 {
+        font-size: 7vw;
+        text-align: center;
+        line-height: 1.2;
+    }
+    .hero-section p {
+        font-size: 4vw;
+        max-width: 90%;
+        margin: 0 auto 30px;
+        text-align: center;
+    }
+    .hero-content {
+        padding: 0 10px;
+        max-width: 100%;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Global Responsive Support */
+    .main-container {
+        padding: 0 20px;
+        gap: 20px;
+    }
+    .section-title {
+        font-size: 2em;
+        margin-bottom: 30px;
+    }
+    .content-container-card,
+    .offer-single-grid,
+    .important-notes-grid,
+    #my-orders-section .card-grid {
+        padding: 25px;
+        margin: 15px auto;
+        width: 100%;
+    }
+    .admin-form-container,
+    .order-form {
+        padding: 30px;
+        margin: 30px auto;
+    }
+    .left-sidebar {
+        width: 100%;
+        position: relative;
+        top: 0;
+        height: auto;
+        flex: none;
+        margin-bottom: 20px;
+    }
+    .admin-content {
+        padding: 20px;
+    }
+    .admin-content h2 {
+        font-size: 1.5em;
+    }
+    .stat-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .stat-card h3 {
+        font-size: 1em;
+    }
+    .stat-card p {
+        font-size: 1.8em;
+    }
+    .admin-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+        max-width: 100%;
+        padding-bottom: 12px;
+        background: transparent;
+    }
+    .admin-table {
+        min-width: 900px;
+        table-layout: auto;
+    }
+    .admin-table th,
+    .admin-table td {
+        padding: 10px 12px;
+        font-size: 0.9em;
+        white-space: nowrap;
+        text-align: left;
+    }
+    .admin-table th:first-child,
+    .admin-table td:first-child {
+        padding-left: 16px;
+    }
+    .admin-table th:last-child,
+    .admin-table td:last-child {
+        padding-right: 16px;
+    }
+    .admin-table th:nth-child(1),
+    .admin-table td:nth-child(1) {
+        min-width: 140px;
+    }
+    .admin-table th:nth-child(2),
+    .admin-table td:nth-child(2) {
+        min-width: 180px;
+    }
+    .admin-table th:nth-child(3),
+    .admin-table td:nth-child(3) {
+        min-width: 200px;
+    }
+    .admin-table th:nth-child(4),
+    .admin-table td:nth-child(4) {
+        min-width: 130px;
+    }
+    .admin-table th:nth-child(5),
+    .admin-table td:nth-child(5) {
+        min-width: 100px;
+    }
+    .admin-table th:nth-child(6),
+    .admin-table td:nth-child(6) {
+        min-width: 110px;
+    }
+    .status-button {
+        font-size: 0.85em;
+        padding: 6px 10px;
+        white-space: nowrap;
+    }
+    .action-buttons button {
+        font-size: 0.9em;
+        padding: 6px 10px;
+    }
+    .service-card {
+        padding: 20px;
+    }
+    .service-card h3 {
+        font-size: 1.3em;
+    }
+    .service-card p {
+        font-size: 1em;
+    }
+    .login-container {
+        padding: 30px;
+        margin-top: 30px;
+    }
+    .login-container h1 {
+        font-size: 2em;
+    }
+    .login-container .subtitle {
+        font-size: 1em;
+    }
+    .login-container input[type="text"],
+    .login-container input[type="password"],
+    .login-container input[type="email"] {
+        padding: 12px;
+        font-size: 1em;
+    }
+    .login-container .btn.login-btn {
+        padding: 12px;
+        font-size: 1em;
+    }
+    .main-content-area .contact-preview {
+        padding: 20px;
+    }
+    .main-content-area .contact-preview p {
+        font-size: 0.95em;
+    }
+    .main-content-area .contact-preview .cta-button {
+        font-size: 1em;
+        padding: 12px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    h1 {
+        font-size: 1.6em;
+    }
+    h2 {
+        font-size: 1.4em;
+    }
+    h3 {
+        font-size: 1.2em;
+    }
+    p,
+    li,
+    a,
+    span,
+    label {
+        font-size: 0.95em;
+        line-height: 1.4;
+    }
     .cta-button,
     .btn,
     button {
         font-size: 0.9em;
         padding: 10px 20px;
     }
-
     input,
     select,
     textarea {
@@ -1483,39 +1612,29 @@ footer .social-links a:hover {
     }
 
     /* Navbar Specifics */
+    .header-card {
+        flex-direction: row !important; /* Pastikan selalu row */
+        justify-content: space-between !important; /* Pastikan space-between */
+        align-items: center !important;
+        padding: 12px 16px !important;
+    }
     .navbar-right {
+        display: flex !important; /* Ensure navbar-right is flex to position hamburger */
+        align-items: center !important;
         gap: 6px;
     }
-
     .navbar-right .user-greeting {
         font-size: 0.85em;
         line-height: 1.2;
     }
-
     .navbar-right .logout-btn,
     .navbar-right .btn {
         font-size: 0.75em;
         padding: 6px 12px;
     }
-
     .hamburger-menu {
         font-size: 1.3em;
-    }
-
-    .header-card {
-        /* Tetap flex-direction: row untuk menjaga logo dan hamburger di baris yang sama */
-        flex-direction: row;
-        justify-content: space-between; /* Untuk memisahkan logo dan hamburger */
-        align-items: center; /* Pusatkan secara vertikal */
-        gap: 8px; /* Jarak antar item di navbar */
-        padding: 12px 16px !important; /* Padding tetap */
-    }
-
-    .user-greeting-container {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
+        display: block !important; /* Re-confirm display block */
     }
 
     /* Hero Section */
@@ -1523,34 +1642,29 @@ footer .social-links a:hover {
         padding-top: 60px;
         padding-bottom: 30px;
     }
-
     .hero-section h1 {
         font-size: 6vw;
         line-height: 1.2;
         text-align: center;
         margin-bottom: 20px;
     }
-
     .hero-section p {
         font-size: 4vw;
         text-align: center;
         margin-bottom: 30px;
         padding: 0 10px;
     }
-
     .cta-button {
         font-size: 4vw;
         padding: 10px 24px;
         margin: 0 auto;
     }
-
     .hero-content {
         padding: 0 10px;
         max-width: 100%;
         align-items: center;
         justify-content: center;
     }
-
     .hero-large-text-overlay {
         font-size: 30vw;
     }
@@ -1559,51 +1673,45 @@ footer .social-links a:hover {
     .admin-content h2 {
         font-size: 1.3em;
     }
-
     .stat-cards-grid {
-        grid-template-columns: 1fr; /* Tumpuk statistik di layar yang sangat kecil */
+        grid-template-columns: 1fr;
     }
-
     .stat-card h3 {
         font-size: 1em;
     }
-
     .stat-card p {
         font-size: 1.3em;
     }
-
     .admin-table th,
     .admin-table td {
         font-size: 0.8em;
     }
-
     .status-button {
         min-width: 70px;
         font-size: 0.75em;
     }
-
-    /* Service Card */
+    .action-buttons button {
+        font-size: 0.9em;
+        padding: 6px 10px;
+    }
     .content-container-card {
         padding: 20px;
         margin: 10px auto;
         border-radius: 16px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     }
-
     .content-container-card h2,
     .content-container-card h3 {
         font-size: 1.3em;
         text-align: center;
         margin-bottom: 10px;
     }
-
     .content-container-card p {
         font-size: 0.95em;
         line-height: 1.5;
         text-align: center;
         padding: 0 6px;
     }
-
     .content-container-card .cta-button,
     .content-container-card .button,
     .content-container-card button {
@@ -1613,100 +1721,79 @@ footer .social-links a:hover {
         margin: 20px auto 10px;
         border-radius: 999px;
     }
-
     .content-container-card img {
         max-width: 100%;
         height: auto;
         display: block;
         margin: 10px auto;
     }
-
     .service-card {
         padding: 16px;
         margin-bottom: 20px;
         border-radius: 16px;
     }
-
     .service-card h3 {
         font-size: 1.1em;
     }
-
     .service-card p {
         font-size: 0.9em;
     }
-
-    /* Login Container */
     .login-container h1 {
         font-size: 1.8em;
     }
-
     .login-container .subtitle {
         font-size: 0.95em;
     }
-
     .login-container .btn.login-btn {
         font-size: 0.95em;
     }
-
-    /* Order Form */
     .main-content-area .order-form label {
         font-size: 0.85em;
     }
-
     .main-content-area .order-form input,
     .main-content-area .order-form select,
     .main-content-area .order-form textarea {
         font-size: 0.95em;
         padding: 12px;
     }
-
     .main-content-area .order-form .btn {
         font-size: 1em;
         padding: 12px 20px;
     }
-
-    /* Order Page Responsive Fix */
     .order-form-section,
     #order-submission-form {
         padding: 16px;
         margin: 0 auto;
         max-width: 95vw;
     }
-
     .order-form-section h1 {
         font-size: 1.6em;
         text-align: center;
     }
-
     .order-form-section p {
         font-size: 0.95em;
         line-height: 1.4;
         text-align: center;
     }
-
     #order-submission-form label {
         font-size: 0.85em;
         margin-top: 12px;
     }
-
     #order-submission-form input,
     #order-submission-form select {
         font-size: 0.95em;
         padding: 10px;
     }
-
     #order-submission-form button[type="submit"] {
         width: 100%;
         padding: 12px;
         font-size: 1em;
         margin-top: 16px;
     }
-
     #order-status {
         font-size: 0.9em;
         text-align: center;
     }
-
     .imei-input-group {
         display: flex;
         flex-direction: column;
