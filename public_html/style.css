@@ -1356,6 +1356,10 @@ footer .social-links a:hover {
 @media (max-width: 768px) {
   .nav-links-desktop {
     display: none !important;
+
+  }
+  .header-card {
+    padding: 20px 25px;
   }
 
   .hamburger-menu {
