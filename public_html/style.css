@@ -1361,11 +1361,6 @@ padding: 12px 25px;
 }
 /* === PATCH TO CENTER HERO AND REMOVE SCROLL === */
 /* === NO SCROLL & FULL HEIGHT HERO === */
-body, html {
-height: 100%;
-margin: 0;
-overflow: hidden; /* Mencegah scroll */
-}
 .hero-section {
 position: relative;
 background-color: var(--bg-content-color);
