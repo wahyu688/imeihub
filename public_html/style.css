@@ -206,69 +206,65 @@ a:hover {
 }
 
 .mobile-nav-overlay {
-    display: none;
+    display: flex;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 80%; /* Lebar sidebar */
+    max-width: 300px;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.95);
+    background-color: rgba(30, 30, 30, 0.95); /* Lebih gelap dan elegan */
     z-index: 999;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transform: translateX(100%);
+    align-items: flex-start;
+    justify-content: flex-start;
+    transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
+    padding: 30px 20px;
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .mobile-nav-overlay.open {
-    transform: translateX(0%);
-    display: flex;
+    transform: translateX(0);
+}
+
+.mobile-nav-links {
+    list-style-type: none;
+    padding: 0;
+    margin: 60px 0 0 0;
+    width: 100%;
+}
+
+.mobile-nav-links li {
+    margin: 20px 0;
+    width: 100%;
+}
+
+.mobile-nav-links a {
+    font-size: 1.3em;
+    padding: 12px 20px;
+    display: block;
+    width: 100%;
+    border-radius: 10px;
+    color: var(--text-color-light);
+    transition: background 0.3s;
+}
+
+.mobile-nav-links a:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .close-mobile-nav {
     position: absolute;
     top: 20px;
     right: 20px;
+    font-size: 2em;
+    color: var(--text-color-light);
     background: none;
     border: none;
-    font-size: 2.5em;
-    color: var(--text-color-light);
     cursor: pointer;
 }
 
-.mobile-nav-links {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    text-align: center;
-}
-
-.mobile-nav-links li {
-    margin: 20px 0;
-}
-
-.mobile-nav-links a {
-    color: var(--text-color-light);
-    font-size: 1.8em;
-    font-weight: bold;
-    padding: 10px 20px;
-    border-radius: 10px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.mobile-nav-links a:hover {
-    background-color: rgba(255, 255, 255, 0.1); /* Tetap putih untuk overlay seluler */
-    color: var(--accent-color);
-}
-
-.mobile-nav-links .nav-link-button {
-    margin-top: 20px;
-    width: auto;
-    display: inline-block;
-    background-color: var(--accent-color); /* Memastikan tombol seluler menggunakan aksen */
-    color: var(--text-color-light);
-}
 
 
 /* --- Bagian Hero - BUKAN KARTU --- */

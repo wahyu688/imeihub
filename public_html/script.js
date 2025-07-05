@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-    const closeMobileNav = document.querySelector('.close-nav'); // Corrected ID
+    const closeMobileNav = document.querySelector('.close-mobile-nav'); // Corrected ID
     const mobileNavLoginRegister = document.getElementById('mobile-nav-login-register');
     const mobileNavUserGreeting = document.getElementById('mobile-nav-user-greeting');
     const mobileUsernameDisplay = document.getElementById('mobile-username-display');
