@@ -290,6 +290,7 @@ a:hover {
     width: calc(100% + 60px); /* Kompensasi padding main-container */
     max-width: none; /* Tanpa lebar maksimum */
     box-sizing: border-box; /* Memastikan padding dihitung dalam lebar */
+    margin-top: 10px;
 }
 
 .hero-large-text-overlay {
