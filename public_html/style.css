@@ -1370,3 +1370,126 @@ footer .social-links a:hover {
     display: block !important;
   }
 }
+
+/* === HERO SECTION OVERRIDE - BUILD FUTURE STYLE === */
+
+/* === HERO SECTION - BUILD FUTURE STYLE FULL IMPROVEMENT === */
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 120px 20px;
+    min-height: 100vh;
+    position: relative;
+    background-color: var(--bg-page-color);
+    overflow: hidden;
+}
+
+.hero-large-text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 23vw;
+    font-weight: 900;
+    color: rgba(0, 0, 0, 0.05);
+    text-transform: uppercase;
+    white-space: nowrap;
+    z-index: 0;
+    line-height: 1;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -10px;
+}
+
+.hero-content {
+    max-width: 950px;
+    z-index: 2;
+    position: relative;
+}
+
+.hero-section h1 {
+    font-size: 5vw;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    color: var(--text-color-dark);
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+.hero-section h1 .accent-text {
+    color: var(--accent-color);
+}
+
+.hero-section p {
+    font-size: 1.7vw;
+    color: var(--secondary-text-color);
+    margin-bottom: 48px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 500;
+}
+
+.cta-button {
+    font-size: 1.3vw;
+    padding: 18px 50px;
+    border-radius: 999px;
+    font-weight: 800;
+    box-shadow: 0 10px 25px var(--shadow-color-light);
+    background-color: var(--accent-color);
+    color: var(--text-color-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px var(--shadow-color-dark);
+    background-color: var(--accent-dark);
+}
+
+@media (max-width: 1024px) {
+    .hero-large-text-overlay {
+        font-size: 32vw;
+        letter-spacing: -4px;
+    }
+
+    .hero-section h1 {
+        font-size: 7vw;
+    }
+
+    .hero-section p {
+        font-size: 3.5vw;
+    }
+
+    .cta-button {
+        font-size: 4vw;
+        padding: 14px 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 80px 15px;
+    }
+
+    .hero-large-text-overlay {
+        font-size: 36vw;
+        letter-spacing: -2px;
+    }
+
+    .hero-section h1 {
+        font-size: 8vw;
+    }
+
+    .hero-section p {
+        font-size: 4vw;
+    }
+
+    .cta-button {
+        font-size: 4.5vw;
+        padding: 12px 25px;
+    }
+}
