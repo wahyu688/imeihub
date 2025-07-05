@@ -43,6 +43,26 @@
     --table-row-hover-light: rgba(0, 0, 0, 0.05); /* Light hover on light table */
 }
 
+/* Gaya Scrollbar Kustom (Hanya untuk browser yang mendukung) */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-page-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-text-color);
+}
+
+
 body {
     margin: 0;
     font-family: 'Inter', sans-serif; /* Menggunakan Google Font Inter */
@@ -117,9 +137,14 @@ a:hover {
     color: var(--text-color-dark);
 }
 
-.header-card .brand-logo img { /* Menambahkan gaya untuk img di brand-logo */
-    height: 40px; /* Ukuran logo */
+.header-card .brand-logo svg {
     margin-right: 10px;
+    /* Tambahkan animasi berputar ringan pada hover */
+    transition: transform 0.3s ease-in-out;
+}
+
+.header-card .brand-logo:hover svg {
+    transform: rotate(5deg);
 }
 
 .header-card .brand-logo span { /* Gaya untuk teks di samping logo */
@@ -139,12 +164,13 @@ a:hover {
     font-weight: 600;
     padding: 8px 15px;
     border-radius: var(--button-border-radius); /* Sudut membulat untuk hover */
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease; /* Tambah transform */
 }
 
 .header-card .nav-links-desktop a:hover {
     background-color: var(--hover-grey-bg); /* Berubah menjadi latar belakang hover abu-abu */
     color: var(--hover-grey-text); /* Berubah menjadi teks gelap untuk hover abu-abu */
+    transform: translateY(-2px); /* Efek naik sedikit */
 }
 
 .header-card .nav-link-button {
@@ -203,6 +229,11 @@ a:hover {
     color: var(--text-color-dark); /* Menggunakan warna teks gelap */
     cursor: pointer;
     z-index: 1001;
+    transition: transform 0.3s ease; /* Animasi berputar */
+}
+
+.hamburger-menu:hover {
+    transform: rotate(90deg); /* Berputar saat hover */
 }
 
 .mobile-nav-overlay {
@@ -250,11 +281,12 @@ a:hover {
     width: 100%;
     border-radius: 8px;
     color: #fff;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.2s ease; /* Tambah transform */
 }
 
 .mobile-nav-links a:hover {
     background-color: rgba(255, 255, 255, 0.08);
+    transform: translateX(5px); /* Efek geser ke kanan */
 }
 
 .close-mobile-nav {
@@ -266,6 +298,11 @@ a:hover {
     background: none;
     border: none;
     cursor: pointer;
+    transition: transform 0.3s ease; /* Animasi berputar */
+}
+
+.close-mobile-nav:hover {
+    transform: rotate(180deg); /* Berputar saat hover */
 }
 
 .mobile-nav-user {
@@ -273,8 +310,8 @@ a:hover {
     color: #ccc;
     font-size: 0.95em;
     padding-left: 5px;
-    /* Pastikan ini ditampilkan di mobile nav, bukan di navbar utama */
-    display: none; /* Defaultnya tersembunyi, akan ditampilkan di media query mobile */
+    /* Defaultnya tersembunyi, akan ditampilkan di media query mobile */
+    display: none;
 }
 
 #mobile-logout-btn {
@@ -286,16 +323,17 @@ a:hover {
     border-radius: 25px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Tambah transform */
 }
 #mobile-logout-btn:hover {
     background-color: #666;
+    transform: translateY(-2px); /* Efek naik sedikit */
 }
 
 
 /* --- Bagian Hero - BUKAN KARTU --- */
 .hero-section {
-    position: relative; /* Untuk penempatan teks besar */
+    position: relative; /* Untuk penempatan teks besar dan gelombang */
     background-color: var(--bg-content-color);
     border-radius: 0; /* Tanpa border radius */
     box-shadow: none; /* Tanpa box shadow */
@@ -304,7 +342,7 @@ a:hover {
     flex-direction: row;
     align-items: center;
     gap: 40px;
-    overflow: hidden; /* Penting untuk teks latar belakang besar */
+    overflow: hidden; /* Penting untuk teks latar belakang besar dan gelombang */
     min-height: 500px; /* Untuk memberikan sedikit ruang */
     /* Margin negatif untuk membentang penuh melewati padding main-container */
     margin-left: -30px;
@@ -312,6 +350,7 @@ a:hover {
     width: calc(100% + 60px); /* Kompensasi padding main-container */
     max-width: none; /* Tanpa lebar maksimum */
     box-sizing: border-box;
+    padding-bottom: 120px; /* Ruang untuk gelombang di bawah */
 }
 
 .hero-content {
@@ -346,6 +385,8 @@ a:hover {
     max-width: 100%;
     height: auto;
     display: block;
+    /* Tambahkan bayangan lembut pada gambar hero */
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.15));
 }
 
 .hero-background-text {
@@ -362,6 +403,72 @@ a:hover {
     user-select: none; /* Tidak bisa di-select */
 }
 
+/* Gelombang SVG di bagian bawah hero */
+.hero-wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px; /* Tinggi gelombang */
+    background-color: var(--bg-page-color); /* Warna gelombang */
+    z-index: 5; /* Di atas konten hero, di bawah konten berikutnya */
+}
+
+/* Menggunakan pseudo-element untuk membuat bentuk gelombang */
+.hero-wave::before {
+    content: '';
+    position: absolute;
+    top: -50px; /* Sesuaikan untuk mengontrol ketinggian puncak gelombang */
+    left: 0;
+    width: 100%;
+    height: 50px; /* Tinggi bagian atas gelombang */
+    background-color: transparent;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0; /* Bentuk gelombang */
+    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05); /* Bayangan lembut di bawah gelombang */
+}
+
+/* Untuk membuat gelombang terlihat lebih baik, gunakan SVG atau properti background-image dengan SVG data URI */
+/* Contoh sederhana dengan CSS murni, bisa lebih kompleks dengan SVG */
+.hero-wave {
+    background: var(--bg-page-color); /* Warna yang sama dengan body/next section */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px; /* Tinggi area gelombang */
+    overflow: hidden;
+    z-index: 5;
+}
+
+.hero-wave::before,
+.hero-wave::after {
+    content: '';
+    position: absolute;
+    width: 200%; /* Lebar dua kali lipat untuk efek gelombang */
+    height: 100px; /* Tinggi gelombang */
+    background-color: var(--bg-page-color); /* Warna gelombang */
+    left: -50%; /* Mulai dari luar layar */
+    border-radius: 45% 55% 0 0 / 100% 100% 0 0; /* Bentuk gelombang */
+    transform-origin: bottom center;
+}
+
+.hero-wave::before {
+    top: 0;
+    opacity: 0.7; /* Transparansi untuk lapisan pertama */
+    animation: wave 10s linear infinite alternate; /* Animasi gelombang */
+}
+
+.hero-wave::after {
+    top: 20px; /* Offset untuk lapisan kedua */
+    opacity: 0.5; /* Transparansi untuk lapisan kedua */
+    animation: wave 15s linear infinite alternate-reverse; /* Animasi gelombang terbalik */
+}
+
+@keyframes wave {
+    0% { transform: translateX(0) rotate(0deg); }
+    100% { transform: translateX(-50%) rotate(2deg); }
+}
+
 
 /* --- Bagian Konten Umum (Kartu) --- */
 .content-container-card {
@@ -370,6 +477,12 @@ a:hover {
     box-shadow: 0 5px 15px var(--shadow-color-light);
     padding: 40px; /* Padding default untuk kartu */
     box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transisi untuk hover */
+}
+
+.content-container-card:hover {
+    transform: translateY(-5px); /* Efek naik sedikit saat hover */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Bayangan lebih dalam saat hover */
 }
 
 .section-container {
@@ -383,7 +496,22 @@ a:hover {
     color: var(--text-color-dark);
     text-align: center;
     margin-bottom: 20px;
+    position: relative; /* Untuk efek underline */
+    padding-bottom: 10px;
 }
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px; /* Lebar underline */
+    height: 4px;
+    background-color: var(--accent-color); /* Warna underline */
+    border-radius: 2px;
+}
+
 
 .card-grid {
     display: grid;
@@ -402,14 +530,20 @@ a:hover {
 }
 
 .service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px); /* Efek naik lebih tinggi */
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15); /* Bayangan lebih dalam */
 }
 
 .service-card .icon {
     font-size: 3em;
     color: var(--accent-color);
     margin-bottom: 15px;
+    /* Animasi ikon */
+    transition: transform 0.3s ease-in-out;
+}
+
+.service-card:hover .icon {
+    transform: scale(1.1) rotate(5deg); /* Membesar dan berputar sedikit */
 }
 
 .service-card h3 {
@@ -434,6 +568,28 @@ a:hover {
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 10px var(--shadow-color-light);
     text-align: center;
+    position: relative; /* Untuk efek pseudo-element */
+    overflow: hidden; /* Penting untuk efek ripple */
+    z-index: 1;
+}
+
+.cta-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2); /* Efek ripple */
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease-out, height 0.4s ease-out;
+    z-index: -1;
+}
+
+.cta-button:hover::before {
+    width: 200%;
+    height: 200%;
 }
 
 .cta-button:hover {
@@ -467,10 +623,12 @@ a:hover {
     color: var(--secondary-text-color);
     margin: 0 10px;
     font-size: 0.9em;
+    transition: color 0.3s ease, transform 0.2s ease; /* Tambah transform */
 }
 
 .footer-card .footer-links a:hover {
     color: var(--accent-color);
+    transform: translateY(-2px); /* Efek naik sedikit */
 }
 
 /* --- Gaya Form Umum (Digunakan di Order & Login) --- */
@@ -485,7 +643,14 @@ a:hover {
     flex-direction: column;
     gap: 20px;
     box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transisi untuk hover */
 }
+
+.auth-form:hover, .order-form:hover {
+    transform: translateY(-5px); /* Efek naik sedikit saat hover */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Bayangan lebih dalam saat hover */
+}
+
 
 .auth-form h2, .order-form h2 {
     text-align: center;
@@ -527,6 +692,20 @@ a:hover {
     appearance: none; /* Properti standar */
     /* Tambahkan padding-right untuk membuat ruang bagi panah kustom */
     padding-right: 40px; /* Sesuaikan sesuai kebutuhan */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transisi untuk fokus */
+}
+
+.auth-form input[type="text"]:focus,
+.auth-form input[type="password"]:focus,
+.auth-form input[type="email"]:focus,
+.order-form input[type="text"]:focus,
+.order-form input[type="email"]:focus,
+.order-form input[type="number"]:focus,
+.order-form select:focus,
+.order-form textarea:focus {
+    outline: none;
+    border-color: var(--accent-color); /* Warna border saat fokus */
+    box-shadow: 0 0 0 3px rgba(74, 74, 74, 0.2); /* Bayangan saat fokus */
 }
 
 .main-content-area .order-form input::placeholder {
@@ -541,14 +720,38 @@ a:hover {
     font-size: 1.1em;
     font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     width: 100%; /* Lebar penuh */
     margin-top: 20px;
     border: none;
+    position: relative; /* Untuk efek ripple */
+    overflow: hidden; /* Penting untuk efek ripple */
+    z-index: 1;
+}
+
+.main-content-area .order-form .btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2); /* Efek ripple */
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease-out, height 0.4s ease-out;
+    z-index: -1;
+}
+
+.main-content-area .order-form .btn:hover::before {
+    width: 200%;
+    height: 200%;
 }
 
 .main-content-area .order-form .btn:hover {
     background-color: #333333; /* Gelap sedikit lebih terang saat hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px var(--shadow-color-dark);
 }
 
 /* Sesuaikan panah select untuk desain datar */
@@ -611,13 +814,14 @@ a:hover {
     color: var(--secondary-text-color);
     border-radius: 10px;
     font-weight: 600;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease; /* Tambah transform */
 }
 
 .admin-sidebar ul li a.active,
 .admin-sidebar ul li a:hover {
     background-color: var(--accent-color);
     color: var(--text-color-light);
+    transform: translateX(5px); /* Efek geser ke kanan */
 }
 
 .admin-content {
@@ -702,9 +906,13 @@ a:hover {
     border-radius: 8px;
     font-size: 0.9em;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease; /* Tambah transform */
     border: none;
     white-space: nowrap; /* Mencegah teks tombol pecah baris */
+}
+
+.action-buttons .btn:hover {
+    transform: translateY(-2px); /* Efek naik sedikit */
 }
 
 .action-buttons .btn-edit { background-color: #007BFF; color: white; }
@@ -724,9 +932,13 @@ a:hover {
     border-radius: 8px;
     font-size: 0.9em;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease; /* Tambah transform */
     border: none;
     white-space: nowrap;
+}
+
+#manage-users-content .action-buttons .btn:hover {
+    transform: translateY(-2px); /* Efek naik sedikit */
 }
 
 #manage-users-content .action-buttons .btn-edit-user { background-color: #007BFF; color: white; }
@@ -775,11 +987,12 @@ a:hover {
     border: none;
     cursor: pointer;
     font-size: 0.9em;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Tambah transform */
 }
 
 .grouped-orders-table .generate-invoice-button:hover {
     background-color: #1A9289; /* Darker shade */
+    transform: translateY(-2px); /* Efek naik sedikit */
 }
 
 /* MEDIA QUERIES FOR RESPONSIVENESS */
@@ -791,6 +1004,7 @@ a:hover {
 
     .hero-section {
         padding: 60px 30px;
+        padding-bottom: 100px; /* Sesuaikan padding bawah untuk gelombang */
     }
 
     .hero-content h1 {
@@ -900,6 +1114,7 @@ a:hover {
         margin-left: -15px;
         margin-right: -15px;
         width: calc(100% + 30px);
+        padding-bottom: 80px; /* Sesuaikan padding bawah untuk gelombang di mobile */
     }
 
     .hero-content {
@@ -921,6 +1136,22 @@ a:hover {
         /* Sesuaikan posisi agar tidak mengganggu header */
         top: 60%; /* Geser sedikit ke bawah */
     }
+
+    /* Sesuaikan tinggi gelombang di mobile */
+    .hero-wave {
+        height: 80px;
+    }
+    .hero-wave::before,
+    .hero-wave::after {
+        height: 80px;
+    }
+    .hero-wave::before {
+        top: 0;
+    }
+    .hero-wave::after {
+        top: 15px; /* Offset lebih kecil di mobile */
+    }
+
 
     .content-container-card {
         padding: 20px; /* Kurangi padding kartu konten */
@@ -1100,6 +1331,7 @@ a:hover {
         margin-left: -10px;
         margin-right: -10px;
         width: calc(100% + 20px);
+        padding-bottom: 60px; /* Sesuaikan padding bawah untuk gelombang di mobile sangat kecil */
     }
 
     .hero-content h1 {
@@ -1114,6 +1346,22 @@ a:hover {
         font-size: 6em;
         top: 65%; /* Sesuaikan posisi agar tidak mengganggu header */
     }
+
+    /* Sesuaikan tinggi gelombang di mobile sangat kecil */
+    .hero-wave {
+        height: 60px;
+    }
+    .hero-wave::before,
+    .hero-wave::after {
+        height: 60px;
+    }
+    .hero-wave::before {
+        top: 0;
+    }
+    .hero-wave::after {
+        top: 10px; /* Offset lebih kecil di mobile sangat kecil */
+    }
+
 
     .content-container-card {
         padding: 15px;
