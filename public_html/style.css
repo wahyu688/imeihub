@@ -2142,3 +2142,93 @@ body {
         gap: 8px;
     }
 }
+
+
+/* === MY ORDERS TABLE SCROLLABLE PATCH === */
+
+@media (max-width: 768px) {
+    .admin-table-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 12px;
+    }
+
+    .admin-table {
+        min-width: 600px;
+        border-collapse: collapse;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 10px 12px;
+        font-size: 0.9em;
+        white-space: nowrap;
+        text-align: left;
+    }
+
+    .admin-table th:first-child,
+    .admin-table td:first-child {
+        padding-left: 16px;
+    }
+
+    .admin-table th:last-child,
+    .admin-table td:last-child {
+        padding-right: 16px;
+    }
+
+    .status-button {
+        font-size: 0.85em;
+        padding: 6px 10px;
+        white-space: nowrap;
+    }
+
+    .action-buttons button {
+        font-size: 0.9em;
+        padding: 6px 10px;
+    }
+}
+
+
+/* === REFINED TABLE SCROLL PATCH (CARD STAYS FIXED) === */
+
+@media (max-width: 768px) {
+    .card-grid {
+        padding: 12px;
+    }
+
+    .card-grid .content-container-card {
+        padding: 16px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .admin-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        background: transparent;
+    }
+
+    .admin-table {
+        min-width: 600px;
+        border-collapse: collapse;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 10px 12px;
+        font-size: 0.9em;
+        white-space: nowrap;
+    }
+
+    .status-button {
+        font-size: 0.85em;
+        padding: 6px 10px;
+        white-space: nowrap;
+    }
+
+    .action-buttons button {
+        font-size: 0.9em;
+        padding: 6px 10px;
+    }
+}
