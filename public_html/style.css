@@ -97,6 +97,10 @@ a:hover {
     flex-wrap: nowrap; /* Mencegah pembungkus item navbar */
 }
 
+.brand-icon{
+    scale: 0.75;
+}
+
 .header-card .navbar-left,
 .header-card .navbar-right {
     display: flex;
