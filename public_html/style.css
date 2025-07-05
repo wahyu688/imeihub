@@ -1491,3 +1491,203 @@ align-items: center;
         padding: 10px 24px;
     }
 }
+
+
+/* === PATCH: GLOBAL RESPONSIVE SUPPORT === */
+
+/* === GLOBAL RESPONSIVE PATCH UNTUK SEMUA HALAMAN === */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 0 20px;
+        gap: 20px;
+    }
+
+    .section-title {
+        font-size: 2em;
+        margin-bottom: 30px;
+    }
+
+    .content-container-card,
+    .offer-single-grid,
+    .important-notes-grid,
+    #my-orders-section .card-grid {
+        padding: 25px;
+        margin: 15px auto;
+        width: 100%;
+    }
+
+    .admin-form-container,
+    .order-form {
+        padding: 30px;
+        margin: 30px auto;
+    }
+
+    .admin-dashboard-container {
+        flex-direction: column;
+        margin-left: -20px;
+        margin-right: -20px;
+        width: calc(100% + 40px);
+        padding: 0 20px;
+    }
+
+    .left-sidebar {
+        width: 100%;
+        position: relative;
+        top: 0;
+        height: auto;
+        flex: none;
+        margin-bottom: 20px;
+    }
+
+    .admin-content {
+        padding: 20px;
+    }
+
+    .admin-content h2 {
+        font-size: 1.5em;
+    }
+
+    .stat-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .stat-card h3 {
+        font-size: 1em;
+    }
+
+    .stat-card p {
+        font-size: 1.8em;
+    }
+
+    .admin-table-container {
+        overflow-x: auto;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .status-button {
+        font-size: 0.85em;
+        padding: 6px 10px;
+    }
+
+    .action-buttons button {
+        font-size: 1em;
+        margin: 0 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-content h2 {
+        font-size: 1.3em;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        font-size: 0.8em;
+    }
+
+    .status-button {
+        min-width: 70px;
+        font-size: 0.75em;
+    }
+
+    .cta-button {
+        font-size: 4.5vw;
+        padding: 12px 25px;
+    }
+
+    .section-title {
+        font-size: 1.7em;
+    }
+}
+
+
+/* === FINAL PATCH: 100% MOBILE FRIENDLY SEMUA HALAMAN === */
+
+/* === TAMBAHAN RESPONSIVE PATCH UNTUK SEMUA HALAMAN (100% MOBILE FRIENDLY) === */
+@media (max-width: 768px) {
+    .service-card {
+        padding: 20px;
+    }
+
+    .service-card h3 {
+        font-size: 1.3em;
+    }
+
+    .service-card p {
+        font-size: 1em;
+    }
+
+    .login-container {
+        padding: 30px;
+        margin-top: 30px;
+    }
+
+    .login-container h1 {
+        font-size: 2em;
+    }
+
+    .login-container .subtitle {
+        font-size: 1em;
+    }
+
+    .login-container input[type="text"],
+    .login-container input[type="password"],
+    .login-container input[type="email"] {
+        padding: 12px;
+        font-size: 1em;
+    }
+
+    .login-container .btn.login-btn {
+        padding: 12px;
+        font-size: 1em;
+    }
+
+    .main-content-area .contact-preview {
+        padding: 20px;
+    }
+
+    .main-content-area .contact-preview p {
+        font-size: 0.95em;
+    }
+
+    .main-content-area .contact-preview .cta-button {
+        font-size: 1em;
+        padding: 12px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container h1 {
+        font-size: 1.8em;
+    }
+
+    .login-container .subtitle {
+        font-size: 0.95em;
+    }
+
+    .login-container .btn.login-btn {
+        font-size: 0.95em;
+    }
+
+    .main-content-area .order-form label {
+        font-size: 0.85em;
+    }
+
+    .main-content-area .order-form input,
+    .main-content-area .order-form select,
+    .main-content-area .order-form textarea {
+        font-size: 0.95em;
+        padding: 12px;
+    }
+
+    .main-content-area .order-form .btn {
+        font-size: 1em;
+        padding: 12px 20px;
+    }
+}
