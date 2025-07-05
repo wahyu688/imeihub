@@ -8,48 +8,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="main-container">
-        <nav class="header-card mobile-header">
-            <div class="navbar-left">
-                <div class="brand-logo">
-                    <img src="imeihub_logo.png" alt="ImeiHub Logo" class="brand-icon" srcset="">
-                    <span>ImeiHub</span>
-                </div>
-                <ul class="nav-links-desktop">
-                    <li><a href="/">HOME</a></li>
-                    <li><a href="services">SERVICES</a></li>
-                    <li><a href="order">ORDER</a></li>
-                    <li><a href="my-orders">MY ORDERS</a></li>
-                    <li><a href="contact">CONTACT</a></li>
-                    <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard">ADMIN DASHBOARD</a></li>
-                </ul>
+    <!-- Pindahkan NAV BAR di sini, di luar main-container -->
+    <nav class="header-card mobile-header">
+        <div class="navbar-left">
+            <div class="brand-logo">
+                <img src="imeihub_logo.png" alt="ImeiHub Logo" class="brand-icon" srcset="">
+                <span>ImeiHub</span>
             </div>
-
-            <div class="navbar-right">
-                <div id="nav-login-register"><a href="login" class="nav-link-button">LOGIN</a></div>
-                <div id="nav-user-greeting" class="user-greeting-container" style="display: none;">
-                    <span>Hi, <strong id="username-display"></strong>!</span>
-                    <button id="logout-btn-navbar" class="nav-link-button">LOGOUT</button>
-                </div>
-                <button class="hamburger-menu" id="hamburger-menu">&#9776;</button>
-            </div>
-        </nav>
-
-        <div class="mobile-nav-overlay" id="mobile-nav-overlay">
-            <button class="close-mobile-nav" id="close-mobile-nav">&times;</button>
-            <ul class="mobile-nav-links">
-                <li><a href="index">HOME</a></li>
+            <ul class="nav-links-desktop">
+                <li><a href="/">HOME</a></li>
                 <li><a href="services">SERVICES</a></li>
                 <li><a href="order">ORDER</a></li>
                 <li><a href="my-orders">MY ORDERS</a></li>
                 <li><a href="contact">CONTACT</a></li>
-                <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard">ADMIN DASHBOARD</a></li>
-                <li><div id="mobile-nav-login-register"><a href="login" class="nav-link-button">LOGIN</a></div></li>
-                <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
-                <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">LOGOUT</button></li>
+                <li id="nav-admin-dashboard" style="display: none;"><a href="admin_dashboard">ADMIN DASHBOARD</a></li>
             </ul>
         </div>
 
+        <div class="navbar-right">
+            <div id="nav-login-register"><a href="login" class="nav-link-button">LOGIN</a></div>
+            <div class="user-greeting-container" id="nav-user-greeting" style="display: none;">
+                <span>Hi, <strong id="username-display"></strong>!</span>
+                <button id="logout-btn-navbar" class="nav-link-button">LOGOUT</button>
+            </div>
+            <button class="hamburger-menu" id="hamburger-menu">&#9776;</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Overlay Navigation (juga di luar main-container) -->
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+        <button class="close-mobile-nav" id="close-mobile-nav">&times;</button>
+        <ul class="mobile-nav-links">
+            <li><a href="/">HOME</a></li>
+            <li><a href="services">SERVICES</a></li>
+            <li><a href="order">ORDER</a></li>
+            <li><a href="my-orders">MY ORDERS</a></li>
+            <li><a href="contact">CONTACT</a></li>
+            <li id="mobile-nav-admin-dashboard" style="display: none;"><a href="admin_dashboard">ADMIN DASHBOARD</a></li>
+            <li><div id="mobile-nav-login-register"><a href="login" class="nav-link-button">LOGIN</a></div></li>
+            <li id="mobile-nav-user-greeting" style="display: none;"><span>Hi, <strong id="mobile-username-display"></strong>!</span></li>
+            <li><button id="mobile-logout-btn" class="nav-link-button" style="display: none;">LOGOUT</button></li>
+        </ul>
+    </div>
+
+    <div class="main-container">
         <header class="hero-section">
             <div class="hero-large-text-overlay">IMEIHUB</div>
             <div class="hero-content">
@@ -62,7 +64,10 @@
             </div>
             <div class="hero-wave"></div> -->
         </header>
+
+        <!-- ... Konten Anda yang lain tetap di dalam main-container ... -->
+
     </div>
-    <script src="script.js"></script>
+    <!-- ... Footer dan script Anda ... -->
 </body>
 </html>

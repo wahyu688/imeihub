@@ -71,35 +71,33 @@ a:hover {
 
 /* --- Tata Letak Umum --- */
 .main-container {
-    max-width: 100%; /* Lebar penuh */
-    margin: 0; /* Tanpa margin */
-    padding: 0 30px; /* Tambahan padding horizontal untuk jarak ke tepi layar */
+    max-width: 1440px; /* Lebar maksimum untuk konten utama */
+    margin: 0 auto; /* Pusatkan konten utama */
+    padding: 0 30px; /* Padding horizontal untuk jarak ke tepi layar */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 30px; /* Jarak antar bagian utama (kartu) */
 }
 
-/* --- Header (Navbar) - BUKAN KARTU --- */
+/* --- Header (Navbar) --- */
 .header-card {
     background-color: var(--bg-content-color); /* Latar belakang header */
     border-radius: 0; /* Tanpa border radius */
     box-shadow: 0 5px 15px var(--shadow-color-light); /* Bayangan tipis di bagian bawah */
-    padding: 15px 60px; /* Padding untuk konten di dalam navbar */
+    padding: 15px 30px; /* Padding untuk konten di dalam navbar, cocok dengan main-container */
     display: flex;
     flex-direction: row; /* Secara eksplisit mengatur arah flex ke baris */
     justify-content: space-between;
     align-items: center;
     position: sticky;
-    top: 0; /* Menempel di bagian paling atas */
+    top: 0;
     z-index: 1000;
-    /* Margin negatif untuk membentang penuh melewati padding main-container */
-    margin-left: -30px;
-    margin-right: -30px;
-    width: calc(100% + 60px); /* Kompensasi padding main-container */
+    width: 100%; /* Mengambil lebar penuh dari parent (body) */
     max-width: none; /* Tanpa lebar maksimum */
-    box-sizing: border-box; /* Memastikan padding dihitung dalam lebar */
-    flex-wrap: nowrap; /* Mencegah pembungkus item navbar */
+    box-sizing: border-box;
+    flex-wrap: nowrap;
+    /* Removed negative margins and calc() width as it's now outside main-container */
 }
 
 .brand-icon {
@@ -314,10 +312,9 @@ a:hover {
     align-items: center;
     overflow: hidden;
     height: 100vh; /* Tinggi penuh viewport */
-    margin-left: -30px;
-    margin-right: -30px;
-    width: calc(100% + 60px);
-    max-width: none;
+    /* Removed negative margins and calc() width as it's now inside main-container which has padding */
+    width: 100%; /* Take full width of its parent (main-container) */
+    max-width: none; /* Tanpa lebar maksimum */
     box-sizing: border-box;
     padding-top: 100px;
     padding-bottom: 60px;
@@ -1372,8 +1369,9 @@ footer .social-links a:hover {
         align-items: center;
         flex-direction: row;
         flex-wrap: nowrap;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        /* Removed margin-left/right !important here as it's now outside main-container */
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .navbar-right {
@@ -1460,9 +1458,8 @@ footer .social-links a:hover {
         height: auto; /* izinkan konten menyesuaikan tinggi */
         padding-left: 16px;
         padding-right: 16px;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        width: 100% !important;
+        /* Removed margin-left/right !important and width !important as it's now inside main-container */
+        width: 100%;
     }
 
     .hero-large-text-overlay {
