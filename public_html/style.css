@@ -984,6 +984,7 @@ footer .social-links a:hover {
     box-sizing: border-box; /* Memastikan padding tidak menambah lebar */
     padding-left: 20px;
     padding-right: 20px;
+    white-space: nowrap; /* Mencegah teks melipat */
 }
 
 .admin-table th {
@@ -1167,6 +1168,8 @@ footer .social-links a:hover {
 .login-container input[type="email"] {
     width: 100%;
     padding: 15px;
+    margin-top: 0;
+    margin-bottom: 25px;
     border: 1px solid #D1D5DB;
     border-radius: 10px;
     background-color: #E0E0E0;
