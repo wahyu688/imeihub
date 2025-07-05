@@ -322,7 +322,8 @@ a:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); /* Pusatkan teks */
-    font-size: 23vw; /* Ukuran responsif */
+    /* Menyesuaikan font-size untuk teks "CONNECTED" */
+    font-size: 19vw; /* Ukuran responsif yang disesuaikan untuk "CONNECTED" */
     font-weight: 900;
     color: rgba(0, 0, 0, 0.05); /* Sangat transparan */
     text-transform: uppercase;
@@ -1326,7 +1327,7 @@ footer .social-links a:hover {
         padding-right: 40px; /* Menjaga padding internal */
     }
     .hero-large-text-overlay {
-        font-size: 25vw; /* Disesuaikan agar tidak terpotong */
+        font-size: 22vw; /* Disesuaikan untuk "CONNECTED" di layar menengah */
         letter-spacing: -4px;
     }
     .hero-section h1 {
@@ -1424,9 +1425,9 @@ footer .social-links a:hover {
 
     /* Navbar Specifics */
     .header-card {
-        width: calc(100% + 40px) !important;
-        margin-left: -20px !important;
-        margin-right: -20px !important;
+        width: calc(100%) !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
         max-width: none !important;
         border-radius: 0;
         margin-top: 0;
@@ -1515,7 +1516,7 @@ footer .social-links a:hover {
         margin-right: calc(50% - 50vw);
     }
     .hero-large-text-overlay {
-        font-size: 20vw; /* Disesuaikan agar tidak terpotong */
+        font-size: 18vw; /* Disesuaikan untuk "CONNECTED" di layar tablet */
         letter-spacing: -2px;
         line-height: 1;
         left: 50%;
@@ -1742,7 +1743,7 @@ footer .social-links a:hover {
         margin-right: calc(50% - 50vw);
     }
     .hero-large-text-overlay {
-        font-size: 18vw; /* Disesuaikan agar tidak terpotong */
+        font-size: 16vw; /* Disesuaikan untuk "CONNECTED" di layar mobile kecil */
     }
     .hero-section h1 {
         font-size: 6vw;
