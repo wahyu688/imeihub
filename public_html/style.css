@@ -1255,24 +1255,25 @@ footer .social-links a:hover {
     .offer-single-grid,
     .important-notes-grid,
     #my-orders-section .card-grid {
-        padding: 30px 40px;
-        width: 100%;
+        padding: 25px;
         margin: 15px auto;
+        width: 100%;
     }
     .admin-form-container,
     .order-form {
-        padding: 40px;
-        margin: 40px auto;
+        padding: 30px;
+        margin: 30px auto;
     }
     .left-sidebar {
-        width: auto;
+        width: 100%;
         position: relative;
         top: 0;
         height: auto;
         flex: none;
+        margin-bottom: 20px;
     }
     .admin-content {
-        padding: 30px;
+        padding: 20px;
     }
     .admin-table th,
     .admin-table td {
@@ -1613,8 +1614,9 @@ footer .social-links a:hover {
 
     /* Navbar Specifics */
     .header-card {
-        flex-direction: row !important; /* Pastikan selalu row */
-        justify-content: space-between !important; /* Pastikan space-between */
+        /* Tetap flex-direction: row untuk menjaga logo dan hamburger di baris yang sama */
+        flex-direction: row !important;
+        justify-content: space-between !important; /* Untuk memisahkan logo dan hamburger */
         align-items: center !important;
         padding: 12px 16px !important;
     }
