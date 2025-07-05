@@ -2349,3 +2349,20 @@ body {
         font-size: 0.95em;
     }
 }
+
+
+/* === RESTORE HAMBURGER VISIBILITY ON MOBILE === */
+
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: block !important;
+        font-size: 1.8em;
+        color: var(--text-color-dark);
+        background: none;
+        border: none;
+    }
+
+    .header-card {
+        justify-content: space-between;
+    }
+}
