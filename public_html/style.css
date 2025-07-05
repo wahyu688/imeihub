@@ -2,20 +2,21 @@
 
 /* Variables - IMEIHUB THEME (Light, Neutral Accent) & Hero Specifics */
 :root {
+    /* Global Theme Colors (White/Light) */
     --bg-page-color: #FFFFFF; /* White background for the page */
     --bg-content-color: #FFFFFF; /* White background for cards/content */
     --text-color-dark: #1A1A1A; /* Dark grey for primary text */
-    --text-color-light: #FFFFFF; /* White for text on dark backgrounds */
+    --text-color-light: #FFFFFF; /* White for text on dark backgrounds (e.g., in hero, or on buttons) */
     --secondary-text-color: #6B7280; /* Muted grey for secondary text */
     --accent-color: #4A4A4A; /* Neutral dark grey for main accents */
-    --accent-dark: #333333; /* Darker shade of the new accent for hover states */
+    --accent-dark: #333333; /* Darker shade of original accent for hover states */
     --border-color: #D1D5DB; /* Light grey for subtle borders */
     --shadow-color-light: rgba(0, 0, 0, 0.1); /* Lighter shadow for elements on light background */
     --shadow-color-dark: rgba(0, 0, 0, 0.3); /* Darker shadow for raised elements */
     --card-border-radius: 12px; /* Slightly sharper radius for modern flat feel */
     --button-border-radius: 8px; /* Sharper buttons for modern flat feel */
 
-    /* New variable for grey hover color (remains the same) */
+    /* Hover colors */
     --hover-grey-bg: #D1D5DB; /* Light grey for hover background */
     --hover-grey-text: var(--text-color-dark); /* Dark text for grey hover */
 
@@ -35,12 +36,12 @@
     --status-proses-aktif-bg: #00BCD4; /* Cyan */
     --status-proses-aktif-text: var(--text-color-light);
 
-    /* Reverted table theme variables to light */
-    --table-bg-light: transparent; /* Changed to transparent for non-card look */
-    --table-header-bg-light: var(--bg-page-color); /* Slightly lighter for table header */
-    --table-text-dark: var(--text-color-dark); /* Dark text for light table */
-    --table-border-light: var(--border-color); /* Light border on light table */
-    --table-row-hover-light: rgba(0, 0, 0, 0.05); /* Light hover on light table */
+    /* Table theme variables (light) */
+    --table-bg-light: transparent;
+    --table-header-bg-light: var(--bg-page-color);
+    --table-text-dark: var(--text-color-dark);
+    --table-border-light: var(--border-color);
+    --table-row-hover-light: rgba(0, 0, 0, 0.05);
 
     /* Hero Section Specific Colors (from image_e7fa85.png) */
     --hero-bg-color: #212121; /* Dark grey/black for hero background */
@@ -51,13 +52,13 @@
 
 body {
     margin: 0;
-    font-family: 'Inter', sans-serif; /* Menggunakan Google Font Inter */
-    background-color: var(--bg-page-color); /* Latar belakang body sekarang sama dengan konten */
-    color: var(--text-color-dark); /* Warna teks utama */
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-page-color);
+    color: var(--text-color-dark);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden; /* Mencegah scrolling horizontal yang tidak diinginkan */
+    overflow-x: hidden;
 }
 
 a {
@@ -70,21 +71,21 @@ a:hover {
     color: var(--accent-color);
 }
 
-/* --- Tata Letak Umum --- */
+/* --- General Layout --- */
 .main-container {
-    max-width: 100%; /* Lebar penuh */
-    margin: 0; /* Tanpa margin */
-    padding: 0 30px; /* Tambahan padding horizontal untuk jarak ke tepi layar */
+    max-width: 100%;
+    margin: 0;
+    padding: 0 30px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 30px; /* Jarak antar bagian utama (kartu) */
+    gap: 30px;
 }
 
-/* --- Header (Navbar) - TIDAK DIUBAH SAMA SEKALI (Original styles) --- */
+/* --- Header (Navbar) - UNCHANGED (Original styles) --- */
 .header-card {
     background-color: #FFFFFF; /* Original white background */
-    border-radius: 0; /* Original: 0, from style.css */
+    border-radius: 0; /* Original: 0 */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Original shadow */
     padding: 15px 60px;
     display: flex;
@@ -298,7 +299,7 @@ a:hover {
 }
 
 
-/* --- Hero Section - Simple Modern Flat Design --- */
+/* --- Hero Section - Simple Modern Flat Design (from image_e7fa85.png) --- */
 .hero-section {
     position: relative;
     background-color: var(--hero-bg-color); /* Dark background for hero */
@@ -692,7 +693,7 @@ footer .social-links a:hover {
 
 .order-card {
     background-color: var(--bg-page-color);
-    border-radius: var(--card-border-radius); /* Use card border radius for consistency */
+    border-radius: var(--card-border-radius);
     padding: 25px;
     box-shadow: 0 4px 10px var(--shadow-color-light);
     display: flex;
@@ -733,7 +734,7 @@ footer .social-links a:hover {
 .status-unknown { background-color: var(--status-unknown-bg); color: var(--status-unknown-text); }
 
 
-/* Spesifik Admin Dashboard */
+/* Admin Dashboard Specific */
 .admin-dashboard-container {
     display: flex;
     gap: 15px;
@@ -1114,7 +1115,7 @@ footer .social-links a:hover {
 .login-container h1 {
     font-size: 3em;
     font-weight: 800;
-    color: var(--text-color-dark); /* Dark text */
+    color: var(--text-color-dark);
     margin-bottom: 10px;
     font-family: 'Orbitron', sans-serif; /* Orbitron for login title */
 }
@@ -1146,7 +1147,7 @@ footer .social-links a:hover {
     width: 100%;
     padding: 15px;
     border: 1px solid var(--border-color);
-    border-radius: var(--button-border-radius); /* Subtle rounded corners */
+    border-radius: var(--button-border-radius);
     background-color: #FDFDFD;
     color: var(--text-color-dark);
     font-size: 1em;
@@ -1161,7 +1162,7 @@ footer .social-links a:hover {
     background-color: var(--accent-color);
     color: var(--text-color-light);
     padding: 15px 30px;
-    border-radius: var(--button-border-radius); /* Subtle rounded corners */
+    border-radius: var(--button-border-radius);
     font-size: 1.1em;
     font-weight: 700;
     cursor: pointer;
@@ -1228,7 +1229,7 @@ footer .social-links a:hover {
     padding: 15px;
     margin-bottom: 15px;
     border: 1px solid var(--border-color);
-    border-radius: var(--button-border-radius); /* Subtle rounded corners */
+    border-radius: var(--button-border-radius);
     background-color: #FDFDFD;
     color: var(--text-color-dark);
     font-size: 1em;
