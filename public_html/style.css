@@ -1771,3 +1771,61 @@ body {
         font-size: 1.5em;
     }
 }
+
+
+/* === FINAL POLISH: USER FRIENDLY SMARTPHONE FIX === */
+
+/* === RESPONSIVE POLISH FOR SMALL SCREEN UX === */
+@media (max-width: 480px) {
+    .header-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px 16px !important;
+    }
+
+    .user-greeting-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .hero-section {
+        padding-top: 80px;
+        padding-bottom: 40px;
+    }
+
+    .hero-section h1 {
+        font-size: 6vw;
+        line-height: 1.2;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .hero-section p {
+        font-size: 4vw;
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 0 10px;
+    }
+
+    .cta-button {
+        font-size: 4vw;
+        padding: 10px 24px;
+        margin: 0 auto;
+    }
+
+    .hero-content {
+        padding: 0 10px;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .hero-large-text-overlay {
+        font-size: 30vw;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+}
