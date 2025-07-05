@@ -53,7 +53,7 @@ transporter.verify(function(error, success) {
 });
 
 // --- DEFINISI HARGA LAYANAN (DIKELOLA DI BACKEND) ---
-const FIXED_IMEI_PRICE = 250000; // Harga 1 IMEI = Rp 250.000
+const FIXED_IMEI_PRICE = 225000; // Harga 1 IMEI = Rp 225.000
 const SERVICE_PRICES = {
     "Temporary IMEI Activation (90 Days)": FIXED_IMEI_PRICE,
     "Permanent Unlock iPhone": FIXED_IMEI_PRICE,
