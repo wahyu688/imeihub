@@ -273,6 +273,8 @@ a:hover {
     color: #ccc;
     font-size: 0.95em;
     padding-left: 5px;
+    /* Pastikan ini ditampilkan di mobile nav, bukan di navbar utama */
+    display: none; /* Defaultnya tersembunyi, akan ditampilkan di media query mobile */
 }
 
 #mobile-logout-btn {
@@ -853,22 +855,29 @@ a:hover {
         margin-bottom: 0; /* Remove margin bottom */
     }
 
-    .header-card .nav-links-desktop {
-        display: none; /* Sembunyikan navigasi desktop */
-    }
-
     .header-card .navbar-right {
+        /* This container holds the user greeting and logout button */
+        display: flex; /* Ensure it's a flex container */
+        align-items: center;
         width: auto; /* Auto width */
         justify-content: flex-end; /* Align to end */
         margin-top: 0; /* Remove margin top */
     }
 
-    .user-greeting-container {
-        flex-direction: row; /* Keep user greeting in a row */
-        gap: 5px;
-        text-align: right; /* Align text to right */
-        width: auto; /* Auto width */
+    .header-card .nav-links-desktop {
+        display: none; /* Sembunyikan navigasi desktop */
     }
+
+    /* Sembunyikan tombol logout di navbar utama pada mobile */
+    #logout-btn-navbar {
+        display: none !important;
+    }
+
+    /* Pastikan user greeting di navbar utama juga disembunyikan jika ingin dipindahkan ke mobile nav */
+    .user-greeting-container {
+        display: none !important;
+    }
+
 
     .hamburger-menu {
         display: block; /* Tampilkan menu hamburger */
@@ -876,6 +885,12 @@ a:hover {
         order: 2; /* Place it after logo/text */
         margin-left: 15px; /* Add margin to separate from other elements */
     }
+
+    /* Tampilkan user greeting di mobile nav overlay */
+    .mobile-nav-user {
+        display: block !important;
+    }
+
 
     .hero-section {
         flex-direction: column; /* Tumpuk konten hero secara vertikal */
@@ -901,12 +916,10 @@ a:hover {
         margin-bottom: 20px;
     }
 
-    .hero-image-container {
-        margin-top: 30px; /* Beri jarak dari teks */
-    }
-
     .hero-background-text {
         font-size: 8em; /* Ukuran teks latar belakang yang lebih kecil */
+        /* Sesuaikan posisi agar tidak mengganggu header */
+        top: 60%; /* Geser sedikit ke bawah */
     }
 
     .content-container-card {
@@ -1099,6 +1112,7 @@ a:hover {
 
     .hero-background-text {
         font-size: 6em;
+        top: 65%; /* Sesuaikan posisi agar tidak mengganggu header */
     }
 
     .content-container-card {
