@@ -1269,232 +1269,11 @@ footer .social-links a:hover {
     }
 
     .section-title {
-        font-size: 2.5em;
-        margin-bottom: 40px;
-    }
-
-    /* Kartu Konten (misalnya, "Mengapa Memilih Kami?") */
-    .content-container-card,
-    .offer-single-grid,
-    .important-notes-grid,
-    #my-orders-section .card-grid {
-        padding: 30px 40px; /* Padding disesuaikan untuk seluler */
-        width: 100%; /* Mengambil lebar penuh di layar lebih kecil */
-        margin: 15px auto; /* Terpusat dengan margin */
-    }
-
-    .admin-form-container,
-    .order-form {
-        padding: 40px;
-        margin: 40px auto;
-    }
-
-    .left-sidebar {
-        width: auto; /* Memungkinkan sidebar mengambil lebar penuh */
-        position: relative;
-        top: 0;
-        height: auto;
-        flex: none; /* Hapus flex tetap */
-    }
-
-    .admin-content {
-        padding: 30px;
-    }
-
-    /* Sesuaikan padding tabel untuk layar lebih kecil */
-    .admin-table th,
-    .admin-table td {
-        padding: 10px;
-    }
-}
-
-@media (max-width: 768px) {
-    /* Global Font Sizes */
-    body {
-        font-size: 15px;
-    }
-
-    h1 {
-        font-size: 2em;
-    }
-
-    h2 {
-        font-size: 1.8em;
-    }
-
-    h3 {
-        font-size: 1.5em;
-    }
-
-    p,
-    li,
-    a,
-    span,
-    label {
-        font-size: 0.95em;
-        line-height: 1.4;
-    }
-
-    .cta-button,
-    .btn,
-    button {
-        font-size: 1em;
-        padding: 12px 24px;
-    }
-
-    input,
-    select,
-    textarea {
-        font-size: 1em;
-        padding: 12px;
-    }
-
-    /* Navbar Specifics */
-    .nav-links-desktop {
-        display: none !important;
-    }
-
-    .header-card {
-        /* Ini adalah bagian kunci untuk membuat navbar fit ke layar saat di dalam main-container */
-        width: calc(100% + 40px) !important; /* 100% dari parent + 2*20px (padding main-container) */
-        margin-left: -20px !important; /* Offset padding kiri main-container */
-        margin-right: -20px !important; /* Offset padding kanan main-container */
-        max-width: none !important; /* Pastikan tidak ada max-width yang membatasinya */
-        border-radius: 0; /* Tanpa border-radius di mobile */
-        margin-top: 0; /* Tanpa margin atas di mobile */
-
-        /* Gaya yang sudah ada */
-        padding: 12px 16px;
-        box-sizing: border-box;
-        overflow-x: hidden;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-direction: row;
-        flex-wrap: nowrap;
-    }
-
-    .navbar-right {
-        display: flex !important;
-        flex-direction: row;
-        align-items: center;
-        gap: 8px;
-        white-space: nowrap;
-    }
-
-    .navbar-right .user-greeting,
-    .navbar-right .logout-btn,
-    .navbar-right #nav-login-register,
-    #nav-user-greeting {
-        display: none !important;
-    }
-
-    #mobile-nav-user-greeting,
-    #mobile-logout-btn {
-        display: block !important;
-        text-align: center;
-        margin-top: 16px;
-    }
-
-    #mobile-nav-user-greeting {
-        font-size: 0.95em;
-    }
-
-    #mobile-logout-btn {
-        padding: 10px 20px;
-        font-size: 0.95em;
-    }
-
-    .hamburger-menu {
-        display: block !important;
-        font-size: 1.8em;
-        color: var(--text-color-dark);
-        background: none;
-        border: none;
-    }
-
-    /* Mobile Overlay Navigation */
-    /* Properti inti sudah diatur secara global, di sini hanya penyesuaian visual */
-    .mobile-nav-overlay {
-        border-radius: 30px 30px 0 0; /* Sudut membulat di bagian bawah */
-        padding-top: 100px; /* Jarak dari atas */
-    }
-
-    .mobile-nav-overlay.open {
-        transform: translateY(0); /* Muncul di layar */
-    }
-
-    .mobile-nav-links {
-        gap: 24px;
-        font-size: 1.3em;
-        font-weight: 500;
-        width: 100%;
-        text-align: center;
-    }
-
-    .mobile-nav-links a {
-        color: var(--text-color-dark);
-        padding: 10px 0;
-    }
-
-    .close-mobile-nav {
-        color: var(--text-color-dark);
-    }
-
-    .mobile-nav-links li:last-child {
-        display: none !important; /* sembunyikan 'Hi, user' duplikat di bawah */
-    }
-
-    /* Hero Section */
-    .hero-section {
-        padding-top: 80px;
-        padding-bottom: 40px;
-        height: auto; /* izinkan konten menyesuaikan tinggi */
-        padding-left: 16px;
-        padding-right: 16px;
-        width: 100%;
-    }
-
-    .hero-large-text-overlay {
-        font-size: 28vw;
-        letter-spacing: -2px;
-        line-height: 1;
-        left: 50%;
-        transform: translateX(-50%);
-        text-align: center;
-    }
-
-    .hero-section h1 {
-        font-size: 7vw;
-        text-align: center;
-        line-height: 1.2;
-    }
-
-    .hero-section p {
-        font-size: 4vw;
-        max-width: 90%;
-        margin: 0 auto 30px;
-        text-align: center;
-    }
-
-    .hero-content {
-        padding: 0 10px;
-        max-width: 100%;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Global Responsive Support */
-    .main-container {
-        padding: 0 20px;
-        gap: 20px;
-    }
-
-    .section-title {
         font-size: 2em;
         margin-bottom: 30px;
     }
 
+    /* Kartu Konten (misalnya, "Mengapa Memilih Kami?") */
     .content-container-card,
     .offer-single-grid,
     .important-notes-grid,
@@ -1724,10 +1503,12 @@ footer .social-links a:hover {
     }
 
     .header-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 12px 16px !important;
+        /* Tetap flex-direction: row untuk menjaga logo dan hamburger di baris yang sama */
+        flex-direction: row;
+        justify-content: space-between; /* Untuk memisahkan logo dan hamburger */
+        align-items: center; /* Pusatkan secara vertikal */
+        gap: 8px; /* Jarak antar item di navbar */
+        padding: 12px 16px !important; /* Padding tetap */
     }
 
     .user-greeting-container {
@@ -1766,7 +1547,8 @@ footer .social-links a:hover {
     .hero-content {
         padding: 0 10px;
         max-width: 100%;
-        text-align: center;
+        align-items: center;
+        justify-content: center;
     }
 
     .hero-large-text-overlay {
