@@ -2391,3 +2391,40 @@ body {
         border: none;
     }
 }
+
+
+/* === FIX: HIDE #nav-login-register IN TOP NAVBAR ON MOBILE === */
+
+@media (max-width: 768px) {
+    .navbar-right #nav-login-register {
+        display: none !important;
+    }
+}
+
+
+/* === FINAL PATCH: HIDE DESKTOP LOGIN, SHOW MOBILE LOGIN IN OVERLAY === */
+
+@media (max-width: 768px) {
+    /* Sembunyikan versi desktop dari user dan logout */
+    #nav-login-register,
+    #nav-user-greeting {
+        display: none !important;
+    }
+
+    /* Tampilkan versi mobile (dalam overlay) */
+    #mobile-nav-user-greeting,
+    #mobile-logout-btn {
+        display: block !important;
+        text-align: center;
+        margin-top: 16px;
+    }
+
+    #mobile-nav-user-greeting {
+        font-size: 0.95em;
+    }
+
+    #mobile-logout-btn {
+        padding: 10px 20px;
+        font-size: 0.95em;
+    }
+}
