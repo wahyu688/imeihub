@@ -93,8 +93,10 @@ a:hover {
     position: sticky;
     top: 0;
     z-index: 1000;
-    width: 100%; /* Mengambil lebar penuh dari parent (body) */
-    max-width: none; /* Tanpa lebar maksimum */
+    width: 100vw; /* Mengambil lebar penuh dari viewport */
+    margin-left: calc(50% - 50vw); /* Menggeser ke kiri untuk menutupi margin body */
+    margin-right: calc(50% - 50vw); /* Menggeser ke kanan untuk menutupi margin body */
+    max-width: none; /* Menghilangkan batasan max-width */
     box-sizing: border-box;
     flex-wrap: nowrap;
 }
@@ -1317,7 +1319,10 @@ footer .social-links a:hover {
 /* --- Responsivitas --- */
 @media (max-width: 1024px) {
     .header-card {
-        padding: 15px 40px;
+        padding: 15px 20px; /* Sesuaikan padding untuk layar menengah */
+        width: 100vw; /* Pastikan full width di breakpoint ini juga */
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
     }
     .hero-section {
         /* Padding internal disesuaikan setelah full width */
@@ -1425,9 +1430,10 @@ footer .social-links a:hover {
 
     /* Navbar Specifics */
     .header-card {
-        width: 100% !important;
-        margin: 0 auto !important;
-        max-width: none !important;
+        width: 100vw !important; /* Mengambil lebar penuh viewport */
+        margin-left: calc(50% - 50vw) !important; /* Menggeser ke kiri */
+        margin-right: calc(50% - 50vw) !important; /* Menggeser ke kanan */
+        max-width: none !important; /* Menghilangkan batasan max-width */
         border-radius: 0;
         margin-top: 0;
 
@@ -1437,7 +1443,7 @@ footer .social-links a:hover {
         align-items: center !important;
         flex-wrap: nowrap;
 
-        padding: 15px 30px;
+        padding: 15px 30px; /* Padding internal tetap */
         box-sizing: border-box;
         overflow-x: auto;
     }
@@ -1713,6 +1719,9 @@ footer .social-links a:hover {
         justify-content: space-between !important;
         align-items: center !important;
         padding: 12px 16px !important;
+        width: 100vw !important; /* Mengambil lebar penuh viewport */
+        margin-left: calc(50% - 50vw) !important; /* Menggeser ke kiri */
+        margin-right: calc(50% - 50vw) !important; /* Menggeser ke kanan */
     }
     .navbar-right {
         gap: 6px;
