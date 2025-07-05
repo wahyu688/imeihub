@@ -1965,3 +1965,128 @@ body {
         gap: 12px;
     }
 }
+
+
+/* === PATCH: RESPONSIVE FIXES NAVBAR & OVERLAY === */
+
+/* === FIX: NAVBAR SATU BARIS & OVERLAY RESPONSIF === */
+@media (max-width: 768px) {
+    .header-card {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+
+    .navbar-right {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .mobile-nav-overlay {
+        overflow-y: auto;
+        max-height: 100vh;
+        padding: 80px 20px 40px;
+    }
+
+    .mobile-nav-links {
+        gap: 24px;
+    }
+
+    .mobile-nav-links li:last-child {
+        display: none !important; /* sembunyikan 'Hi, user' duplikat di bawah */
+    }
+}
+
+
+/* === PATCH: RESPONSIVE FONT TUNING FOR SMALL SCREENS === */
+
+@media (max-width: 480px) {
+    .navbar-right {
+        gap: 6px;
+    }
+
+    .navbar-right .user-greeting {
+        font-size: 0.85em;
+        line-height: 1.2;
+    }
+
+    .navbar-right .logout-btn,
+    .navbar-right .btn {
+        font-size: 0.75em;
+        padding: 6px 12px;
+    }
+
+    .hamburger-menu {
+        font-size: 1.3em;
+    }
+}
+
+
+/* === GLOBAL FONT-SIZE RESPONSIVE PATCH FOR MOBILE === */
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 1.6em;
+    }
+
+    h2 {
+        font-size: 1.4em;
+    }
+
+    h3 {
+        font-size: 1.2em;
+    }
+
+    p, li, a, span, label {
+        font-size: 0.95em;
+        line-height: 1.4;
+    }
+
+    .cta-button,
+    .btn,
+    button {
+        font-size: 0.9em;
+        padding: 10px 20px;
+    }
+
+    input, select, textarea {
+        font-size: 0.95em;
+        padding: 10px;
+    }
+
+    .hero-section h1 {
+        font-size: 6vw;
+    }
+
+    .hero-section p {
+        font-size: 4vw;
+    }
+
+    .section-title {
+        font-size: 1.3em;
+    }
+
+    .stat-card h3 {
+        font-size: 1em;
+    }
+
+    .stat-card p {
+        font-size: 1.3em;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        font-size: 0.85em;
+    }
+}
