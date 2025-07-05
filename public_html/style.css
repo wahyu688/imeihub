@@ -206,22 +206,24 @@ a:hover {
 }
 
 .mobile-nav-overlay {
-    display: flex;
     position: fixed;
     top: 0;
     left: 0;
-    width: 80%; /* Lebar sidebar */
-    max-width: 300px;
+    width: 85%;
+    max-width: 320px;
     height: 100%;
-    background-color: rgba(30, 30, 30, 0.95); /* Lebih gelap dan elegan */
+    background-color: #1f1f1f; /* Warna latar belakang sidebar mobile yang gelap */
     z-index: 999;
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
-    padding: 30px 20px;
-    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
+    padding: 40px 25px;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
 }
 
 .mobile-nav-overlay.open {
@@ -231,27 +233,28 @@ a:hover {
 .mobile-nav-links {
     list-style-type: none;
     padding: 0;
-    margin: 60px 0 0 0;
+    margin: 40px 0 0 0;
     width: 100%;
 }
 
 .mobile-nav-links li {
-    margin: 20px 0;
+    margin: 15px 0;
     width: 100%;
 }
 
 .mobile-nav-links a {
-    font-size: 1.3em;
-    padding: 12px 20px;
+    font-size: 1.1em;
+    font-weight: 600;
+    padding: 14px 20px;
     display: block;
     width: 100%;
-    border-radius: 10px;
-    color: var(--text-color-light);
-    transition: background 0.3s;
+    border-radius: 8px;
+    color: #fff;
+    transition: background 0.2s;
 }
 
 .mobile-nav-links a:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 .close-mobile-nav {
@@ -259,11 +262,34 @@ a:hover {
     top: 20px;
     right: 20px;
     font-size: 2em;
-    color: var(--text-color-light);
+    color: #fff;
     background: none;
     border: none;
     cursor: pointer;
 }
+
+.mobile-nav-user {
+    margin-top: 30px;
+    color: #ccc;
+    font-size: 0.95em;
+    padding-left: 5px;
+}
+
+#mobile-logout-btn {
+    margin-top: 10px;
+    background-color: #444;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+#mobile-logout-btn:hover {
+    background-color: #666;
+}
+
 
 /* --- Bagian Hero - BUKAN KARTU --- */
 .hero-section {
@@ -814,16 +840,17 @@ a:hover {
         margin-right: -15px;
         width: calc(100% + 30px);
         flex-wrap: wrap; /* Allow header items to wrap */
-        justify-content: center; /* Center items when wrapped */
+        justify-content: space-between; /* Space out items */
+        align-items: center; /* Vertically align items */
     }
 
     .header-card .navbar-left {
-        flex-direction: column; /* Stack logo and nav links vertically */
+        flex-direction: row; /* Keep logo and text in a row */
         align-items: center;
-        gap: 15px;
-        flex-grow: unset; /* Remove flex-grow */
-        width: 100%;
-        margin-bottom: 10px;
+        gap: 10px; /* Reduce gap */
+        flex-grow: 1; /* Allow it to take space */
+        width: auto; /* Auto width */
+        margin-bottom: 0; /* Remove margin bottom */
     }
 
     .header-card .nav-links-desktop {
@@ -831,23 +858,23 @@ a:hover {
     }
 
     .header-card .navbar-right {
-        width: 100%;
-        justify-content: center; /* Center login/register button */
-        margin-top: 10px;
+        width: auto; /* Auto width */
+        justify-content: flex-end; /* Align to end */
+        margin-top: 0; /* Remove margin top */
     }
 
     .user-greeting-container {
-        flex-direction: column;
+        flex-direction: row; /* Keep user greeting in a row */
         gap: 5px;
-        text-align: center;
-        width: 100%;
+        text-align: right; /* Align text to right */
+        width: auto; /* Auto width */
     }
 
     .hamburger-menu {
         display: block; /* Tampilkan menu hamburger */
-        position: absolute; /* Posisikan absolut di dalam header */
-        right: 15px;
-        top: 15px;
+        position: static; /* Remove absolute positioning */
+        order: 2; /* Place it after logo/text */
+        margin-left: 15px; /* Add margin to separate from other elements */
     }
 
     .hero-section {
@@ -1035,13 +1062,13 @@ a:hover {
 
     .hamburger-menu {
         font-size: 1.8em;
-        right: 10px;
-        top: 10px;
+        /* Positioned by flexbox now */
     }
 
     .mobile-nav-overlay {
-        width: 100%; /* Sidebar takes full width on very small screens */
+        width: 90%; /* Sidebar takes more width on very small screens */
         max-width: none;
+        padding: 30px 20px;
     }
 
     .mobile-nav-links a {
@@ -1051,8 +1078,8 @@ a:hover {
 
     .close-mobile-nav {
         font-size: 1.8em;
-        top: 10px;
-        right: 10px;
+        top: 15px;
+        right: 15px;
     }
 
     .hero-section {
