@@ -97,7 +97,6 @@ a:hover {
     max-width: none; /* Tanpa lebar maksimum */
     box-sizing: border-box;
     flex-wrap: nowrap;
-    /* Removed negative margins and calc() width as it's now outside main-container */
 }
 
 .brand-icon {
@@ -215,27 +214,25 @@ a:hover {
     position: fixed;
     top: 0;
     left: 0;
-    width: 85%;
-    max-width: 320px;
-    height: 100%;
-    background-color: #1f1f1f;
+    width: 100vw; /* Lebar penuh viewport */
+    height: 100vh; /* Tinggi penuh viewport */
+    background-color: rgba(240, 243, 247, 0.98); /* Latar belakang semi-transparan */
+    backdrop-filter: blur(4px); /* Efek blur */
     z-index: 999;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
-    padding: 40px 25px;
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
+    align-items: flex-start; /* Konten rata kiri */
+    justify-content: flex-start; /* Konten mulai dari atas */
+    transform: translateY(-100%); /* Tersembunyi di atas layar */
+    transition: transform 0.3s ease; /* Transisi untuk meluncur */
+    padding: 100px 25px 40px 25px; /* Padding atas untuk ruang dari navbar, dll. */
+    border-radius: 0; /* Tidak ada border-radius di sini */
+    box-shadow: none; /* Tidak ada box-shadow di sini */
     overflow-y: auto; /* Memungkinkan scroll jika konten overlay panjang */
-    max-height: 100vh; /* Memastikan overlay tidak melebihi tinggi viewport */
 }
 
 .mobile-nav-overlay.open {
-    transform: translateX(0);
+    transform: translateY(0); /* Muncul di layar */
 }
 
 .mobile-nav-links {
@@ -257,12 +254,12 @@ a:hover {
     display: block;
     width: 100%;
     border-radius: 8px;
-    color: #fff;
+    color: var(--text-color-dark); /* Warna teks gelap */
     transition: background 0.2s;
 }
 
 .mobile-nav-links a:hover {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: var(--hover-grey-bg); /* Berubah menjadi latar belakang hover abu-abu */
 }
 
 .close-mobile-nav {
@@ -270,7 +267,7 @@ a:hover {
     top: 20px;
     right: 20px;
     font-size: 2em;
-    color: #fff;
+    color: var(--text-color-dark); /* Warna teks gelap */
     background: none;
     border: none;
     cursor: pointer;
@@ -278,15 +275,15 @@ a:hover {
 
 .mobile-nav-user {
     margin-top: 30px;
-    color: #ccc;
+    color: var(--secondary-text-color); /* Warna teks sekunder */
     font-size: 0.95em;
     padding-left: 5px;
 }
 
 #mobile-logout-btn {
     margin-top: 10px;
-    background-color: #444;
-    color: white;
+    background-color: var(--accent-color); /* Warna aksen */
+    color: var(--text-color-light); /* Teks putih */
     padding: 10px 20px;
     border: none;
     border-radius: 25px;
@@ -296,7 +293,7 @@ a:hover {
 }
 
 #mobile-logout-btn:hover {
-    background-color: #666;
+    background-color: var(--accent-dark); /* Status hover */
 }
 
 /* --- Bagian Hero - BUKAN KARTU --- */
@@ -312,7 +309,6 @@ a:hover {
     align-items: center;
     overflow: hidden;
     height: 100vh; /* Tinggi penuh viewport */
-    /* Removed negative margins and calc() width as it's now inside main-container which has padding */
     width: 100%; /* Take full width of its parent (main-container) */
     max-width: none; /* Tanpa lebar maksimum */
     box-sizing: border-box;
@@ -1359,8 +1355,15 @@ footer .social-links a:hover {
     }
 
     .header-card {
-        width: 100% !important;
-        max-width: 100vw !important;
+        /* Ini adalah bagian kunci untuk membuat navbar fit ke layar saat di dalam main-container */
+        width: calc(100% + 40px) !important; /* 100% dari parent + 2*20px (padding main-container) */
+        margin-left: -20px !important; /* Offset padding kiri main-container */
+        margin-right: -20px !important; /* Offset padding kanan main-container */
+        max-width: none !important; /* Pastikan tidak ada max-width yang membatasinya */
+        border-radius: 0; /* Tanpa border-radius di mobile */
+        margin-top: 0; /* Tanpa margin atas di mobile */
+
+        /* Gaya yang sudah ada */
         padding: 12px 16px;
         box-sizing: border-box;
         overflow-x: hidden;
@@ -1369,9 +1372,6 @@ footer .social-links a:hover {
         align-items: center;
         flex-direction: row;
         flex-wrap: nowrap;
-        /* Removed margin-left/right !important here as it's now outside main-container */
-        margin-left: 0;
-        margin-right: 0;
     }
 
     .navbar-right {
@@ -1414,20 +1414,14 @@ footer .social-links a:hover {
     }
 
     /* Mobile Overlay Navigation */
+    /* Properti inti sudah diatur secara global, di sini hanya penyesuaian visual */
     .mobile-nav-overlay {
-        width: 100vw;
-        max-width: 100vw; /* Pastikan mengisi penuh lebar */
-        background-color: rgba(240, 243, 247, 0.98);
-        backdrop-filter: blur(4px);
-        border-radius: 30px 30px 0 0;
-        padding-top: 100px;
-        transform: translateY(-100%);
-        transition: transform 0.3s ease;
-        justify-content: flex-start; /* Sesuaikan untuk konten di atas */
+        border-radius: 30px 30px 0 0; /* Sudut membulat di bagian bawah */
+        padding-top: 100px; /* Jarak dari atas */
     }
 
     .mobile-nav-overlay.open {
-        transform: translateY(0);
+        transform: translateY(0); /* Muncul di layar */
     }
 
     .mobile-nav-links {
@@ -1458,7 +1452,6 @@ footer .social-links a:hover {
         height: auto; /* izinkan konten menyesuaikan tinggi */
         padding-left: 16px;
         padding-right: 16px;
-        /* Removed margin-left/right !important and width !important as it's now inside main-container */
         width: 100%;
     }
 
