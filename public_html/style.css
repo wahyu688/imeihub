@@ -872,11 +872,11 @@ footer .social-links a:hover {
 
 .admin-content {
     flex-grow: 1;
-    background-color: transparent;
-    border-radius: 0;
-    box-shadow: none;
+    background-color: transparent; /* Latar belakang transparan */
+    border-radius: 0; /* Tanpa border radius */
+    box-shadow: none; /* Tanpa box shadow */
     padding: 40px;
-    min-height: 500px;
+    min-height: 500px; /* Memastikan area konten memiliki tinggi tertentu */
 }
 
 .admin-content h2 {
@@ -895,7 +895,7 @@ footer .social-links a:hover {
 }
 
 .stat-card {
-    background-color: var(--bg-content-color);
+    background-color: var(--bg-content-color); /* Tetap card untuk stat card */
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 4px 10px var(--shadow-color-light);
@@ -914,74 +914,177 @@ footer .social-links a:hover {
     color: var(--accent-color);
 }
 
+/* Gaya baru untuk header Manage Orders */
+.manage-orders-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Memungkinkan wrap di layar kecil */
+    align-items: flex-end;
+    margin-bottom: 16px;
+    gap: 16px; /* Jarak antar item */
+}
+
+.manage-orders-controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap; /* Memungkinkan wrap di layar kecil */
+}
+
+#search-orders-by {
+    padding: 8px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95em;
+    width: 220px; /* Lebar default */
+    background-color: #f3f4f6; /* Latar belakang input */
+    color: var(--text-color-dark);
+}
+
+.total-revenue-display {
+    font-weight: 600;
+    font-size: 0.95em;
+    color: var(--text-color-dark);
+    background: #f3f4f6;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+
 .admin-table-container {
-    overflow-x: auto;
+    overflow-x: auto; /* Memungkinkan scroll horizontal */
     margin-top: 30px;
     border-radius: 0;
     box-shadow: none;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling di iOS */
 }
 
 .admin-table {
     width: 100%;
+    min-width: 800px; /* Lebar minimum agar tabel bisa di-scroll di mobile */
     border-collapse: separate;
     border-spacing: 0;
-    background-color: transparent;
+    background-color: transparent; /* Latar belakang transparan */
     color: var(--table-text-dark);
-    font-size: 0.95em;
-    table-layout: fixed;
-    border-radius: 0;
-    overflow: visible;
+    font-size: 0.95em; /* Sedikit lebih besar untuk keterbacaan */
+    table-layout: auto; /* Auto layout untuk kolom */
+    border-radius: 0; /* Tanpa border-radius */
+    overflow: visible; /* Tidak lagi tersembunyi */
 }
 
 .admin-table th,
 .admin-table td {
-    padding: 15px;
-    border-bottom: 1px solid var(--table-border-light);
+    padding: 15px; /* Padding lebih besar untuk keterbacaan */
+    border-bottom: 1px solid var(--table-border-light); /* Border lebih tipis dan terang */
     text-align: left;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Memastikan padding tidak menambah lebar */
     padding-left: 20px;
     padding-right: 20px;
 }
 
 .admin-table th {
-    background-color: var(--table-header-bg-light);
+    background-color: var(--table-header-bg-light); /* Latar belakang header tabel terang */
     font-weight: 700;
-    color: var(--secondary-text-color);
+    color: var(--secondary-text-color); /* Teks sekunder */
     text-transform: uppercase;
-    font-size: 0.85em;
+    font-size: 0.85em; /* Sedikit lebih besar */
 }
 
 .admin-table tbody tr:hover {
-    background-color: var(--table-row-hover-light);
+    background-color: var(--table-row-hover-light); /* Hover terang pada latar belakang terang */
 }
 
-.status-button {
+/* Gaya untuk baris grup tanggal di tabel pesanan admin */
+.order-group-header {
+    background-color: #f4f4f4; /* Warna latar belakang header grup */
+    color: #333;
+    font-weight: bold;
+    font-size: 0.95em;
+}
+
+.order-group-header td {
+    padding: 12px 20px;
+    border-bottom: 1px solid #ccc;
+}
+
+.generate-invoice-button {
+    margin-left: 12px;
     padding: 6px 12px;
+    background: #4f46e5; /* Warna biru ungu */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: background-color 0.3s ease;
+}
+
+.generate-invoice-button:hover {
+    background-color: #3730a3; /* Warna lebih gelap saat hover */
+}
+
+/* Gaya untuk tombol status di tabel */
+.status-button {
+    padding: 6px 12px; /* Padding lebih besar */
     border-radius: 20px;
     border: none;
     cursor: pointer;
     font-size: 0.9em;
     font-weight: 600;
     transition: opacity 0.3s ease;
+    white-space: nowrap; /* Mencegah teks status melipat */
 }
 
 .status-button:hover {
     opacity: 0.8;
 }
 
-.action-buttons button {
-    background: none;
-    border: none;
-    color: var(--secondary-text-color);
+/* Gaya untuk dropdown update status dan role */
+.admin-status-select,
+.admin-role-select {
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    color: var(--text-color-dark);
+    font-size: 0.9em;
     cursor: pointer;
-    font-size: 1.2em;
-    margin: 0 5px;
-    transition: color 0.3s ease;
+    -webkit-appearance: none; /* Hapus gaya default browser */
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%236B7280" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); /* Panah kustom */
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 18px;
+    min-width: 120px; /* Lebar minimum untuk dropdown */
 }
 
-.action-buttons button:hover {
-    color: var(--accent-color);
+.admin-status-select:focus,
+.admin-role-select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(74, 74, 74, 0.1);
 }
+
+/* Gaya untuk tombol delete user */
+.delete-user-button {
+    background-color: var(--status-dibatalkan-bg);
+    color: var(--status-dibatalkan-text);
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.delete-user-button:hover {
+    background-color: #c82333; /* Sedikit lebih gelap saat hover */
+    opacity: 0.9;
+}
+
 
 /* 🔻 Logo dekoratif kanan bawah */
 .floating-logo {
@@ -1492,7 +1595,7 @@ footer .social-links a:hover {
         background: transparent;
     }
     .admin-table {
-        min-width: 900px;
+        min-width: 700px; /* Disesuaikan untuk layar 768px */
         table-layout: auto;
     }
     .admin-table th,
@@ -1510,30 +1613,16 @@ footer .social-links a:hover {
     .admin-table td:last-child {
         padding-right: 16px;
     }
-    .admin-table th:nth-child(1),
-    .admin-table td:nth-child(1) {
-        min-width: 140px;
-    }
-    .admin-table th:nth-child(2),
-    .admin-table td:nth-child(2) {
-        min-width: 180px;
-    }
-    .admin-table th:nth-child(3),
-    .admin-table td:nth-child(3) {
-        min-width: 200px;
-    }
-    .admin-table th:nth-child(4),
-    .admin-table td:nth-child(4) {
-        min-width: 130px;
-    }
-    .admin-table th:nth-child(5),
-    .admin-table td:nth-child(5) {
-        min-width: 100px;
-    }
-    .admin-table th:nth-child(6),
-    .admin-table td:nth-child(6) {
-        min-width: 110px;
-    }
+    /* Menyesuaikan lebar kolom untuk 768px */
+    .admin-table th:nth-child(1), .admin-table td:nth-child(1) { min-width: 100px; } /* Order ID */
+    .admin-table th:nth-child(2), .admin-table td:nth-child(2) { min-width: 120px; } /* User */
+    .admin-table th:nth-child(3), .admin-table td:nth-child(3) { min-width: 120px; } /* Service */
+    .admin-table th:nth-child(4), .admin-table td:nth-child(4) { min-width: 150px; } /* IMEI */
+    .admin-table th:nth-child(5), .admin-table td:nth-child(5) { min-width: 120px; } /* Date */
+    .admin-table th:nth-child(6), .admin-table td:nth-child(6) { min-width: 100px; } /* Status */
+    .admin-table th:nth-child(7), .admin-table td:nth-child(7) { min-width: 120px; } /* Actions (Select) */
+
+
     .status-button {
         font-size: 0.85em;
         padding: 6px 10px;

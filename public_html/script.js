@@ -967,8 +967,7 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
   
   // Calculate totals
   const subTotal = validOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
-  // No sale tax as per new requirement
-  const totalAmount = subTotal; // Total is just subTotal without tax
+  const totalAmount = subTotal;
 
   // Generate table rows
   const rows = validOrders.map((order, index) => `
@@ -992,11 +991,9 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
                     <div style="margin-bottom: 20px;">
                         <img src="imeihub_logo.png" alt="ImeiHub Logo" style="width: 80px; height: 80px; display: block; margin-bottom: 10px;">
                         <strong style="font-size: 1.2em; display: block; margin-bottom: 5px;">ImeiHub Company</strong>
-                        <!-- Removed company address -->
                     </div>
                 </td>
                 <td style="width: 50%; vertical-align: top; text-align: right;">
-                    <div style="font-size: 1.8em; font-weight: bold; color: #333; margin-bottom: 20px;"></div>
                     <table style="width: 100%; text-align: right; font-size: 0.9em;">
                         <tr>
                             <td style="padding: 5px 0; color: #666;">Invoice#:</td>
@@ -1006,7 +1003,6 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
                             <td style="padding: 5px 0; color: #666;">Invoice Date:</td>
                             <td style="padding: 5px 0; font-weight: bold;">${invoiceDate}</td>
                         </tr>
-                        <!-- Removed Due Date -->
                     </table>
                 </td>
             </tr>
@@ -1017,11 +1013,8 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
                 <td style="width: 50%; vertical-align: top;">
                     <strong style="font-size: 1.1em; display: block; margin-bottom: 10px; color: #555;">BILL TO:</strong>
                     <span style="font-size: 1em; display: block; margin-bottom: 5px;">${user}</span>
-                    <!-- Removed client address -->
                 </td>
-                <td style="width: 50%; vertical-align: top;">
-                    <!-- Empty for alignment -->
-                </td>
+                <td style="width: 50%; vertical-align: top;"></td>
             </tr>
         </table>
 
@@ -1036,7 +1029,6 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
             </thead>
             <tbody>
                 ${rows}
-                <!-- Empty row for "Enter item name/description" as per image -->
                 <tr style="border-bottom: 1px solid #eee;">
                     <td style="padding: 10px; text-align: left; font-size: 0.9em; color: #999;">Enter item name/description</td>
                     <td style="padding: 10px; text-align: right; font-size: 0.9em; color: #999;"></td>
@@ -1055,7 +1047,6 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
                             <td style="padding: 8px 12px; font-size: 0.95em; color: #555;">Sub Total</td>
                             <td style="padding: 8px 12px; font-size: 0.95em; font-weight: bold;">Rp ${subTotal.toLocaleString('id-ID')}</td>
                         </tr>
-                        <!-- Removed Sale Tax row -->
                         <tr style="background-color: #eee;">
                             <td style="padding: 12px; font-size: 1.1em; font-weight: bold; color: #333;">TOTAL</td>
                             <td style="padding: 12px; font-size: 1.1em; font-weight: bold; color: #333;">Rp ${totalAmount.toLocaleString('id-ID')}</td>
@@ -1064,6 +1055,16 @@ function generateProfessionalInvoicePDF(orders, user, invoiceId, invoiceDate) {
                 </td>
             </tr>
         </table>
+
+        <!-- Bank Information Section -->
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <strong style="font-size: 1em; color: #555;">Bank Transfer Information</strong>
+            <p style="margin: 8px 0 0 0; font-size: 0.9em; color: #333;">
+                <strong>BANK NAME:</strong> BCA<br>
+                <strong>ACCOUNT NAME:</strong> I GEDE ADITYA DUAJA<br>
+                <strong>ACCOUNT NO:</strong> 1460880218
+            </p>
+        </div>
     </div>
   `;
 
